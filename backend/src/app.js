@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmetConfig from "./config/helmet.config.js";
+import { checkMaintenanceMode } from "./middleware/checkMaintenanceMode.js";
 import productRoutes from "./routes/productRoutes.js";
 import modelRoutes from "./routes/modelRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -56,15 +57,17 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
-// Routes
-app.use("/products", productRoutes);
-app.use("/models", modelRoutes);
-app.use("/auth", authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/bookings', bookingRoutes);
+// Admin routes (bypass maintenance mode)
 app.use('/admin/auth', adminAuthRoutes);
 app.use('/api/superadmin', superadminRoutes);
+
+// Client routes (check maintenance mode first)
+app.use("/products", checkMaintenanceMode, productRoutes);
+app.use("/models", checkMaintenanceMode, modelRoutes);
+app.use("/auth", checkMaintenanceMode, authRoutes);
+app.use('/api/users', checkMaintenanceMode, userRoutes);
+app.use('/api/dashboard', checkMaintenanceMode, dashboardRoutes);
+app.use('/api/bookings', checkMaintenanceMode, bookingRoutes);
 
 
 app.get("/", (req, res) => {

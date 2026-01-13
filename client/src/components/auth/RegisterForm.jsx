@@ -99,8 +99,19 @@ const RegisterForm = () => {
           navigate("/login");
         }, 2000);
       } else {
-        // Registration failed
-        setError(data.message || "Registration failed. Please try again.");
+        // Check for specific error conditions
+        if (data.signupsDisabled) {
+          setError(
+            "New user registrations are currently disabled. Please contact support for assistance."
+          );
+        } else if (data.maintenanceMode) {
+          setError(
+            "The system is currently under maintenance. Please try again later."
+          );
+        } else {
+          // Registration failed with generic error
+          setError(data.message || "Registration failed. Please try again.");
+        }
       }
     } catch (err) {
       console.error("Registration error:", err);

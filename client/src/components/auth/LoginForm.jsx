@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API_URL from "../../config/api";
+import Modal from "../common/Modal";
 
 /**
  * LoginForm - Reusable login form component
@@ -12,6 +13,14 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: "",
+    message: "",
+    type: "info",
+  });
 
   // Clear any stale tokens when login form loads
   useEffect(() => {
@@ -48,8 +57,21 @@ const LoginForm = () => {
         localStorage.setItem("user", JSON.stringify(data.user));
         navigate("/main");
       } else {
-        // Login failed
-        setError(data.message || "Invalid username or password");
+        // Check for specific error conditions
+        if (data.suspended) {
+          // Show modal for suspended account
+          setModalConfig({
+            title: "Account Suspended",
+            message:
+              data.message ||
+              "Your account has been suspended. Please contact support for assistance.",
+            type: "error",
+          });
+          setShowModal(true);
+        } else {
+          // Show generic error
+          setError(data.message || "Invalid username or password");
+        }
       }
     } catch (err) {
       console.error("Login error:", err);
@@ -96,6 +118,15 @@ const LoginForm = () => {
       >
         {isLoading ? "Logging in..." : "Login"}
       </button>
+
+      {/* Suspended Account Modal */}
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        type={modalConfig.type}
+      />
     </>
   );
 };

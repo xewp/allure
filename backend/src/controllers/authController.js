@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import SystemSettings from "../models/SystemSettings.js";
 
 export const login = async (req, res) => {
   try {
@@ -39,6 +40,16 @@ export const login = async (req, res) => {
       return res.status(401).json({
         success: false,
         message: "Invalid username or password",
+      });
+    }
+
+    // Check if user is suspended
+    if (user.suspended) {
+      return res.status(403).json({
+        success: false,
+        message: "Your account has been suspended. Please contact support for assistance.",
+        suspended: true,
+        suspendedAt: user.suspendedAt,
       });
     }
 
@@ -91,6 +102,16 @@ export const login = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
+    // Check if signups are enabled
+    const signupSetting = await SystemSettings.findOne({ key: "enable_signups" });
+    if (signupSetting && signupSetting.value === false) {
+      return res.status(403).json({
+        success: false,
+        message: "New user registrations are currently disabled",
+        signupsDisabled: true,
+      });
+    }
+
     const { username, password, firstName, lastName, email, phoneNumber, age } = req.body;
 
     // Validate all required fields

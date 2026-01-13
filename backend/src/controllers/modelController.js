@@ -20,8 +20,11 @@ const uploadToCloudinary = async (base64Image) => {
 // Get all local models
 export const getLocalModels = async (req, res) => {
   try {
+    // Only show approved models to clients by default
+    // Unless showAll parameter is passed (for admin panel)
+    const filter = req.query.showAll === 'true' ? {} : { approvalStatus: "approved" };
+    
     // Check if filtering by availability is requested
-    const filter = {};
     if (req.query.available === 'true') {
       // Show models where available is true OR undefined (for backward compatibility)
       filter.$or = [{ available: true }, { available: { $exists: false } }];
@@ -36,8 +39,11 @@ export const getLocalModels = async (req, res) => {
 // Get all foreign models
 export const getForeignModels = async (req, res) => {
   try {
+    // Only show approved models to clients by default
+    // Unless showAll parameter is passed (for admin panel)
+    const filter = req.query.showAll === 'true' ? {} : { approvalStatus: "approved" };
+    
     // Check if filtering by availability is requested
-    const filter = {};
     if (req.query.available === 'true') {
       // Show models where available is true OR undefined (for backward compatibility)
       filter.$or = [{ available: true }, { available: { $exists: false } }];

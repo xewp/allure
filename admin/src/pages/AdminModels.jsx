@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import API_URL from "../config/api";
+import AdminModal from "../components/common/AdminModal";
 
 const AdminModels = () => {
   const themeColor = "#d6b48e";
@@ -16,6 +17,14 @@ const AdminModels = () => {
   const [loadingLikes, setLoadingLikes] = useState(false);
   const [currentModelName, setCurrentModelName] = useState("");
 
+  // Admin Modal State
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [adminModalConfig, setAdminModalConfig] = useState({
+    title: "",
+    message: "",
+    type: "info",
+  });
+
   const [formData, setFormData] = useState({
     name: "",
     age: "",
@@ -30,12 +39,19 @@ const AdminModels = () => {
     setLoading(true);
     try {
       const endpoint =
-        activeTab === "local" ? "/models/local" : "/models/foreign";
+        activeTab === "local"
+          ? "/models/local?showAll=true"
+          : "/models/foreign?showAll=true";
       const response = await axios.get(`${API_URL}${endpoint}`);
       setModels(response.data);
     } catch (error) {
       console.error("Error fetching models:", error);
-      alert("Failed to load models");
+      setAdminModalConfig({
+        title: "Error",
+        message: "Failed to load models. Please try again.",
+        type: "error",
+      });
+      setShowAdminModal(true);
     } finally {
       setLoading(false);
     }
@@ -82,30 +98,57 @@ const AdminModels = () => {
   const handleSave = async () => {
     try {
       await axios.put(`${API_URL}/models/${editingModel._id}`, formData);
-      alert("Model updated successfully!");
+      setAdminModalConfig({
+        title: "Success",
+        message: "Model updated successfully!",
+        type: "success",
+      });
+      setShowAdminModal(true);
       setShowEditModal(false);
       setEditingModel(null);
       fetchModels(); // Refresh the list
     } catch (error) {
       console.error("Error updating model:", error);
-      alert("Failed to update model");
+      setAdminModalConfig({
+        title: "Error",
+        message: "Failed to update model. Please try again.",
+        type: "error",
+      });
+      setShowAdminModal(true);
     }
   };
 
   // Delete model
   const handleDelete = async (modelId, modelName) => {
-    if (!confirm(`Are you sure you want to delete "${modelName}"?`)) {
-      return;
-    }
-
-    try {
-      await axios.delete(`${API_URL}/models/${modelId}`);
-      alert("Model deleted successfully!");
-      fetchModels(); // Refresh the list
-    } catch (error) {
-      console.error("Error deleting model:", error);
-      alert("Failed to delete model");
-    }
+    // Use modal for confirmation
+    setAdminModalConfig({
+      title: "Confirm Delete",
+      message: `Are you sure you want to delete "${modelName}"? This action cannot be undone.`,
+      type: "warning",
+      confirmText: "Delete",
+      showCancel: true,
+      onConfirm: async () => {
+        try {
+          await axios.delete(`${API_URL}/models/${modelId}`);
+          setAdminModalConfig({
+            title: "Success",
+            message: "Model deleted successfully!",
+            type: "success",
+          });
+          setShowAdminModal(true);
+          fetchModels(); // Refresh the list
+        } catch (error) {
+          console.error("Error deleting model:", error);
+          setAdminModalConfig({
+            title: "Error",
+            message: "Failed to delete model. Please try again.",
+            type: "error",
+          });
+          setShowAdminModal(true);
+        }
+      },
+    });
+    setShowAdminModal(true);
   };
 
   return (
@@ -480,6 +523,19 @@ const AdminModels = () => {
           </div>
         </div>
       )}
+
+      {/* Admin Modal */}
+      <AdminModal
+        isOpen={showAdminModal}
+        onClose={() => setShowAdminModal(false)}
+        title={adminModalConfig.title}
+        message={adminModalConfig.message}
+        type={adminModalConfig.type}
+        confirmText={adminModalConfig.confirmText}
+        onConfirm={adminModalConfig.onConfirm}
+        showCancel={adminModalConfig.showCancel}
+        onCancel={adminModalConfig.onCancel}
+      />
     </div>
   );
 };
