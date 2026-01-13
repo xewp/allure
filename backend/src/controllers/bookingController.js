@@ -1,4 +1,5 @@
 import Booking from "../models/Booking.js";
+import { logAdminAction } from "../middleware/logAdminAction.js";
 
 // Create a new booking
 export const createBooking = async (req, res) => {
@@ -163,6 +164,16 @@ export const updateBookingStatus = async (req, res) => {
     booking.status = status;
     booking.updatedAt = Date.now();
     await booking.save();
+    
+    // Log the action
+    await logAdminAction(
+      req,
+      "updated_booking_status",
+      "booking",
+      booking._id,
+      `${booking.userName} - ${booking.modelName}`,
+      { previousStatus: booking.status, newStatus: status }
+    );
 
     res.status(200).json({
       success: true,
@@ -191,6 +202,15 @@ export const deleteBooking = async (req, res) => {
         message: "Booking not found",
       });
     }
+    
+    // Log the action
+    await logAdminAction(
+      req,
+      "deleted_booking",
+      "booking",
+      booking._id,
+      `${booking.userName} - ${booking.modelName}`
+    );
 
     res.status(200).json({
       success: true,

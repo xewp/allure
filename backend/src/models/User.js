@@ -82,6 +82,19 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  suspended: {
+    type: Boolean,
+    default: false,
+  },
+  suspendedAt: {
+    type: Date,
+    default: null,
+  },
+  suspendedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "AdminUser",
+    default: null,
+  },
 });
 
 const User = mongoose.model("User", userSchema, "Users");

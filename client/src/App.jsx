@@ -1,16 +1,22 @@
 import { Routes, Route } from "react-router-dom";
-import LandingPage from "./pages/LandingPage";
-import AboutPage from "./pages/AboutPage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import MainPage from "./pages/MainPage";
-import DetailPage from "./components/DetailPage"; // 1. Import your new component
-import BookingPage from "./pages/BookingPage";
-import FavoritesPage from "./pages/FavoritesPage";
-import ProfilePage from "./pages/ProfilePage";
-import EditPage from "./pages/EditPage";
-import ProtectedRoute from "./components/ProtectedRoute";
-import ErrorPage from "./pages/ErrorPage";
+// Public pages
+import LandingPage from "./pages/public/LandingPage";
+import AboutPage from "./pages/public/AboutPage";
+import ErrorPage from "./pages/public/ErrorPage";
+// Auth pages
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+// Model pages
+import MainPage from "./pages/models/MainPage";
+import DetailPage from "./pages/models/DetailPage";
+import FavoritesPage from "./pages/models/FavoritesPage";
+// Booking pages
+import BookingPage from "./pages/booking/BookingPage";
+// User pages
+import ProfilePage from "./pages/user/ProfilePage";
+import EditPage from "./pages/user/EditPage";
+// Common components
+import ProtectedRoute from "./components/common/ProtectedRoute";
 import "./App.css";
 
 function App() {

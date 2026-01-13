@@ -2,6 +2,7 @@ import LocalModel from "../models/LocalModel.js";
 import ForeignModel from "../models/ForeignModel.js";
 import mongoose from "mongoose";
 import cloudinary from "../config/cloudinary.js";
+import { logAdminAction } from "../middleware/logAdminAction.js";
 
 // Helper function to upload to Cloudinary
 const uploadToCloudinary = async (base64Image) => {
@@ -117,6 +118,17 @@ export const createLocalModel = async (req, res) => {
     };
     
     const model = await LocalModel.create(modelData);
+    
+    // Log the action
+    await logAdminAction(
+      req,
+      "created_local_model",
+      "model",
+      model._id,
+      model.name,
+      { available: model.available }
+    );
+    
     res.status(201).json({ message: "Local model created!", model });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -146,6 +158,17 @@ export const createForeignModel = async (req, res) => {
     };
     
     const model = await ForeignModel.create(modelData);
+    
+    // Log the action
+    await logAdminAction(
+      req,
+      "created_foreign_model",
+      "model",
+      model._id,
+      model.name,
+      { available: model.available }
+    );
+    
     res.status(201).json({ message: "Foreign model created!", model });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -182,6 +205,16 @@ export const updateModel = async (req, res) => {
     if (!updatedModel) {
       return res.status(404).json({ error: "Model not found" });
     }
+    
+    // Log the action
+    await logAdminAction(
+      req,
+      "updated_model",
+      "model",
+      updatedModel._id,
+      updatedModel.name,
+      { updatedFields: Object.keys(updateData) }
+    );
 
     res.json({ message: "Model updated successfully", model: updatedModel });
   } catch (error) {
@@ -210,6 +243,15 @@ export const deleteModel = async (req, res) => {
     if (!deletedModel) {
       return res.status(404).json({ error: "Model not found" });
     }
+    
+    // Log the action
+    await logAdminAction(
+      req,
+      "deleted_model",
+      "model",
+      deletedModel._id,
+      deletedModel.name
+    );
 
     res.json({ message: "Model deleted successfully", model: deletedModel });
   } catch (error) {

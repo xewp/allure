@@ -1,8 +1,18 @@
+/* Premium Fonts */
+@import '@fontsource/playfair-display/400.css';
+@import '@fontsource/playfair-display/600.css';
+@import '@fontsource/playfair-display/700.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer utilities {
+  /* Original animations */
   @keyframes fadeInUp {
     from {
       opacity: 0;
@@ -28,10 +38,131 @@
     }
     to {
       opacity: 1;
+      transform: scale(0.95);
     }
   }
   .animate-fade-in {
-    animation: fadeIn 0.5s ease-in-out;
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  /* Enhanced card entrance animation */
+  @keyframes cardEntrance {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .animate-card-entrance {
+    animation: cardEntrance 0.6s ease-out both;
+  }
+
+  /* Staggered delays for cards */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-600 { animation-delay: 600ms; }
+
+  /* Carousel slide animation */
+  @keyframes carouselSlide {
+    from {
+      opacity: 0;
+      transform: scale(1.05);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  .animate-carousel-slide {
+    animation: carouselSlide 0.8s ease-out;
+  }
+
+  /* Glow pulse animation */
+  @keyframes glowPulse {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(216, 175, 127, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(216, 175, 127, 0.6);
+    }
+  }
+  .animate-glow-pulse {
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+
+  /* Title entrance */
+  @keyframes titleEntrance {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+      letter-spacing: 0.5em;
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      letter-spacing: 0.1em;
+    }
+  }
+  .animate-title-entrance {
+    animation: titleEntrance 1s ease-out both;
+  }
+
+  /* Tab slide in */
+  @keyframes tabSlideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  .animate-tab-slide {
+    animation: tabSlideIn 0.5s ease-out both;
+  }
+
+  /* Shimmer effect */
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+  .animate-shimmer {
+    animation: shimmer 3s infinite;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(216, 175, 127, 0.3) 50%,
+      transparent 100%
+    );
+    background-size: 1000px 100%;
+  }
+
+  /* Elegant Spinner */
+  @keyframes elegant-spinner {
+    0%,
+    80%,
+    100% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    40% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  .animate-elegant-spinner {
+    animation: elegant-spinner 1.4s infinite ease-in-out both;
   }
 }
 
@@ -39,13 +170,13 @@
 
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
   font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #000000;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

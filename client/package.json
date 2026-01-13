@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/playfair-display": "^5.2.8",
     "axios": "^1.13.2",
     "jwt-decode": "^4.0.0",
     "react": "^19.2.0",

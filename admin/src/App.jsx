@@ -13,6 +13,11 @@ import AdminUsers from "./pages/AdminUsers";
 import AdminModels from "./pages/AdminModels";
 import AdminBookings from "./pages/AdminBookings";
 import AdminUpload from "./pages/AdminUpload";
+import SuperadminDashboard from "./pages/SuperadminDashboard";
+import AllUsersTable from "./pages/AllUsersTable";
+import ModelApprovalList from "./pages/ModelApprovalList";
+import SystemSettings from "./pages/SystemSettings";
+import AdminLogs from "./pages/AdminLogs";
 
 // Import layout
 import AdminLayout from "./components/layout/AdminLayout";
@@ -42,6 +47,18 @@ function App() {
           <Route path="models" element={<AdminModels />} />
           <Route path="bookings" element={<AdminBookings />} />
           <Route path="upload" element={<AdminUpload />} />
+          {/* Superadmin routes */}
+          <Route
+            path="superadmin/dashboard"
+            element={<SuperadminDashboard />}
+          />
+          <Route path="superadmin/users" element={<AllUsersTable />} />
+          <Route
+            path="superadmin/model-approvals"
+            element={<ModelApprovalList />}
+          />
+          <Route path="superadmin/settings" element={<SystemSettings />} />
+          <Route path="superadmin/logs" element={<AdminLogs />} />
         </Route>
       </Routes>
     </Router>

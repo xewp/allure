@@ -583,7 +583,7 @@ const AdminUsers = () => {
         </div>
       )}
 
-      {/* Model Details Modal for Favorites */}
+      {/* Model Details Modal for Favorites - Matching AdminBookings format */}
       {(selectedModelDetails || modelLoading) && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-6 animate-fade-in"
@@ -614,7 +614,7 @@ const AdminUsers = () => {
                 </button>
                 <div className="flex flex-col items-center mb-6">
                   <div
-                    className="w-32 h-32 rounded-full overflow-hidden mb-4 border-2"
+                    className="w-40 h-40 rounded-full overflow-hidden mb-4 border-2"
                     style={{ borderColor: themeColor }}
                   >
                     <img
@@ -624,84 +624,49 @@ const AdminUsers = () => {
                     />
                   </div>
                   <h3
-                    className="text-2xl font-bold"
+                    className="text-2xl font-bold mb-2"
                     style={{ color: themeColor }}
                   >
                     {selectedModelDetails.name}
                   </h3>
-                  <span className="text-gray-400 text-sm uppercase tracking-widest mt-1">
-                    {selectedModelDetails.location || "Model"}
+                  <span className="text-gray-400 text-sm uppercase tracking-widest mb-2">
+                    {selectedModelDetails.category === "foreign"
+                      ? "FOREIGN"
+                      : "LOCAL"}
                   </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-gray-400 text-sm">Height</p>
-                    <p className="text-white">
-                      {selectedModelDetails.height || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400 text-sm">Bust</p>
-                    <p className="text-white">
-                      {selectedModelDetails.bust || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400 text-sm">Waist</p>
-                    <p className="text-white">
-                      {selectedModelDetails.waist || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400 text-sm">Hips</p>
-                    <p className="text-white">
-                      {selectedModelDetails.hips || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400 text-sm">Shoe Size</p>
-                    <p className="text-white">
-                      {selectedModelDetails.shoeSize || "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400 text-sm">Availability</p>
-                    <p
-                      className={
-                        selectedModelDetails.available
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }
-                    >
-                      {selectedModelDetails.available
-                        ? "Available"
-                        : "Unavailable"}
-                    </p>
-                  </div>
+                  <p
+                    className={`text-sm font-semibold ${
+                      selectedModelDetails.available
+                        ? "text-green-500"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {selectedModelDetails.available
+                      ? "✓ Available"
+                      : "✗ Unavailable"}
+                  </p>
                 </div>
 
                 {selectedModelDetails.galleryImages &&
                   selectedModelDetails.galleryImages.length > 0 && (
                     <div className="mt-6">
-                      <p className="text-gray-400 text-sm mb-2">
-                        Gallery Preview
+                      <p className="text-gray-400 text-sm mb-3 text-center">
+                        Gallery
                       </p>
-                      <div className="flex gap-2 overflow-x-auto pb-2">
-                        {selectedModelDetails.galleryImages
-                          .slice(0, 4)
-                          .map((img, idx) => (
-                            <div
-                              key={idx}
-                              className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden"
-                            >
-                              <img
-                                src={img}
-                                alt={`Gallery ${idx}`}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))}
+                      <div className="grid grid-cols-3 gap-3">
+                        {selectedModelDetails.galleryImages.map((img, idx) => (
+                          <div
+                            key={idx}
+                            className="aspect-square rounded-lg overflow-hidden border"
+                            style={{ borderColor: themeColor }}
+                          >
+                            <img
+                              src={img}
+                              alt={`Gallery ${idx + 1}`}
+                              className="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer"
+                            />
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}

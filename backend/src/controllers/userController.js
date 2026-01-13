@@ -1,10 +1,25 @@
 import User from '../models/User.js';
 import LocalModel from '../models/LocalModel.js';
 import ForeignModel from '../models/ForeignModel.js';
+import { logAdminAction } from '../middleware/logAdminAction.js';
 
 export const addFavorite = async (req, res) => {
     try {
         const { userId, modelId, name, username, password, imageUrl, category } = req.body;
+        
+        // First check if it's already in favorites
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        const alreadyFavorited = user.favorites.some(fav => String(fav.modelId) === String(modelId));
+        
+        if (alreadyFavorited) {
+            // Already favorited, just return the current user
+            const currentUser = await User.findById(userId).select('-password');
+            return res.status(200).json(currentUser);
+        }
         
         const favoriteObject = {
             modelId,
@@ -16,11 +31,11 @@ export const addFavorite = async (req, res) => {
         };
         
         // Add to user's favorites
-        const result = await User.findByIdAndUpdate(
+        const updatedUser = await User.findByIdAndUpdate(
             userId, 
             { $addToSet: { favorites: favoriteObject } },
             { new: true }
-        );
+        ).select('-password');
         
         // Increment favoritesCount on the model (try both collections)
         await LocalModel.findByIdAndUpdate(
@@ -33,7 +48,7 @@ export const addFavorite = async (req, res) => {
             { $inc: { favoritesCount: 1 } }
         ).catch(() => {});
         
-        res.status(200).json({ message: 'Model added to favorites' });
+        res.status(200).json(updatedUser);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -44,11 +59,11 @@ export const removeFavorite = async (req, res) => {
         const { userId, modelId } = req.body;
         
         // Remove from user's favorites
-        await User.findByIdAndUpdate(
+        const updatedUser = await User.findByIdAndUpdate(
             userId, 
             { $pull: { favorites: { modelId: modelId } } },
             { new: true }
-        );
+        ).select('-password');
         
         // Decrement favoritesCount on the model (try both collections)
         await LocalModel.findByIdAndUpdate(
@@ -61,7 +76,7 @@ export const removeFavorite = async (req, res) => {
             { $inc: { favoritesCount: -1 } }
         ).catch(() => {});
         
-        res.status(200).json({ message: 'Model removed from favorites' });
+        res.status(200).json(updatedUser);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -118,6 +133,33 @@ export const getFavorites = async (req, res) => {
     }
 };
 
+// Get user by ID - for profile page
+export const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const user = await User.findById(id).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error("Get user error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching user",
+    });
+  }
+};
+
 // Get all users (excluding passwords) - for admin panel
 export const getAllUsers = async (req, res) => {
   try {
@@ -151,6 +193,15 @@ export const deleteUser = async (req, res) => {
         message: "User not found",
       });
     }
+    
+    // Log the action
+    await logAdminAction(
+      req,
+      "deleted_user",
+      "user",
+      deletedUser._id,
+      `${deletedUser.firstName} ${deletedUser.lastName} (${deletedUser.email})`
+    );
     
     res.status(200).json({
       success: true,
@@ -223,6 +274,16 @@ export const updateUser = async (req, res) => {
         message: "User not found",
       });
     }
+    
+    // Log the action
+    await logAdminAction(
+      req,
+      "updated_user",
+      "user",
+      updatedUser._id,
+      `${updatedUser.firstName} ${updatedUser.lastName} (${updatedUser.email})`,
+      { updatedFields: Object.keys(updateData) }
+    );
     
     res.status(200).json({
       success: true,
