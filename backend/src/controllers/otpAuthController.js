@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import SystemSettings from '../models/SystemSettings.js';
 import { generateOTP, hashOTP, verifyOTP as verifyOTPUtil, isOTPExpired, calculateOTPExpiry } from '../utils/otpUtils.js';
 import { sendOTPEmail } from '../services/emailService.js';
 
@@ -10,6 +11,15 @@ import { sendOTPEmail } from '../services/emailService.js';
  */
 export const registerWithOTP = async (req, res) => {
   try {
+    // Check if signup is enabled in system settings
+    const signupSetting = await SystemSettings.findOne({ key: 'enableSignup' });
+    if (signupSetting && signupSetting.value === false) {
+      return res.status(403).json({
+        success: false,
+        message: 'New user registrations are currently disabled. Please contact support.',
+      });
+    }
+
     const { email, password, username, firstName, lastName, phoneNumber, age } = req.body;
 
     // Validate required fields
