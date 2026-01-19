@@ -14,6 +14,7 @@ import adminAuthRoutes from './routes/adminAuthRoutes.js';
 import superadminRoutes from './routes/superadminRoutes.js';
 import otpAuthRoutes from './routes/otpAuthRoutes.js';
 import userApprovalRoutes from './routes/userApprovalRoutes.js';
+import publicSettingsRoutes from './routes/publicSettingsRoutes.js';
 
 const app = express();
 
@@ -66,6 +67,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
+
+// Public routes (no authentication required)
+app.use('/api/settings', publicSettingsRoutes);
 
 // Admin routes (bypass maintenance mode)
 app.use('/admin/auth', adminAuthRoutes);

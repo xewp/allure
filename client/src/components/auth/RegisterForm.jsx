@@ -22,10 +22,33 @@ const RegisterForm = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [signupEnabled, setSignupEnabled] = useState(true); // Track if signup is enabled
 
   // OTP Modal state
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
+
+  // Check if signup is enabled on component mount
+  React.useEffect(() => {
+    const checkSignupStatus = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/settings/public-settings`);
+        const data = await response.json();
+        if (data.success) {
+          setSignupEnabled(data.settings.signupEnabled);
+          if (!data.settings.signupEnabled) {
+            setError(
+              "New user registrations are currently disabled. Please contact support.",
+            );
+          }
+        }
+      } catch (err) {
+        console.error("Failed to check signup status:", err);
+        // Default to enabled if check fails
+      }
+    };
+    checkSignupStatus();
+  }, []);
 
   // Client-side validation
   const validateEmail = (email) => {
@@ -97,27 +120,25 @@ const RegisterForm = () => {
 
       const data = await response.json();
 
+      // Check if signup is disabled (403 status)
+      if (response.status === 403) {
+        setError(
+          data.message ||
+            "New user registrations are currently disabled. Please contact support.",
+        );
+        return;
+      }
+
       if (data.success) {
         // Registration successful - show OTP modal
         setSuccess(
-          "Registration successful! Please check your email for the verification code."
+          "Registration successful! Please check your email for the verification code.",
         );
         setRegisteredEmail(email);
         setShowOTPModal(true);
       } else {
-        // Check for specific error conditions
-        if (data.signupsDisabled) {
-          setError(
-            "New user registrations are currently disabled. Please contact support for assistance."
-          );
-        } else if (data.maintenanceMode) {
-          setError(
-            "The system is currently under maintenance. Please try again later."
-          );
-        } else {
-          // Registration failed with generic error
-          setError(data.message || "Registration failed. Please try again.");
-        }
+        // Registration failed with generic error
+        setError(data.message || "Registration failed. Please try again.");
       }
     } catch (err) {
       console.error("Registration error:", err);
@@ -209,12 +230,18 @@ const RegisterForm = () => {
       </div>
       <button
         onClick={handleRegister}
-        disabled={isLoading}
+        disabled={isLoading || !signupEnabled}
         className={`mt-6 md:mt-8 px-8 py-3 rounded-full bg-black text-gold font-semibold transition-all hover:scale-105 ${
-          isLoading ? "opacity-50 cursor-not-allowed" : "hover:shadow-gold"
+          isLoading || !signupEnabled
+            ? "opacity-50 cursor-not-allowed"
+            : "hover:shadow-gold"
         }`}
       >
-        {isLoading ? "Registering..." : "Register"}
+        {isLoading
+          ? "Registering..."
+          : !signupEnabled
+            ? "Registrations Disabled"
+            : "Register"}
       </button>
       <p className="mt-4 text-black text-sm md:text-base">
         Already have an account?{" "}
