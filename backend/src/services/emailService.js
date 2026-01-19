@@ -251,7 +251,13 @@ export const sendOTPEmail = async (email, otp) => {
     await transporter.sendMail(mailOptions);
     log.info('OTP email sent successfully', { email });
   } catch (error) {
-    log.error('Failed to send OTP email', { email, error: error.message });
+    log.error('Failed to send OTP email', { 
+      email, 
+      error: error.message,
+      code: error.code,
+      response: error.response,
+      command: error.command 
+    });
     throw new Error('Failed to send verification email');
   }
 };
@@ -798,7 +804,13 @@ export const sendPasswordResetEmail = async (email, token, userId) => {
     await transporter.sendMail(mailOptions);
     log.info('Password reset email sent successfully', { email });
   } catch (error) {
-    log.error('Failed to send password reset email', { email, error: error.message });
+    log.error('Failed to send password reset email', { 
+      email, 
+      error: error.message,
+      code: error.code,
+      response: error.response,
+      command: error.command 
+    });
     throw new Error('Failed to send password reset email');
   }
 };
