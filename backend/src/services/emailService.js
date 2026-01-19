@@ -589,8 +589,9 @@ export const sendApprovalEmail = async (email, approved) => {
 export const sendPasswordResetEmail = async (email, token, userId) => {
   const transporter = createTransporter();
   
-  // Create reset URL using localhost for testing
-  const resetUrl = `http://localhost:5173/reset-password?token=${token}&userId=${userId}`;
+  // Create reset URL using environment variable (production) or localhost (development)
+  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+  const resetUrl = `${clientUrl}/reset-password?token=${token}&userId=${userId}`;
   
   const mailOptions = {
     from: `"Power Allure" <${process.env.EMAIL_FROM}>`,
