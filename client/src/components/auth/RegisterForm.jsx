@@ -7,7 +7,7 @@ import OTPModal from "./OTPModal";
  * RegisterForm - Reusable registration form component
  * Handles registration state, validation, and API communication
  */
-const RegisterForm = () => {
+const RegisterForm = ({ signupEnabled = true }) => {
   const navigate = useNavigate();
 
   // Form state
@@ -22,33 +22,10 @@ const RegisterForm = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [signupEnabled, setSignupEnabled] = useState(true); // Track if signup is enabled
 
   // OTP Modal state
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
-
-  // Check if signup is enabled on component mount
-  React.useEffect(() => {
-    const checkSignupStatus = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/settings/public-settings`);
-        const data = await response.json();
-        if (data.success) {
-          setSignupEnabled(data.settings.signupEnabled);
-          if (!data.settings.signupEnabled) {
-            setError(
-              "New user registrations are currently disabled. Please contact support.",
-            );
-          }
-        }
-      } catch (err) {
-        console.error("Failed to check signup status:", err);
-        // Default to enabled if check fails
-      }
-    };
-    checkSignupStatus();
-  }, []);
 
   // Client-side validation
   const validateEmail = (email) => {
@@ -151,6 +128,14 @@ const RegisterForm = () => {
   return (
     <>
       <div className="w-full max-w-lg flex flex-col gap-4">
+        {/* Signup Disabled Warning */}
+        {!signupEnabled && (
+          <div className="text-orange-700 text-sm font-semibold text-center bg-orange-100 p-4 rounded-lg border-2 border-orange-400">
+            ⚠️ New user registrations are currently disabled. Please contact
+            support for assistance.
+          </div>
+        )}
+
         {/* Two-column grid for form fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
@@ -158,14 +143,16 @@ const RegisterForm = () => {
             placeholder="First Name *"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none"
+            disabled={!signupEnabled}
+            className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <input
             type="text"
             placeholder="Last Name *"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none"
+            disabled={!signupEnabled}
+            className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -174,7 +161,8 @@ const RegisterForm = () => {
           placeholder="Email Address *"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none"
+          disabled={!signupEnabled}
+          className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -183,7 +171,8 @@ const RegisterForm = () => {
             placeholder="Phone Number *"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
-            className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none"
+            disabled={!signupEnabled}
+            className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <input
             type="number"
@@ -192,7 +181,8 @@ const RegisterForm = () => {
             onChange={(e) => setAge(e.target.value)}
             min="18"
             max="120"
-            className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none"
+            disabled={!signupEnabled}
+            className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -201,7 +191,8 @@ const RegisterForm = () => {
           placeholder="Username *"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none"
+          disabled={!signupEnabled}
+          className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
         />
 
         <input
@@ -210,11 +201,12 @@ const RegisterForm = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           onKeyPress={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && signupEnabled) {
               handleRegister();
             }
           }}
-          className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none"
+          disabled={!signupEnabled}
+          className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
         />
 
         {error && (

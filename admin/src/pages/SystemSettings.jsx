@@ -8,7 +8,7 @@ const SystemSettings = () => {
   const [settings, setSettings] = useState({
     maintenance_mode: false,
     default_commission_percentage: 20,
-    enable_signups: true,
+    enableSignup: true, // Changed from enable_signups to match backend
     announcement_banner: "",
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -135,14 +135,14 @@ const SystemSettings = () => {
               </p>
             </div>
             <button
-              onClick={() => handleToggle("enable_signups")}
+              onClick={() => handleToggle("enableSignup")}
               className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors ${
-                settings.enable_signups ? "bg-green-600" : "bg-gray-600"
+                settings.enableSignup ? "bg-green-600" : "bg-gray-600"
               }`}
             >
               <span
                 className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
-                  settings.enable_signups ? "translate-x-9" : "translate-x-1"
+                  settings.enableSignup ? "translate-x-9" : "translate-x-1"
                 }`}
               />
             </button>

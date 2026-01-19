@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import API_URL from "../../config/api";
 import Modal from "../common/Modal";
 import OTPModal from "./OTPModal";
@@ -11,9 +11,11 @@ import ForgotPasswordModal from "./ForgotPasswordModal";
  */
 const LoginForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [info, setInfo] = useState(""); // For informational messages
   const [isLoading, setIsLoading] = useState(false);
 
   // Modal state
@@ -35,7 +37,14 @@ const LoginForm = () => {
   useEffect(() => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-  }, []);
+
+    // Check for messages from navigation state (e.g., from register redirect)
+    if (location.state?.message) {
+      setInfo(location.state.message);
+      // Clear the state message after displaying
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   const handleLogin = async () => {
     // Clear previous errors
@@ -157,6 +166,13 @@ const LoginForm = () => {
             Forgot Password?
           </button>
         </div>
+
+        {/* Info Message - for messages from navigation state */}
+        {info && (
+          <div className="text-blue-700 text-sm font-semibold text-center bg-blue-100 p-3 rounded-lg border border-blue-300">
+            {info}
+          </div>
+        )}
 
         {error && (
           <div className="text-red-600 text-sm font-semibold text-center bg-red-100 p-3 rounded-lg border border-red-300">

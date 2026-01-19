@@ -25,7 +25,7 @@ const AuthLayout = ({ children, title, leftSectionStyle = {} }) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           setVisibleSections(
-            (prev) => new Set([...prev, entry.target.dataset.section])
+            (prev) => new Set([...prev, entry.target.dataset.section]),
           );
         }
       });
@@ -33,7 +33,7 @@ const AuthLayout = ({ children, title, leftSectionStyle = {} }) => {
 
     const observer = new IntersectionObserver(
       observerCallback,
-      observerOptions
+      observerOptions,
     );
 
     const sections = document.querySelectorAll("[data-section]");
@@ -78,7 +78,7 @@ const AuthLayout = ({ children, title, leftSectionStyle = {} }) => {
           className={`text-gold ${mergedStyle.subheadingSize} font-light tracking-wide`}
         >
           Feel the power. Own the allure
-          {/* Hidden Easter egg: clickable period only on login page */}
+          {/* Hidden Easter egg: clickable period on login page */}
           {location.pathname === "/login" ? (
             <span
               onClick={() => navigate("/register")}
