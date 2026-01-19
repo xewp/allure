@@ -249,8 +249,11 @@ export const validateSession = async (req, res) => {
     // Verify JWT signature
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+    // Support both old token format (id) and new token format (userId)
+    const userId = decoded.userId || decoded.id;
+    
     // Fetch user
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(401).json({

@@ -107,7 +107,7 @@ export const useDetailPageLogic = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId: user._id,
+            userId: user.id || user._id, // Support both new (id) and old (_id)
             modelId: modelData._id,
             name: modelData.name,
             imageUrl: primaryImageUrl,

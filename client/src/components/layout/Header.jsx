@@ -29,9 +29,8 @@ const Header = ({ activeTab, onTabChange }) => {
       }
 
       const user = JSON.parse(userStr);
-      const response = await fetch(
-        `${API_URL}/api/users/${user._id}/favorites`
-      );
+      const userId = user.id || user._id;
+      const response = await fetch(`${API_URL}/api/users/${userId}/favorites`);
 
       if (response.ok) {
         const favorites = await response.json();

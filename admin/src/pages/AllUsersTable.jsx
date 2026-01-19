@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import API_URL from "../config/api";
+import useModal from "../hooks/useModal.jsx";
 
 const AllUsersTable = () => {
+  const { Modal, showSuccess, showError } = useModal();
   const themeColor = "#d6b48e";
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -12,7 +14,6 @@ const AllUsersTable = () => {
     total: 0,
     pages: 0,
   });
-  const [confirmAction, setConfirmAction] = useState(null);
 
   useEffect(() => {
     fetchUsers();
@@ -25,7 +26,7 @@ const AllUsersTable = () => {
         `${API_URL}/api/superadmin/users?page=${pagination.page}&limit=${pagination.limit}&search=${searchTerm}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       const data = await response.json();
 
@@ -40,41 +41,86 @@ const AllUsersTable = () => {
     }
   };
 
-  const handleSuspendToggle = async (userId, currentStatus) => {
-    if (!confirmAction) {
-      setConfirmAction({
-        userId,
-        action: currentStatus ? "unsuspend" : "suspend",
-      });
-      return;
-    }
-
+  const handleApproveUser = async (userId) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${API_URL}/api/superadmin/users/${userId}/suspend`,
+        `${API_URL}/api/admin/approve-user/${userId}`,
         {
-          method: "PUT",
+          method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       const data = await response.json();
 
       if (data.success) {
         fetchUsers();
-        alert(data.message);
+        showSuccess("User approved successfully!");
       } else {
-        alert(data.message || "Failed to update user status");
+        showError(data.message || "Failed to approve user");
       }
     } catch (error) {
-      console.error("Error toggling user suspension:", error);
-      alert("Error updating user status");
-    } finally {
-      setConfirmAction(null);
+      console.error("Error approving user:", error);
+      showError("Error approving user");
+    }
+  };
+
+  const handleRejectUser = async (userId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${API_URL}/api/admin/reject-user/${userId}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        fetchUsers();
+        showSuccess("User rejected successfully");
+      } else {
+        showError(data.message || "Failed to reject user");
+      }
+    } catch (error) {
+      console.error("Error rejecting user:", error);
+      showError("Error rejecting user");
+    }
+  };
+
+  const handleToggleModelAccess = async (userId, currentStatus) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${API_URL}/api/admin/toggle-model-access/${userId}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        fetchUsers();
+        showSuccess(
+          `Model access ${currentStatus ? "disabled" : "enabled"} successfully!`,
+        );
+      } else {
+        showError(data.message || "Failed to toggle model access");
+      }
+    } catch (error) {
+      console.error("Error toggling model access:", error);
+      showError("Error toggling model access");
     }
   };
 
@@ -102,9 +148,11 @@ const AllUsersTable = () => {
           className="text-3xl md:text-4xl font-bold mb-2"
           style={{ color: themeColor }}
         >
-          User Management
+          User Registration Approval
         </h1>
-        <p className="text-gray-400">Manage all platform users</p>
+        <p className="text-gray-400">
+          Approve or reject new user registrations
+        </p>
       </div>
 
       {/* Search Bar */}
@@ -142,7 +190,7 @@ const AllUsersTable = () => {
                 Joined
               </th>
               <th className="text-left p-4 text-gray-400 font-semibold">
-                Status
+                Approval Status
               </th>
               <th className="text-left p-4 text-gray-400 font-semibold">
                 Actions
@@ -175,29 +223,51 @@ const AllUsersTable = () => {
                     {formatDate(user.createdAt)}
                   </td>
                   <td className="p-4">
-                    {user.suspended ? (
-                      <span className="px-3 py-1 rounded-full text-xs bg-red-900 text-red-200">
-                        Suspended
+                    {user.approvalStatus === "pending" && (
+                      <span className="px-3 py-1 rounded-full text-xs bg-yellow-900 text-yellow-200">
+                        Pending
                       </span>
-                    ) : (
+                    )}
+                    {user.approvalStatus === "approved" && (
                       <span className="px-3 py-1 rounded-full text-xs bg-green-900 text-green-200">
-                        Active
+                        Approved
+                      </span>
+                    )}
+                    {user.approvalStatus === "rejected" && (
+                      <span className="px-3 py-1 rounded-full text-xs bg-red-900 text-red-200">
+                        Rejected
                       </span>
                     )}
                   </td>
                   <td className="p-4">
-                    <button
-                      onClick={() =>
-                        handleSuspendToggle(user._id, user.suspended)
-                      }
-                      className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                        user.suspended
-                          ? "bg-green-600 hover:bg-green-700 text-white"
-                          : "bg-red-600 hover:bg-red-700 text-white"
-                      }`}
-                    >
-                      {user.suspended ? "Unsuspend" : "Suspend"}
-                    </button>
+                    <div className="flex gap-2">
+                      {user.approvalStatus === "pending" && (
+                        <>
+                          <button
+                            onClick={() => handleApproveUser(user._id)}
+                            className="px-3 py-1 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleRejectUser(user._id)}
+                            className="px-3 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold text-sm transition-colors"
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
+                      {user.approvalStatus === "approved" && (
+                        <span className="px-3 py-1 rounded-full text-xs bg-green-900 text-green-200">
+                          Approved
+                        </span>
+                      )}
+                      {user.approvalStatus === "rejected" && (
+                        <span className="px-3 py-1 rounded-full text-xs bg-red-900 text-red-200">
+                          Rejected
+                        </span>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))
@@ -233,47 +303,8 @@ const AllUsersTable = () => {
         </div>
       )}
 
-      {/* Confirmation Modal */}
-      {confirmAction && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-          <div
-            className="bg-gray-900 rounded-2xl p-8 max-w-md border"
-            style={{ borderColor: themeColor }}
-          >
-            <h3 className="text-2xl font-bold text-white mb-4">
-              Confirm Action
-            </h3>
-            <p className="text-gray-300 mb-6">
-              Are you sure you want to {confirmAction.action} this user?
-              {confirmAction.action === "suspend" &&
-                " This will immediately log them out and prevent access."}
-            </p>
-            <div className="flex gap-4">
-              <button
-                onClick={() =>
-                  handleSuspendToggle(
-                    confirmAction.userId,
-                    confirmAction.action === "unsuspend"
-                  )
-                }
-                className="flex-1 px-6 py-3 rounded-xl font-semibold transition-all"
-                style={{
-                  backgroundColor: themeColor,
-                  color: "black",
-                }}
-              >
-                Confirm
-              </button>
-              <button
-                onClick={() => setConfirmAction(null)}
-                className="flex-1 px-6 py-3 rounded-xl bg-gray-800 text-white font-semibold hover:bg-gray-700 transition-all"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Global Modal */}
+      {Modal}
     </div>
   );
 };

@@ -105,7 +105,7 @@ export const ModelCard = ({
     >
       <div
         className={`relative ${
-          isLarge ? "h-[600px]" : isMedium ? "h-[450px]" : "h-[400px]"
+          isLarge ? "h-[720px]" : isMedium ? "h-[540px]" : "h-[480px]"
         } bg-gradient-to-br from-gray-900 to-black rounded-[1.4rem] overflow-hidden`}
       >
         {model.imageUrl ? (

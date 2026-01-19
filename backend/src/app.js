@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import helmetConfig from "./config/helmet.config.js";
 import { checkMaintenanceMode } from "./middleware/checkMaintenanceMode.js";
+import { log, debugLog } from "./utils/logger.js";
+import { requestLogger, devLogger } from "./middleware/requestLogger.js";
 import productRoutes from "./routes/productRoutes.js";
 import modelRoutes from "./routes/modelRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -10,8 +12,14 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import adminAuthRoutes from './routes/adminAuthRoutes.js';
 import superadminRoutes from './routes/superadminRoutes.js';
+import otpAuthRoutes from './routes/otpAuthRoutes.js';
+import userApprovalRoutes from './routes/userApprovalRoutes.js';
 
 const app = express();
+
+// HTTP request logging middleware
+app.use(requestLogger);
+app.use(devLogger);
 
 // Security headers via Helmet
 app.use(helmetConfig);
@@ -37,15 +45,13 @@ const corsOptions = {
     // Combine all allowed origins
     const allowedOrigins = [...localOrigins, ...productionOrigins];
     
-    // Debug logging
-    console.log('CORS Request from origin:', origin);
-    console.log('Allowed origins:', allowedOrigins);
-    console.log('FRONTEND_URLS env:', process.env.FRONTEND_URLS);
+    // Debug logging (only in debug mode)
+    debugLog('CORS', 'Request from origin', { origin, allowedOrigins });
     
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.error('CORS BLOCKED - Origin not allowed:', origin);
+      log.warn('CORS BLOCKED - Origin not allowed', { origin });
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -60,11 +66,13 @@ app.use(express.urlencoded({ limit: '100mb', extended: true }));
 // Admin routes (bypass maintenance mode)
 app.use('/admin/auth', adminAuthRoutes);
 app.use('/api/superadmin', superadminRoutes);
+app.use('/api/admin', userApprovalRoutes);
 
 // Client routes (check maintenance mode first)
 app.use("/products", checkMaintenanceMode, productRoutes);
 app.use("/models", checkMaintenanceMode, modelRoutes);
 app.use("/auth", checkMaintenanceMode, authRoutes);
+app.use("/api/otp-auth", checkMaintenanceMode, otpAuthRoutes);
 app.use('/api/users', checkMaintenanceMode, userRoutes);
 app.use('/api/dashboard', checkMaintenanceMode, dashboardRoutes);
 app.use('/api/bookings', checkMaintenanceMode, bookingRoutes);
@@ -85,7 +93,13 @@ app.use((req, res) => {
 
 // Global error handler - no stack traces in production
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
+  // Log error with stack trace
+  log.error(err.message, { 
+    statusCode: err.statusCode || 500,
+    path: req.path,
+    method: req.method,
+    stack: err.stack 
+  });
   
   const statusCode = err.statusCode || 500;
   const response = {

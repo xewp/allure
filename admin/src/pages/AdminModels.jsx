@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import API_URL from "../config/api";
 import AdminModal from "../components/common/AdminModal";
+import useModal from "../hooks/useModal.jsx";
 
 const AdminModels = () => {
+  const { showError } = useModal();
   const themeColor = "#d6b48e";
   const [activeTab, setActiveTab] = useState("local");
   const [models, setModels] = useState([]);
@@ -85,10 +87,12 @@ const AdminModels = () => {
       const response = await axios.get(`${API_URL}/models/${model._id}/likes`);
       if (response.data.success) {
         setLikesData(response.data.users);
+      } else {
+        showError("Failed to load likes");
       }
     } catch (error) {
       console.error("Error fetching likes:", error);
-      alert("Failed to load likes");
+      showError("Failed to load likes");
     } finally {
       setLoadingLikes(false);
     }

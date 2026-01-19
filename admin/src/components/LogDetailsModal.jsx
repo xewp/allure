@@ -1,11 +1,13 @@
 import React from "react";
+import useModal from "../hooks/useModal.jsx";
 
 const LogDetailsModal = ({ log, onClose }) => {
+  const { showSuccess } = useModal();
   const themeColor = "#d6b48e";
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
+    showSuccess("Copied to clipboard!");
   };
 
   const formatTimestamp = (timestamp) => {

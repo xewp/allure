@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import BookingCalendar from "../components/BookingCalendar";
+import useModal from "../hooks/useModal.jsx";
 
 const AdminBookings = () => {
+  const { Modal, showSuccess, showError, showConfirm } = useModal();
   const themeColor = "#d6b48e";
 
   const [bookings, setBookings] = useState([]);
@@ -38,7 +40,7 @@ const AdminBookings = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       // Check if response is JSON
@@ -80,49 +82,45 @@ const AdminBookings = () => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ status: newStatus }),
-        }
+        },
       );
 
       if (response.ok) {
-        // Refresh bookings
         fetchBookings();
       } else {
-        alert("Failed to update booking status");
+        showError("Failed to update booking status");
       }
     } catch (err) {
       console.error("Error updating status:", err);
-      alert("Error updating booking status");
+      showError("Error updating booking status");
     }
   };
 
   const deleteBooking = async (bookingId) => {
-    if (!confirm("Are you sure you want to delete this booking?")) {
-      return;
-    }
+    showConfirm("Are you sure you want to delete this booking?", async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-    try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/bookings/${bookingId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/bookings/${bookingId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        }
-      );
+        );
 
-      if (response.ok) {
-        // Refresh bookings
-        fetchBookings();
-      } else {
-        alert("Failed to delete booking");
+        if (response.ok) {
+          fetchBookings();
+        } else {
+          showError("Failed to delete booking");
+        }
+      } catch (err) {
+        console.error("Error deleting booking:", err);
+        showError("Error deleting booking");
       }
-    } catch (err) {
-      console.error("Error deleting booking:", err);
-      alert("Error deleting booking");
-    }
+    });
   };
 
   const getStatusColor = (status) => {
@@ -147,14 +145,14 @@ const AdminBookings = () => {
 
       // Use the simple /models/:id endpoint
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/models/${modelId}`
+        `${import.meta.env.VITE_API_URL}/models/${modelId}`,
       );
       if (response.ok) {
         const data = await response.json();
         setSelectedModelDetails(data);
       } else {
         console.error("Failed to fetch model details");
-        alert("Failed to fetch model details");
+        showError("Failed to fetch model details");
       }
     } catch (error) {
       console.error("Error fetching model details:", error);
@@ -169,7 +167,7 @@ const AdminBookings = () => {
     console.log("Model Category:", booking.modelCategory);
 
     if (!booking.modelId) {
-      alert("Model ID is missing from booking data");
+      showError("Model ID is missing from booking data");
       return;
     }
 
@@ -336,7 +334,7 @@ const AdminBookings = () => {
                           updateBookingStatus(booking._id, e.target.value)
                         }
                         className={`px-3 py-1 rounded-full text-white text-sm font-semibold ${getStatusColor(
-                          booking.status
+                          booking.status,
                         )}`}
                       >
                         <option value="pending">Pending</option>
@@ -546,6 +544,9 @@ const AdminBookings = () => {
           </div>
         </div>
       )}
+
+      {/* Global Modal */}
+      {Modal}
     </div>
   );
 };

@@ -1,17 +1,15 @@
 import AdminUser from "../models/AdminUser.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { log } from "../utils/logger.js";
 
 export const adminLogin = async (req, res) => {
   try {
-    console.log("\n========== ADMIN LOGIN ATTEMPT ==========");
-    console.log("Request body:", req.body);
-    
     const { username, password } = req.body;
 
     // Validate input
     if (!username || !password) {
-      console.log("[DEBUG] Missing username or password");
+      log.warn("Admin login attempt with missing credentials");
       return res.status(400).json({
         success: false,
         message: "Please provide both username and password",
@@ -20,6 +18,7 @@ export const adminLogin = async (req, res) => {
 
     // Input sanitization - limit length and check for dangerous characters
     if (username.length > 50 || password.length > 100) {
+      log.warn("Admin login attempt with invalid input length", { username });
       return res.status(400).json({
         success: false,
         message: "Invalid input length",
@@ -30,7 +29,7 @@ export const adminLogin = async (req, res) => {
     const sanitizedUsername = username.replace(/[^\w\-_.]/g, '');
     
     if (sanitizedUsername !== username) {
-      console.log("[DEBUG] Username was sanitized, original:", username, "sanitized:", sanitizedUsername);
+      log.warn("Admin login attempt with invalid characters in username");
       return res.status(400).json({
         success: false,
         message: "Username contains invalid characters",
@@ -38,40 +37,21 @@ export const adminLogin = async (req, res) => {
     }
 
     // Find admin user by username
-    console.log("[DEBUG] Searching for username:", sanitizedUsername);
-    console.log("[DEBUG] Collection:", AdminUser.collection.name);
-    console.log("[DEBUG] Database:", AdminUser.db.databaseName);
-    
-    // First, let's see how many users exist total
-    const totalCount = await AdminUser.countDocuments();
-    console.log("[DEBUG] Total AdminUsers in database:", totalCount);
-    
-    // Try to find the specific user
     const adminUser = await AdminUser.findOne({ username: sanitizedUsername });
-    console.log("[DEBUG] Login attempt for username:", sanitizedUsername);
-    console.log("[DEBUG] User found:", !!adminUser);
     
-    // If not found, let's see what usernames actually exist
     if (!adminUser) {
-      const allUsers = await AdminUser.find({}).select('username').limit(10);
-      console.log("[DEBUG] Available usernames:", allUsers.map(u => u.username));
-      console.log("[DEBUG] User not found in database");
+      log.warn("Failed admin login attempt - user not found", { username: sanitizedUsername });
       return res.status(401).json({
         success: false,
         message: "Invalid admin credentials",
       });
     }
 
-    console.log("[DEBUG] User details - username:", adminUser.username, "role:", adminUser.role);
-    console.log("[DEBUG] Password from request length:", password.length);
-    console.log("[DEBUG] Password hash from DB:", adminUser.password?.substring(0, 20));
-
     // Check password
     const isMatch = await bcrypt.compare(password, adminUser.password);
-    console.log("[DEBUG] Password match result:", isMatch);
     
     if (!isMatch) {
-      console.log("[DEBUG] Password mismatch - login failed");
+      log.warn("Failed admin login attempt - invalid password", { username: sanitizedUsername });
       return res.status(401).json({
         success: false,
         message: "Invalid admin credentials",
@@ -101,7 +81,12 @@ export const adminLogin = async (req, res) => {
     adminUser.lastActivityAt = new Date();
     await adminUser.save();
 
-    // Successful login
+    // Successful login - log without sensitive data
+    log.info("Admin login successful", { 
+      username: adminUser.username, 
+      role: adminUser.role 
+    });
+
     res.status(200).json({
       success: true,
       message: "Admin login successful",
@@ -114,7 +99,7 @@ export const adminLogin = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Admin login error:", error);
+    log.error("Admin login error", { error: error.message });
     res.status(500).json({
       success: false,
       message: "Server error during admin login",
@@ -141,6 +126,7 @@ export const validateSession = async (req, res) => {
     const adminUser = await AdminUser.findById(decoded.id);
 
     if (!adminUser) {
+      log.warn("Session validation failed - user not found", { userId: decoded.id });
       return res.status(401).json({
         success: false,
         message: "User not found",
@@ -161,6 +147,7 @@ export const validateSession = async (req, res) => {
     const isValidSession = await bcrypt.compare(token, adminUser.activeSessionToken);
 
     if (!isValidSession) {
+      log.warn("Session invalidated - token mismatch", { username: adminUser.username });
       return res.status(401).json({
         success: false,
         message: "Session has been invalidated by another login",
@@ -175,7 +162,7 @@ export const validateSession = async (req, res) => {
       sessionInvalidated: false,
     });
   } catch (error) {
-    console.error("Session validation error:", error);
+    log.error("Session validation error", { error: error.message });
 
     if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
       return res.status(401).json({

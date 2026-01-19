@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import API_URL from "../config/api";
+import useModal from "../hooks/useModal.jsx";
+import UserActionsModal from "../components/common/UserActionsModal";
 
 const AdminUsers = () => {
+  const { Modal, showSuccess, showError, showConfirm } = useModal();
   const themeColor = "#d6b48e";
 
   // State management
@@ -12,6 +15,8 @@ const AdminUsers = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [actionModalOpen, setActionModalOpen] = useState(false);
+  const [adminRole, setAdminRole] = useState("admin");
 
   // Edit form state
   const [editForm, setEditForm] = useState({
@@ -51,6 +56,16 @@ const AdminUsers = () => {
   // Fetch users on component mount
   useEffect(() => {
     fetchUsers();
+    // Get admin role from localStorage
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      try {
+        const user = JSON.parse(userString);
+        setAdminRole(user.role || "admin");
+      } catch (err) {
+        console.error("Error parsing user from localStorage:", err);
+      }
+    }
   }, []);
 
   // Handle search
@@ -73,32 +88,28 @@ const AdminUsers = () => {
 
   // Delete user
   const handleDeleteUser = async (userId) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this user? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
+    showConfirm(
+      "Are you sure you want to delete this user? This action cannot be undone.",
+      async () => {
+        try {
+          const response = await fetch(`${API_URL}/api/users/${userId}`, {
+            method: "DELETE",
+          });
+          const data = await response.json();
 
-    try {
-      const response = await fetch(`${API_URL}/api/users/${userId}`, {
-        method: "DELETE",
-      });
-      const data = await response.json();
-
-      if (data.success) {
-        // Refresh user list
-        fetchUsers();
-        setSelectedUser(null);
-        alert("User deleted successfully");
-      } else {
-        alert(data.message || "Failed to delete user");
-      }
-    } catch (err) {
-      console.error("Error deleting user:", err);
-      alert("Unable to connect to server");
-    }
+          if (data.success) {
+            fetchUsers();
+            setSelectedUser(null);
+            showSuccess("User deleted successfully");
+          } else {
+            showError(data.message || "Failed to delete user");
+          }
+        } catch (err) {
+          console.error("Error deleting user:", err);
+          showError("Unable to connect to server");
+        }
+      },
+    );
   };
 
   // Open edit modal
@@ -127,17 +138,89 @@ const AdminUsers = () => {
       const data = await response.json();
 
       if (data.success) {
-        // Refresh user list
         fetchUsers();
         setEditingUser(null);
-        alert("User updated successfully");
+        showSuccess("User updated successfully");
       } else {
-        alert(data.message || "Failed to update user");
+        showError(data.message || "Failed to update user");
       }
     } catch (err) {
       console.error("Error updating user:", err);
-      alert("Unable to connect to server");
+      showError("Unable to connect to server");
     }
+  };
+
+  // Suspend/Unsuspend user
+  const handleSuspendUser = async (userId, currentStatus) => {
+    const action = currentStatus ? "unsuspend" : "suspend";
+    showConfirm(
+      `Are you sure you want to ${action} this user?${!currentStatus ? " This will prevent them from accessing the platform." : ""}`,
+      async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(
+            `${API_URL}/api/superadmin/users/${userId}/suspend`,
+            {
+              method: "PUT",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            },
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            fetchUsers();
+            setSelectedUser(null);
+            setActionModalOpen(false);
+            showSuccess(data.message || `User ${action}ed successfully`);
+          } else {
+            showError(data.message || `Failed to ${action} user`);
+          }
+        } catch (err) {
+          console.error(`Error ${action}ing user:`, err);
+          showError("Unable to connect to server");
+        }
+      },
+      "Confirm Action",
+    );
+  };
+
+  // Toggle Model Access (Superadmin only)
+  const handleToggleModelAccess = async (userId, currentStatus) => {
+    const action = currentStatus ? "disable" : "enable";
+    showConfirm(
+      `Are you sure you want to ${action} model access for this user?`,
+      async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(
+            `${API_URL}/api/admin/toggle-model-access/${userId}`,
+            {
+              method: "PATCH",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            fetchUsers();
+            setSelectedUser(null);
+            setActionModalOpen(false);
+            showSuccess(`Model access ${action}d successfully!`);
+          } else {
+            showError(data.message || `Failed to ${action} model access`);
+          }
+        } catch (err) {
+          console.error(`Error ${action}ing model access:`, err);
+          showError("Unable to connect to server");
+        }
+      },
+      "Confirm Action",
+    );
   };
 
   // Format date
@@ -428,11 +511,11 @@ const AdminUsers = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3">
+            {/* Action Button */}
+            <div className="flex justify-center">
               <button
-                onClick={() => handleEditClick(selectedUser)}
-                className="flex-1 py-3 rounded-full border text-white font-semibold transition-all hover:text-black"
+                onClick={() => setActionModalOpen(true)}
+                className="px-8 py-3 rounded-full border-2 text-white font-semibold transition-all hover:text-black"
                 style={{ borderColor: themeColor }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = themeColor;
@@ -441,13 +524,7 @@ const AdminUsers = () => {
                   e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
-                Edit User
-              </button>
-              <button
-                onClick={() => handleDeleteUser(selectedUser._id)}
-                className="flex-1 py-3 rounded-full border border-red-500 text-red-500 font-semibold transition-all hover:bg-red-500 hover:text-white"
-              >
-                Delete User
+                Manage User
               </button>
             </div>
           </div>
@@ -675,6 +752,28 @@ const AdminUsers = () => {
           </div>
         </div>
       )}
+
+      {/* User Actions Modal */}
+      <UserActionsModal
+        isOpen={actionModalOpen}
+        onClose={() => setActionModalOpen(false)}
+        user={selectedUser}
+        adminRole={adminRole}
+        onEditUser={() => handleEditClick(selectedUser)}
+        onToggleModelAccess={() =>
+          handleToggleModelAccess(
+            selectedUser._id,
+            selectedUser.canViewModels !== false,
+          )
+        }
+        onDeleteUser={() => handleDeleteUser(selectedUser._id)}
+        onSuspendUser={() =>
+          handleSuspendUser(selectedUser._id, selectedUser.suspended)
+        }
+      />
+
+      {/* Global Modal */}
+      {Modal}
     </div>
   );
 };

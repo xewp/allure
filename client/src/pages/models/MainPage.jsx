@@ -16,6 +16,8 @@ const MainPage = () => {
     handleCardClick,
     handleTabClick,
     navigate,
+    userPermissions,
+    permissionsLoading,
   } = useMainPageLogic();
 
   return (
@@ -35,7 +37,24 @@ const MainPage = () => {
           navigate={navigate}
         />
 
-        {loading ? (
+        {permissionsLoading ? (
+          <div className="flex justify-center items-center min-h-[600px]">
+            <LoadingSpinner message="Loading..." size="large" />
+          </div>
+        ) : userPermissions && !userPermissions.canViewModels ? (
+          <div className="flex justify-center items-center min-h-[600px]">
+            <div className="bg-red-500/20 border-2 border-red-500 rounded-2xl p-8 max-w-md text-center">
+              <div className="text-6xl mb-4">🚫</div>
+              <h3 className="text-2xl font-bold text-red-500 mb-2">
+                Model Access Disabled
+              </h3>
+              <p className="text-gray-300">
+                Your access to view models has been disabled by the
+                administrator. Please contact support.
+              </p>
+            </div>
+          </div>
+        ) : loading ? (
           <div className="flex justify-center items-center min-h-[600px]">
             <LoadingSpinner message="Loading models" size="large" />
           </div>

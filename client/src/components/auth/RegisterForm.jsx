@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API_URL from "../../config/api";
+import OTPModal from "./OTPModal";
 
 /**
  * RegisterForm - Reusable registration form component
@@ -21,6 +22,10 @@ const RegisterForm = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // OTP Modal state
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   // Client-side validation
   const validateEmail = (email) => {
@@ -74,7 +79,7 @@ const RegisterForm = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/auth/register`, {
+      const response = await fetch(`${API_URL}/api/otp-auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,11 +98,12 @@ const RegisterForm = () => {
       const data = await response.json();
 
       if (data.success) {
-        // Registration successful
-        setSuccess("Registration successful! You can now log in.");
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+        // Registration successful - show OTP modal
+        setSuccess(
+          "Registration successful! Please check your email for the verification code."
+        );
+        setRegisteredEmail(email);
+        setShowOTPModal(true);
       } else {
         // Check for specific error conditions
         if (data.signupsDisabled) {
@@ -216,6 +222,22 @@ const RegisterForm = () => {
           Login here
         </Link>
       </p>
+
+      {/* OTP Verification Modal */}
+      <OTPModal
+        isOpen={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        email={registeredEmail}
+        onSuccess={() => {
+          setShowOTPModal(false);
+          navigate("/login", {
+            state: {
+              message:
+                "Email verified! Your account is awaiting admin approval.",
+            },
+          });
+        }}
+      />
     </>
   );
 };

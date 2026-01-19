@@ -2,6 +2,8 @@ import User from '../models/User.js';
 import LocalModel from '../models/LocalModel.js';
 import ForeignModel from '../models/ForeignModel.js';
 import { logAdminAction } from '../middleware/logAdminAction.js';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 export const addFavorite = async (req, res) => {
     try {
@@ -305,6 +307,249 @@ export const updateUser = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server error while updating user",
+    });
+  }
+};
+
+// Change user password
+export const changePassword = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { currentPassword, newPassword } = req.body;
+    
+    // Validate input
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password and new password are required",
+      });
+    }
+    
+    // Validate new password strength
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be at least 6 characters long",
+      });
+    }
+    
+    // Get user with password
+    const user = await User.findById(id);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    
+    // Verify current password using bcrypt
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Current password is incorrect",
+      });
+    }
+    
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    
+    // Update password with hashed version
+    user.password = hashedPassword;
+    await user.save();
+    
+    res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    console.error("Change password error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while changing password",
+    });
+  }
+};
+
+// Request password reset
+export const requestPasswordReset = async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+    
+    // Find user by email (case-insensitive)
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    
+    if (!user) {
+      // Don't reveal if email exists (security best practice)
+      return res.status(200).json({
+        success: true,
+        message: "If the email exists in our system, a reset link has been sent",
+      });
+    }
+    
+    // Generate secure reset token (32 bytes = 64 hex characters)
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    
+    // Hash the token before storing (security best practice)
+    const hashedToken = await bcrypt.hash(resetToken, 10);
+    
+    // Store hashed token and expiration (15 minutes from now)
+    user.passwordResetToken = hashedToken;
+    user.passwordResetExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    await user.save();
+    
+    // Import email service dynamically
+    const { sendPasswordResetEmail } = await import('../services/emailService.js');
+    
+    // Send email with plain token (user needs this)
+    await sendPasswordResetEmail(user.email, resetToken, user._id);
+    
+    res.status(200).json({
+      success: true,
+      message: "If the email exists in our system, a reset link has been sent",
+    });
+  } catch (error) {
+    console.error("Password reset request error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to process password reset request",
+    });
+  }
+};
+
+// Verify reset token (optional - for frontend validation)
+export const verifyResetToken = async (req, res) => {
+  try {
+    const { token, userId } = req.body;
+    
+    if (!token || !userId) {
+      return res.status(400).json({
+        success: false,
+        message: "Token and userId are required",
+      });
+    }
+    
+    const user = await User.findById(userId);
+    
+    if (!user || !user.passwordResetToken || !user.passwordResetExpires) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired reset token",
+      });
+    }
+    
+    // Check if token expired
+    if (new Date() > user.passwordResetExpires) {
+      return res.status(400).json({
+        success: false,
+        message: "Reset token has expired. Please request a new one.",
+      });
+    }
+    
+    // Verify token matches
+    const isValid = await bcrypt.compare(token, user.passwordResetToken);
+    
+    if (!isValid) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid reset token",
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: "Token is valid",
+    });
+  } catch (error) {
+    console.error("Token verification error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to verify token",
+    });
+  }
+};
+
+// Reset password
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, userId, newPassword } = req.body;
+    
+    // Validate input
+    if (!token || !userId || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Token, userId, and new password are required",
+      });
+    }
+    
+    // Validate password
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters long",
+      });
+    }
+    
+    const user = await User.findById(userId);
+    
+    if (!user || !user.passwordResetToken || !user.passwordResetExpires) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired reset token",
+      });
+    }
+    
+    // Check if token expired
+    if (new Date() > user.passwordResetExpires) {
+      return res.status(400).json({
+        success: false,
+        message: "Reset token has expired. Please request a new one.",
+      });
+    }
+    
+    // Verify token matches
+    const isValid = await bcrypt.compare(token, user.passwordResetToken);
+    
+    if (!isValid) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid reset token",
+      });
+    }
+    
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    
+    // Update password and clear reset token
+    user.password = hashedPassword;
+    user.passwordResetToken = null;
+    user.passwordResetExpires = null;
+    await user.save();
+    
+    // Import email service dynamically and send confirmation
+    const { sendPasswordResetConfirmation } = await import('../services/emailService.js');
+    await sendPasswordResetConfirmation(user.email);
+    
+    res.status(200).json({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    console.error("Password reset error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to reset password",
     });
   }
 };

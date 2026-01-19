@@ -8,6 +8,8 @@ import MaintenancePage from "./pages/public/MaintenancePage";
 // Auth pages
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
+import OTPVerificationPage from "./pages/auth/OTPVerificationPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 // Model pages
 import MainPage from "./pages/models/MainPage";
 import DetailPage from "./pages/models/DetailPage";
@@ -62,6 +64,8 @@ function App() {
       <Route path="/about" element={<AboutPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/verify-otp" element={<OTPVerificationPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path="/main" element={<MainPage />} />

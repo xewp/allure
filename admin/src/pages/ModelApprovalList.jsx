@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import API_URL from "../config/api";
+import useModal from "../hooks/useModal.jsx";
 
 const ModelApprovalList = () => {
+  const { Modal, showSuccess, showError } = useModal();
   const themeColor = "#d6b48e";
   const [pendingModels, setPendingModels] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,20 +43,20 @@ const ModelApprovalList = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ category }),
-        }
+        },
       );
 
       const data = await response.json();
 
       if (data.success) {
-        alert("Model approved successfully!");
+        showSuccess("Model approved successfully!");
         fetchPendingModels();
       } else {
-        alert(data.message || "Failed to approve model");
+        showError(data.message || "Failed to approve model");
       }
     } catch (error) {
       console.error("Error approving model:", error);
-      alert("Error approving model");
+      showError("Error approving model");
     }
   };
 
@@ -70,20 +72,20 @@ const ModelApprovalList = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ category }),
-        }
+        },
       );
 
       const data = await response.json();
 
       if (data.success) {
-        alert("Model rejected successfully!");
+        showSuccess("Model rejected successfully!");
         fetchPendingModels();
       } else {
-        alert(data.message || "Failed to reject model");
+        showError(data.message || "Failed to reject model");
       }
     } catch (error) {
       console.error("Error rejecting model:", error);
-      alert("Error rejecting model");
+      showError("Error rejecting model");
     }
   };
 
@@ -99,20 +101,20 @@ const ModelApprovalList = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ category }),
-        }
+        },
       );
 
       const data = await response.json();
 
       if (data.success) {
-        alert(data.message);
-        window.location.reload(); // Reload to show updated status
+        showSuccess(data.message);
+        window.location.reload();
       } else {
-        alert(data.message || "Failed to update featured status");
+        showError(data.message || "Failed to update featured status");
       }
     } catch (error) {
       console.error("Error toggling featured status:", error);
-      alert("Error updating featured status");
+      showError("Error updating featured status");
     }
   };
 
@@ -318,6 +320,9 @@ const ModelApprovalList = () => {
           </div>
         </div>
       )}
+
+      {/* Global Modal */}
+      {Modal}
     </div>
   );
 };

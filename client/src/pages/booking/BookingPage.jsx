@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/Header";
+import API_URL from "../../config/api";
 
 const BookingPage = () => {
   const themeColor = "#dcb887";
@@ -27,8 +28,9 @@ const BookingPage = () => {
       try {
         const token = localStorage.getItem("token");
         const userData = JSON.parse(localStorage.getItem("user") || "{}");
+        const userId = userData.id || userData._id;
 
-        if (!token || !userData._id) {
+        if (!token || !userId) {
           setError("Please log in to make a booking");
           return;
         }
@@ -49,14 +51,12 @@ const BookingPage = () => {
           setFavorites(userData.favorites);
         } else {
           // Fetch fresh user data to get favorites
-          const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/users/${userData._id}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const userId = userData.id || userData._id;
+          const response = await fetch(`${API_URL}/api/users/${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
           if (response.ok) {
             const data = await response.json();
@@ -119,17 +119,14 @@ const BookingPage = () => {
         modelCategory: selectedModelData.category?.toLowerCase() || "local",
       };
 
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/bookings`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(bookingData),
-        }
-      );
+      const response = await fetch(`${API_URL}/api/bookings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(bookingData),
+      });
 
       const data = await response.json();
 

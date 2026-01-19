@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 import API_URL from "../config/api";
+import useModal from "../hooks/useModal.jsx";
 
 const AdminUpload = () => {
+  const { Modal, showSuccess, showError, showWarning } = useModal();
   const themeColor = "#d6b48e";
   const [mainImage, setMainImage] = useState(null);
   const [mainImagePreview, setMainImagePreview] = useState(null);
@@ -69,7 +71,7 @@ const AdminUpload = () => {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!mainImage) return alert("Please select a main image");
+    if (!mainImage) return showWarning("Please select a main image");
     setLoading(true);
 
     try {
@@ -98,10 +100,10 @@ const AdminUpload = () => {
 
       await axios.post(endpoint, finalData);
 
-      alert(
+      showSuccess(
         `${
           collection === "local" ? "Local" : "Foreign"
-        } talent saved successfully!`
+        } talent saved successfully!`,
       );
 
       // Reset form
@@ -118,7 +120,7 @@ const AdminUpload = () => {
       setGalleryPreviews([]);
     } catch (error) {
       console.error(error);
-      alert("Upload failed. Check console for details.");
+      showError("Upload failed. Check console for details.");
     } finally {
       setLoading(false);
     }
@@ -362,6 +364,9 @@ const AdminUpload = () => {
           </div>
         </div>
       </div>
+
+      {/* GlobalModal */}
+      {Modal}
     </div>
   );
 };

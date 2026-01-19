@@ -32,8 +32,8 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // Get userId from authenticated user
-    const userId = req.user.id;
+    // Get userId from authenticated user - support both old (id) and new (userId) JWT format
+    const userId = req.user.userId || req.user.id;
 
     // Create new booking
     const newBooking = new Booking({

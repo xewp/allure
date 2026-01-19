@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import API_URL from "../config/api";
+import useModal from "../hooks/useModal.jsx";
 
 const SystemSettings = () => {
+  const { Modal, showSuccess, showError } = useModal();
   const themeColor = "#d6b48e";
   const [settings, setSettings] = useState({
     maintenance_mode: false,
@@ -55,13 +57,13 @@ const SystemSettings = () => {
       const data = await response.json();
 
       if (data.success) {
-        alert("Settings saved successfully!");
+        showSuccess("Settings saved successfully!");
       } else {
-        alert(data.message || "Failed to save settings");
+        showError(data.message || "Failed to save settings");
       }
     } catch (error) {
       console.error("Error saving settings:", error);
-      alert("Error saving settings");
+      showError("Error saving settings");
     } finally {
       setIsSaving(false);
     }
@@ -162,7 +164,7 @@ const SystemSettings = () => {
               onChange={(e) =>
                 handleInputChange(
                   "default_commission_percentage",
-                  parseFloat(e.target.value)
+                  parseFloat(e.target.value),
                 )
               }
               className="w-32 px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-[#d6b48e]"
@@ -221,6 +223,9 @@ const SystemSettings = () => {
           <li>All settings changes are logged and can be audited</li>
         </ul>
       </div>
+
+      {/* Global Modal */}
+      {Modal}
     </div>
   );
 };

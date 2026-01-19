@@ -20,8 +20,9 @@ export const authenticateToken = async (req, res, next) => {
     // Attach user to request
     req.user = decoded;
 
-    // Optionally, fetch full user data
-    const user = await User.findById(decoded.id).select("-password");
+    // Optionally, fetch full user data - support both old (id) and new (userId) JWT format
+    const userId = decoded.userId || decoded.id;
+    const user = await User.findById(userId).select("-password");
     
     if (!user) {
       return res.status(404).json({

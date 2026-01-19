@@ -29,8 +29,12 @@ const AdminNav = () => {
 
   const superadminNavItems = [
     { path: "/superadmin/dashboard", label: "SA Dashboard", icon: "🔧" },
-    { path: "/superadmin/users", label: "All Users", icon: "👥" },
-    { path: "/superadmin/model-approvals", label: "Approvals", icon: "✅" },
+    { path: "/superadmin/users", label: "User Approval", icon: "✅" },
+    {
+      path: "/superadmin/model-approvals",
+      label: "Model Approval",
+      icon: "✨",
+    },
     { path: "/superadmin/settings", label: "Settings", icon: "⚙️" },
     { path: "/superadmin/logs", label: "Admin Logs", icon: "📋" },
   ];

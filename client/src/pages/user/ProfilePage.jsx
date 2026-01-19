@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import EditProfileModal from "../../components/profile/EditProfileModal";
+import OTPModal from "../../components/auth/OTPModal";
 import API_URL from "../../config/api";
 
 const ProfilePage = () => {
@@ -12,6 +13,7 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showOTPModal, setShowOTPModal] = useState(false);
 
   // Fetch user data from MongoDB
   useEffect(() => {
@@ -20,11 +22,14 @@ const ProfilePage = () => {
         const token = localStorage.getItem("token");
         const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
 
-        if (!storedUser._id) {
+        // Support both old (_id) and new (id) user object formats
+        const userId = storedUser.id || storedUser._id;
+
+        if (!userId) {
           throw new Error("User ID not found");
         }
 
-        const response = await fetch(`${API_URL}/api/users/${storedUser._id}`, {
+        const response = await fetch(`${API_URL}/api/users/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -65,6 +70,30 @@ const ProfilePage = () => {
 
   const handleUpdateSuccess = (updatedUser) => {
     setUser(updatedUser);
+  };
+
+  const handleVerifyEmail = () => {
+    setShowOTPModal(true);
+  };
+
+  const handleOTPSuccess = async () => {
+    setShowOTPModal(false);
+    // Refresh user data to show updated verification status
+    try {
+      const token = localStorage.getItem("token");
+      const userId = user._id;
+      const response = await fetch(`${API_URL}/api/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setUser(data.user);
+      // Update localStorage
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      storedUser.emailVerified = true;
+      localStorage.setItem("user", JSON.stringify(storedUser));
+    } catch (err) {
+      console.error("Failed to refresh user data", err);
+    }
   };
 
   if (loading) {
@@ -240,6 +269,15 @@ const ProfilePage = () => {
         onClose={handleModalClose}
         userData={user}
         onUpdateSuccess={handleUpdateSuccess}
+      />
+
+      {/* OTP Verification Modal */}
+      <OTPModal
+        isOpen={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        email={user?.email}
+        onSuccess={handleOTPSuccess}
+        onVerifyLater={() => setShowOTPModal(false)}
       />
     </div>
   );

@@ -10,6 +10,8 @@ import React from "react";
  * @param {string} props.type - Modal type: 'success', 'error', 'warning', 'info'
  * @param {string} props.confirmText - Text for confirm button (default: 'OK')
  * @param {function} props.onConfirm - Callback when confirm is clicked
+ * @param {string} props.actionText - Optional action button text
+ * @param {function} props.onAction - Optional action button callback
  */
 const Modal = ({
   isOpen,
@@ -19,6 +21,8 @@ const Modal = ({
   type = "info",
   confirmText = "OK",
   onConfirm,
+  actionText,
+  onAction,
 }) => {
   if (!isOpen) return null;
 
@@ -70,6 +74,19 @@ const Modal = ({
 
         {/* Message */}
         <p className="text-center text-gray-600 mb-6">{message}</p>
+
+        {/* Action Button (Optional) */}
+        {actionText && onAction && (
+          <button
+            onClick={() => {
+              onAction();
+              onClose();
+            }}
+            className="w-full py-3 rounded-xl font-semibold transition-all hover:scale-105 mb-3 bg-black text-gold"
+          >
+            {actionText}
+          </button>
+        )}
 
         {/* Confirm Button */}
         <button

@@ -15,9 +15,62 @@ const MainPage = () => {
   const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(false);
   const [visibleSections, setVisibleSections] = useState(new Set());
+  const [userPermissions, setUserPermissions] = useState(null); // Track user permissions
+  const [permissionsLoading, setPermissionsLoading] = useState(true);
 
   const themeColor = "#D8AF7F"; // Gold
   const arrowBgColor = "#3e3e3e"; // Dark grey for carousel buttons
+
+  // Fetch user permissions on mount
+  useEffect(() => {
+    const fetchUserPermissions = async () => {
+      alert("DEBUG: Starting permission fetch"); // DEBUG
+      try {
+        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const userId = storedUser.id || storedUser._id;
+        const token = localStorage.getItem("token");
+
+        console.log(
+          "DEBUG: userId=",
+          userId,
+          "token=",
+          token ? "exists" : "missing"
+        );
+
+        if (!userId || !token) {
+          alert("DEBUG: No userId or token found");
+          setPermissionsLoading(false);
+          return;
+        }
+
+        const response = await fetch(`${API_URL}/api/users/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        console.log("DEBUG: Response status:", response.status);
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Fetched user permissions:", data.user);
+          console.log("canViewModels value:", data.user.canViewModels);
+          alert(`DEBUG: canViewModels = ${data.user.canViewModels}`); // DEBUG
+          setUserPermissions({
+            canViewModels: data.user.canViewModels !== false,
+          });
+        } else {
+          console.error("Failed to fetch permissions:", response.status);
+          alert(`DEBUG: API failed with status ${response.status}`);
+        }
+      } catch (error) {
+        console.error("Error fetching user permissions:", error);
+        alert(`DEBUG: Error - ${error.message}`);
+      } finally {
+        setPermissionsLoading(false);
+      }
+    };
+
+    fetchUserPermissions();
+  }, []);
 
   // Fetch models from API based on category
   const fetchModels = async (category) => {
@@ -280,7 +333,24 @@ const MainPage = () => {
 
         {/* Bottom Grid (Model Cards) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 w-full pb-12 md:pb-20">
-          {loading ? (
+          {permissionsLoading ? (
+            <div className="col-span-full flex justify-center items-center min-h-[400px]">
+              <LoadingSpinner message="Loading..." size="large" />
+            </div>
+          ) : userPermissions && !userPermissions.canViewModels ? (
+            <div className="col-span-full text-center py-20">
+              <div className="bg-red-500/20 border-2 border-red-500 rounded-2xl p-8 max-w-md mx-auto">
+                <div className="text-6xl mb-4">🚫</div>
+                <h3 className="text-2xl font-bold text-red-500 mb-2">
+                  Model Access Disabled
+                </h3>
+                <p className="text-gray-300 mb-6">
+                  Your access to view models has been disabled by the
+                  administrator. Please contact support for assistance.
+                </p>
+              </div>
+            </div>
+          ) : loading ? (
             <div className="col-span-full flex justify-center items-center min-h-[400px]">
               <LoadingSpinner message="Loading models" size="large" />
             </div>

@@ -4,7 +4,8 @@ import { login, register, validateSession } from "../controllers/authController.
 const router = express.Router();
 
 router.post("/login", login);
-router.post("/register", register);
+// Legacy endpoint disabled - use /otp-auth/register instead
+// router.post("/register", register);
 router.get("/validate-session", validateSession);
 
 export default router;

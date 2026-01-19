@@ -11,6 +11,41 @@ export const useMainPageLogic = () => {
   );
   const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [userPermissions, setUserPermissions] = useState(null);
+  const [permissionsLoading, setPermissionsLoading] = useState(true);
+
+  // Fetch user permissions on mount
+  useEffect(() => {
+    const fetchUserPermissions = async () => {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const userId = storedUser.id || storedUser._id;
+        const token = localStorage.getItem("token");
+
+        if (!userId || !token) {
+          setPermissionsLoading(false);
+          return;
+        }
+
+        const response = await fetch(`${API_URL}/api/users/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserPermissions({
+            canViewModels: data.user.canViewModels !== false,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching permissions:", error);
+      } finally {
+        setPermissionsLoading(false);
+      }
+    };
+
+    fetchUserPermissions();
+  }, []);
 
   const fetchModels = async (category) => {
     setLoading(true);
@@ -138,5 +173,7 @@ export const useMainPageLogic = () => {
     handleCardClick,
     handleTabClick,
     navigate,
+    userPermissions,
+    permissionsLoading,
   };
 };
