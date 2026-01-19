@@ -55,6 +55,7 @@ export const registerWithOTP = async (req, res) => {
       emailVerified: false,
       isApproved: false,
       approvalStatus: 'pending',
+      canViewModels: false, // New users cannot view models by default
     });
 
     await newUser.save();

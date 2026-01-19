@@ -47,21 +47,38 @@ export const useMainPageLogic = () => {
     fetchUserPermissions();
   }, []);
 
-  const fetchModels = async (category) => {
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalModels, setTotalModels] = useState(0);
+
+  const fetchModels = async (category, pageNum = 1, append = false) => {
     setLoading(true);
     try {
       const endpoint = category === "LOCAL" ? "local" : "foreign";
       const response = await fetch(
-        `${API_URL}/models/${endpoint}?available=true`
+        `${API_URL}/models/${endpoint}?available=true&page=${pageNum}&limit=15`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setModels(data);
+      
+      // Handle paginated response
+      if (data.models && data.pagination) {
+        setModels(prev => append ? [...prev, ...data.models] : data.models);
+        setHasMore(data.pagination.hasMore);
+        setTotalModels(data.pagination.totalModels);
+        setPage(pageNum);
+      } else {
+        // Fallback for backward compatibility (if API returns array directly)
+        setModels(data);
+        setHasMore(false);
+      }
     } catch (error) {
       console.error("Error fetching models:", error);
       setModels([]);
+      setHasMore(false);
     } finally {
       setLoading(false);
     }
@@ -112,8 +129,12 @@ export const useMainPageLogic = () => {
   };
 
   useEffect(() => {
+    // Reset pagination when switching tabs
+    setPage(1);
+    setHasMore(true);
+    
     if (activeTab === "LOCAL" || activeTab === "FOREIGN") {
-      fetchModels(activeTab);
+      fetchModels(activeTab, 1, false);
     } else if (activeTab === "FAVORITES") {
       fetchFavorites();
     }
@@ -134,6 +155,12 @@ export const useMainPageLogic = () => {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+  };
+
+  const loadMoreModels = () => {
+    if (hasMore && !loading && (activeTab === "LOCAL" || activeTab === "FOREIGN")) {
+      fetchModels(activeTab, page + 1, true);
+    }
   };
 
   const featuredModels = models.slice(0, 2);
@@ -172,8 +199,11 @@ export const useMainPageLogic = () => {
     userFavorites,
     handleCardClick,
     handleTabClick,
+    loadMoreModels,
     navigate,
     userPermissions,
     permissionsLoading,
+    hasMore,
+    totalModels,
   };
 };

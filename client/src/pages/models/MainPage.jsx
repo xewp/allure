@@ -15,9 +15,12 @@ const MainPage = () => {
     userFavorites,
     handleCardClick,
     handleTabClick,
+    loadMoreModels,
     navigate,
     userPermissions,
     permissionsLoading,
+    hasMore,
+    totalModels,
   } = useMainPageLogic();
 
   return (
@@ -64,6 +67,11 @@ const MainPage = () => {
             regularModels={regularModels}
             handleCardClick={handleCardClick}
             userFavorites={userFavorites}
+            hasMore={
+              hasMore && (activeTab === "LOCAL" || activeTab === "FOREIGN")
+            }
+            loading={loading}
+            onLoadMore={loadMoreModels}
           />
         ) : (
           <NoModelsFound activeTab={activeTab} />

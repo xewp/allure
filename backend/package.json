@@ -10,6 +10,7 @@
     "seed-superadmin": "node scripts/createSuperadmin.js"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "chalk": "^5.6.2",
@@ -24,7 +25,6 @@
     "jwt-decode": "^4.0.0",
     "mongoose": "^7.5.0",
     "morgan": "^1.10.1",
-    "nodemailer": "^7.0.12",
     "winston": "^3.19.0"
   },
   "devDependencies": {

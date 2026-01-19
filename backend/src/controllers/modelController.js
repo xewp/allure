@@ -29,8 +29,32 @@ export const getLocalModels = async (req, res) => {
       // Show models where available is true OR undefined (for backward compatibility)
       filter.$or = [{ available: true }, { available: { $exists: false } }];
     }
-    const models = await LocalModel.find(filter);
-    res.json(models);
+    
+    // Pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 15;
+    const skip = (page - 1) * limit;
+    
+    // Get total count for pagination metadata
+    const totalModels = await LocalModel.countDocuments(filter);
+    const totalPages = Math.ceil(totalModels / limit);
+    
+    // Fetch paginated models
+    const models = await LocalModel.find(filter)
+      .skip(skip)
+      .limit(limit);
+    
+    // Return paginated response with metadata
+    res.json({
+      models,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalModels,
+        hasMore: page < totalPages,
+        limit
+      }
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -48,8 +72,32 @@ export const getForeignModels = async (req, res) => {
       // Show models where available is true OR undefined (for backward compatibility)
       filter.$or = [{ available: true }, { available: { $exists: false } }];
     }
-    const models = await ForeignModel.find(filter);
-    res.json(models);
+    
+    // Pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 15;
+    const skip = (page - 1) * limit;
+    
+    // Get total count for pagination metadata
+    const totalModels = await ForeignModel.countDocuments(filter);
+    const totalPages = Math.ceil(totalModels / limit);
+    
+    // Fetch paginated models
+    const models = await ForeignModel.find(filter)
+      .skip(skip)
+      .limit(limit);
+    
+    // Return paginated response with metadata
+    res.json({
+      models,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalModels,
+        hasMore: page < totalPages,
+        limit
+      }
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -138,7 +138,7 @@ const userSchema = new mongoose.Schema({
   // Model Access Control (managed by superadmin)
   canViewModels: {
     type: Boolean,
-    default: true, // Default to true so existing and new users can see models
+    default: false, // New users cannot view models by default (requires admin approval)
   },
 
   // Suspension

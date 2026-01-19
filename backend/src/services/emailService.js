@@ -1,21 +1,5 @@
-import { createTransport } from 'nodemailer';
+import { sendEmail } from './emailSender.js';
 import { log } from '../utils/logger.js';
-
-/**
- * Create and configure Nodemailer transporter
- * Uses SMTP configuration from environment variables
- */
-const createTransporter = () => {
-  return createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT),
-    secure: false, // true for 465, false for other ports (587 uses STARTTLS)
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-};
 
 /**
  * Send OTP verification email to user
@@ -24,13 +8,9 @@ const createTransporter = () => {
  * @returns {Promise<void>}
  */
 export const sendOTPEmail = async (email, otp) => {
-  const transporter = createTransporter();
+  const subject = 'Verify Your Email - Power Allure';
   
-  const mailOptions = {
-    from: `"Power Allure" <${process.env.EMAIL_FROM}>`,
-    to: email,
-    subject: 'Verify Your Email - Power Allure',
-    html: `
+  const html = `
       <!DOCTYPE html>
       <html>
       <head>
@@ -226,37 +206,36 @@ export const sendOTPEmail = async (email, otp) => {
         </div>
       </body>
       </html>
-    `,
-    text: `
-      Power Allure - Email Verification
-      
-      Welcome!
-      
-      Thank you for registering with Power Allure. Your verification code is:
-      
-      ${otp}
-      
-      This code will expire in ${process.env.OTP_EXPIRY_MINUTES || 10} minutes.
-      
-      What happens next?
-      Once verified, your account will be reviewed by our administrators. You'll receive a confirmation email once approved.
-      
-      Security Notice: If you didn't request this code, please ignore this email.
-      
-      © ${new Date().getFullYear()} Power Allure. All Rights Reserved.
-    `,
-  };
+    `;
+
+  const text = `
+    Power Allure - Email Verification
+    
+    Welcome!
+    
+    Thank you for registering with Power Allure. Your verification code is:
+    
+    ${otp}
+    
+    This code will expire in ${process.env.OTP_EXPIRY_MINUTES || 10} minutes.
+    
+    What happens next?
+    Once verified, your account will be reviewed by our administrators. You'll receive a confirmation email once approved.
+    
+    Security Notice: If you didn't request this code, please ignore this email.
+    
+    © ${new Date().getFullYear()} Power Allure. All Rights Reserved.
+  `;
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendEmail(email, subject, html, text);
     log.info('OTP email sent successfully', { email });
   } catch (error) {
     log.error('Failed to send OTP email', { 
       email, 
       error: error.message,
       code: error.code,
-      response: error.response,
-      command: error.command 
+      response: error.response
     });
     throw new Error('Failed to send verification email');
   }
@@ -269,17 +248,11 @@ export const sendOTPEmail = async (email, otp) => {
  * @returns {Promise<void>}
  */
 export const sendApprovalEmail = async (email, approved) => {
-  const transporter = createTransporter();
-  
   const subject = approved 
     ? '🎉 Welcome to Power Allure - Account Approved!' 
     : 'Power Allure - Account Registration Update';
     
-  const mailOptions = {
-    from: `"Power Allure" <${process.env.EMAIL_FROM}>`,
-    to: email,
-    subject,
-    html: approved ? `
+  const html = approved ? `
       <!DOCTYPE html>
       <html>
       <head>
@@ -573,11 +546,14 @@ export const sendApprovalEmail = async (email, approved) => {
         </div>
       </body>
       </html>
-    `,
-  };
+    `;
+
+  const text = approved ? 
+    `Power Allure - Account Approved\n\nCongratulations! Your account has been approved. You can now sign in.\n\n© ${new Date().getFullYear()} Power Allure. All Rights Reserved.` :
+    `Power Allure - Account Registration Update\n\nThank you for your interest. Unfortunately, we are unable to approve your account at this time.\n\n© ${new Date().getFullYear()} Power Allure. All Rights Reserved.`;
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendEmail(email, subject, html, text);
     log.info('Approval email sent successfully', { email, approved });
   } catch (error) {
     log.error('Failed to send approval email', { email, error: error.message });
@@ -593,17 +569,12 @@ export const sendApprovalEmail = async (email, approved) => {
  * @returns {Promise<void>}
  */
 export const sendPasswordResetEmail = async (email, token, userId) => {
-  const transporter = createTransporter();
-  
   // Create reset URL using environment variable (production) or localhost (development)
-  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+ const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
   const resetUrl = `${clientUrl}/reset-password?token=${token}&userId=${userId}`;
   
-  const mailOptions = {
-    from: `"Power Allure" <${process.env.EMAIL_FROM}>`,
-    to: email,
-    subject: 'Reset Your Password - Power Allure',
-    html: `
+  const subject = 'Reset Your Password - Power Allure';
+  const html = `
       <!DOCTYPE html>
       <html>
       <head>
@@ -783,33 +754,31 @@ export const sendPasswordResetEmail = async (email, token, userId) => {
         </div>
       </body>
       </html>
-    `,
-    text: `
-      Power Allure - Password Reset Request
-      
-      We received a request to reset your password.
-      
-      Reset your password by visiting this link:
-      ${resetUrl}
-      
-      This link will expire in 15 minutes.
-      
-      If you didn't request this password reset, please ignore this email.
-      
-      © ${new Date().getFullYear()} Power Allure. All Rights Reserved.
-    `,
-  };
+    `;
+  
+  const text = `
+    Power Allure - Password Reset Request
+    
+    We received a request to reset your password.
+    
+    Reset your password by visiting this link:
+    ${resetUrl}
+    
+    This link will expire in 15 minutes.
+    
+    If you didn't request this password reset, please ignore this email.
+    
+    © ${new Date().getFullYear()} Power Allure. All Rights Reserved.
+  `;
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendEmail(email, subject, html, text);
     log.info('Password reset email sent successfully', { email });
   } catch (error) {
-    log.error('Failed to send password reset email', { 
-      email, 
+    log.error('Failed to send password reset email', {  email, 
       error: error.message,
       code: error.code,
-      response: error.response,
-      command: error.command 
+      response: error.response
     });
     throw new Error('Failed to send password reset email');
   }
@@ -821,13 +790,8 @@ export const sendPasswordResetEmail = async (email, token, userId) => {
  * @returns {Promise<void>}
  */
 export const sendPasswordResetConfirmation = async (email) => {
-  const transporter = createTransporter();
-  
-  const mailOptions = {
-    from: `"Power Allure" <${process.env.EMAIL_FROM}>`,
-    to: email,
-    subject: '✓ Password Successfully Changed - Power Allure',
-    html: `
+  const subject = '✓ Password Successfully Changed - Power Allure';
+  const html = `
       <!DOCTYPE html>
       <html>
       <head>
@@ -937,41 +901,27 @@ export const sendPasswordResetConfirmation = async (email) => {
         </div>
       </body>
       </html>
-    `,
-    text: `
-      Power Allure - Password Changed Successfully
-      
-      Your password has been successfully changed.
-      
-      You can now log in with your new password.
-      
-      If you didn't make this change, please contact support immediately.
-      
-      © ${new Date().getFullYear()} Power Allure. All Rights Reserved.
-    `,
-  };
+    `;
+  
+  const text = `
+    Power Allure - Password Changed Successfully
+    
+    Your password has been successfully changed.
+    
+    You can now log in with your new password.
+    
+    If you didn't make this change, please contact support immediately.
+    
+    © ${new Date().getFullYear()} Power Allure. All Rights Reserved.
+  `;
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendEmail(email, subject, html, text);
     log.info('Password reset confirmation email sent successfully', { email });
   } catch (error) {
     log.error('Failed to send password reset confirmation', { email, error: error.message });
-    // Don't throw error - confirmation email is optional
+    // Don't throw  error - confirmation email is optional
   }
 };
 
-/**
- * Verify email service configuration
- * @returns {Promise<boolean>} True if connection successful
- */
-export const verifyEmailConfig = async () => {
-  try {
-    const transporter = createTransporter();
-    await transporter.verify();
-    log.info('Email service is ready');
-    return true;
-  } catch (error) {
-    log.error('Email service configuration error', { error: error.message });
-    return false;
-  }
-};
+

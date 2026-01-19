@@ -6,6 +6,9 @@ export const ModelGrid = ({
   regularModels,
   handleCardClick,
   userFavorites = [],
+  hasMore = false,
+  loading = false,
+  onLoadMore,
 }) => {
   // Combine all models into one array
   const allModels = [...featuredModels, ...regularModels];
@@ -44,6 +47,66 @@ export const ModelGrid = ({
           ))}
         </div>
       ))}
+
+      {/* Load More Button */}
+      {hasMore && onLoadMore && (
+        <div className="flex justify-center pt-8">
+          <button
+            onClick={onLoadMore}
+            disabled={loading}
+            className="group relative px-8 py-4 bg-gradient-to-r from-amber-600 to-yellow-500 text-white font-semibold rounded-xl 
+                     hover:from-amber-500 hover:to-yellow-400 
+                     transform hover:scale-105 transition-all duration-300 
+                     disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+                     shadow-lg hover:shadow-xl"
+          >
+            <span className="flex items-center gap-2">
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Loading...
+                </>
+              ) : (
+                <>
+                  Load More Models
+                  <svg
+                    className="w-5 h-5 group-hover:translate-y-0.5 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </>
+              )}
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
