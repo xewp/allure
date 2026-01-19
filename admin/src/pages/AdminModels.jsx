@@ -13,6 +13,11 @@ const AdminModels = () => {
   const [editingModel, setEditingModel] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+
   // Likes Modal State
   const [showLikesModal, setShowLikesModal] = useState(false);
   const [likesData, setLikesData] = useState([]);
@@ -37,17 +42,37 @@ const AdminModels = () => {
   });
 
   // Fetch models from database
-  const fetchModels = async () => {
-    setLoading(true);
+  const fetchModels = async (page = 1, append = false) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
+
     try {
       const endpoint =
         activeTab === "local"
-          ? "/models/local?showAll=true"
-          : "/models/foreign?showAll=true";
+          ? `/models/local?showAll=true&page=${page}&limit=15`
+          : `/models/foreign?showAll=true&page=${page}&limit=15`;
       const response = await axios.get(`${API_URL}${endpoint}`);
-      setModels(response.data);
+
+      // Backend returns { models: [...], pagination: {...} }
+      const newModels = response.data.models || [];
+      const pagination = response.data.pagination || {};
+
+      if (append) {
+        setModels((prev) => [...prev, ...newModels]);
+      } else {
+        setModels(newModels);
+      }
+
+      setHasMore(pagination.hasMore || false);
+      setCurrentPage(page);
     } catch (error) {
       console.error("Error fetching models:", error);
+      if (!append) {
+        setModels([]); // Set empty array on error
+      }
       setAdminModalConfig({
         title: "Error",
         message: "Failed to load models. Please try again.",
@@ -56,12 +81,21 @@ const AdminModels = () => {
       setShowAdminModal(true);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
+  };
+
+  // Load more models
+  const handleLoadMore = () => {
+    fetchModels(currentPage + 1, true);
   };
 
   // Fetch models when tab changes
   useEffect(() => {
-    fetchModels();
+    setModels([]);
+    setCurrentPage(1);
+    setHasMore(false);
+    fetchModels(1, false);
   }, [activeTab]);
 
   // Open edit modal
@@ -291,6 +325,23 @@ const AdminModels = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Load More Button */}
+      {!loading && models.length > 0 && hasMore && (
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+            className="px-8 py-3 rounded-full font-semibold transition-all disabled:opacity-50"
+            style={{
+              backgroundColor: themeColor,
+              color: "#000",
+            }}
+          >
+            {loadingMore ? "Loading..." : "Load More Models"}
+          </button>
         </div>
       )}
 
