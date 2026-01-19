@@ -17,6 +17,10 @@ import userApprovalRoutes from './routes/userApprovalRoutes.js';
 
 const app = express();
 
+// Trust proxy - Required for Render deployment and rate limiting
+// Render sits behind a proxy, so we need to trust the X-Forwarded-For header
+app.set('trust proxy', 1);
+
 // HTTP request logging middleware
 app.use(requestLogger);
 app.use(devLogger);
