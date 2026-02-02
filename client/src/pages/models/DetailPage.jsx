@@ -37,7 +37,7 @@ const DetailPage = () => {
   };
 
   const handleBookingSuccess = (booking) => {
-    console.log("Booking created successfully:", booking);
+
   };
 
   const handleImageZoom = (imageUrl) => {

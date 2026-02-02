@@ -57,7 +57,7 @@ const Header = ({ activeTab, onTabChange }) => {
         navigate("/booking");
       }
     } catch (error) {
-      console.error("Error checking favorites:", error);
+
       navigate("/booking");
     } finally {
       setLoading(false);

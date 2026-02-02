@@ -53,7 +53,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
         });
       }
     } catch (error) {
-      console.error("Password reset request error:", error);
+
       setMessage({
         type: "error",
         text: "Unable to connect to server. Please try again.",

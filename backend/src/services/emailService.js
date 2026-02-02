@@ -924,4 +924,10 @@ export const sendPasswordResetConfirmation = async (email) => {
   }
 };
 
+// Export booking email functions
+export { 
+  sendBookingSubmittedEmail,
+  sendBookingConfirmedEmail,
+  sendBookingCancelledEmail 
+} from './bookingEmailTemplates.js';
 

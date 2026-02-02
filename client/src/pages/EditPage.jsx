@@ -85,7 +85,7 @@ const EditPage = () => {
         });
       }
     } catch (error) {
-      console.error("Update error:", error);
+
       setMessage({
         type: "error",
         text: "An error occurred while updating profile",
@@ -160,7 +160,7 @@ const EditPage = () => {
         });
       }
     } catch (error) {
-      console.error("Password change error:", error);
+
       setPasswordMessage({
         type: "error",
         text: "An error occurred while changing password",

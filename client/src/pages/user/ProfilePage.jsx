@@ -43,7 +43,7 @@ const ProfilePage = () => {
         setUser(data.user);
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching user data:", err);
+
         setError(err.message || "Failed to load profile data");
         setLoading(false);
       }
@@ -92,7 +92,7 @@ const ProfilePage = () => {
       storedUser.emailVerified = true;
       localStorage.setItem("user", JSON.stringify(storedUser));
     } catch (err) {
-      console.error("Failed to refresh user data", err);
+
     }
   };
 

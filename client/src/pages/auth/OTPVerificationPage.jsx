@@ -73,7 +73,7 @@ const OTPVerificationPage = () => {
         setError(data.message || "Invalid OTP. Please try again.");
       }
     } catch (err) {
-      console.error("OTP verification error:", err);
+
       setError("Unable to connect to server. Please try again.");
     } finally {
       setIsLoading(false);
@@ -108,7 +108,7 @@ const OTPVerificationPage = () => {
         setError(data.message || "Failed to resend OTP. Please try again.");
       }
     } catch (err) {
-      console.error("Resend OTP error:", err);
+
       setError("Unable to connect to server. Please try again.");
     } finally {
       setIsLoading(false);

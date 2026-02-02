@@ -16,14 +16,12 @@ export const authenticateAdmin = async (req, res, next) => {
 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("AdminMiddleware Decoded:", decoded);
 
     // Attach user to request
     req.user = decoded;
 
     // Verify admin user exists
     const admin = await AdminUser.findById(decoded.id).select("-password");
-    console.log("AdminMiddleware DB Result:", admin ? "Found" : "Not Found", "for ID:", decoded.id);
 
     if (!admin) {
       return res.status(404).json({

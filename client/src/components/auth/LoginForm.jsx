@@ -126,7 +126,7 @@ const LoginForm = () => {
         }
       }
     } catch (err) {
-      console.error("Login error:", err);
+
       setError("Unable to connect to server. Please try again.");
     } finally {
       setIsLoading(false);

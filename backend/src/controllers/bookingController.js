@@ -1,5 +1,7 @@
 import Booking from "../models/Booking.js";
+import User from "../models/User.js";
 import { logAdminAction } from "../middleware/logAdminAction.js";
+import { sendBookingSubmittedEmail, sendBookingConfirmedEmail, sendBookingCancelledEmail } from "../services/emailService.js";
 
 // Create a new booking
 export const createBooking = async (req, res) => {
@@ -48,12 +50,30 @@ export const createBooking = async (req, res) => {
       status: "pending",
     });
 
-    await newBooking.save();
+    const savedBooking = await newBooking.save();
+
+    // Send confirmation email to client
+    try {
+      const user = await User.findById(userId).select('email');
+      if (user) {
+        await sendBookingSubmittedEmail(user.email, {
+          userName,
+          modelName,
+          event,
+          eventDate,
+          eventTime,
+          company,
+          status: 'pending'
+        });
+      }
+    } catch (emailError) {
+      // Non-blocking - log but don't fail booking
+    }
 
     res.status(201).json({
       success: true,
       message: "Booking created successfully",
-      booking: newBooking,
+      booking: savedBooking,
     });
   } catch (error) {
     console.error("Create booking error:", error);
@@ -88,7 +108,21 @@ export const getAllBookings = async (req, res) => {
 // Get bookings for a specific user
 export const getUserBookings = async (req, res) => {
   try {
-    const userId = req.params.userId || req.user.id;
+    // Support both route param (admin) and decoded token (user)
+    let userId = req.params.userId || req.user?.userId || req.user?.id;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID not found",
+      });
+    }
+
+    // Convert string to ObjectId if needed
+    const mongoose = await import('mongoose');
+    if (typeof userId === 'string') {
+      userId = new mongoose.default.Types.ObjectId(userId);
+    }
 
     const bookings = await Booking.find({ userId }).sort({ createdAt: -1 });
 
@@ -162,7 +196,29 @@ export const updateBookingStatus = async (req, res) => {
 
     booking.status = status;
     booking.updatedAt = Date.now();
-    await booking.save();
+    const updatedBooking = await booking.save();
+
+    // Send email notification
+    try {
+      const user = await User.findById(booking.userId).select('email');
+      if (user) {
+        const emailData = {
+          userName: booking.userName,
+          modelName: booking.modelName,
+          event: booking.event,
+          eventDate: booking.eventDate,
+          eventTime: booking.eventTime,
+          company: booking.company
+        };
+        if (status === 'confirmed') {
+          await sendBookingConfirmedEmail(user.email, emailData);
+        } else if (status === 'cancelled') {
+          await sendBookingCancelledEmail(user.email, emailData);
+        }
+      }
+    } catch (emailError) {
+      // Non-blocking
+    }
     
     // Log the action
     await logAdminAction(
@@ -177,7 +233,7 @@ export const updateBookingStatus = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Booking status updated successfully",
-      booking,
+      booking: updatedBooking,
     });
   } catch (error) {
     console.error("Update booking status error:", error);

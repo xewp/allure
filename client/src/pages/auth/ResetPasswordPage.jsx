@@ -46,7 +46,7 @@ const ResetPasswordPage = () => {
           setError(data.message || "Invalid or expired reset token");
         }
       } catch (err) {
-        console.error("Token verification error:", err);
+
         setError("Unable to verify reset link. Please try again.");
       } finally {
         setVerifying(false);
@@ -101,7 +101,7 @@ const ResetPasswordPage = () => {
         setError(data.message || "Failed to reset password");
       }
     } catch (err) {
-      console.error("Password reset error:", err);
+
       setError("Unable to connect to server. Please try again.");
     } finally {
       setLoading(false);

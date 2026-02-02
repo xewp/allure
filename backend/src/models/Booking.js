@@ -42,6 +42,10 @@ const bookingSchema = new mongoose.Schema({
     enum: ["local", "foreign"],
     required: true,
   },
+  modelImageUrl: {
+    type: String,
+    required: false,
+  },
   status: {
     type: String,
     enum: ["pending", "confirmed", "completed", "cancelled"],

@@ -90,7 +90,7 @@ const DetailPage = () => {
           setIsFavorite(isAlreadyFavorite);
         }
       } catch (error) {
-        console.error("Error fetching model data:", error);
+
         setModelData(null);
       } finally {
         setLoading(false);
@@ -173,7 +173,7 @@ const DetailPage = () => {
         localStorage.setItem("user", JSON.stringify(user));
       }
     } catch (error) {
-      console.error("Failed to update favorites", error);
+
     }
   };
 

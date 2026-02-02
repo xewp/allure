@@ -21,7 +21,7 @@ const FavoritesPage = () => {
             setFavorites(data);
           }
         } catch (error) {
-          console.error("Failed to fetch favorites", error);
+
         }
       }
       setLoading(false);

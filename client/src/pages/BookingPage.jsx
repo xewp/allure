@@ -66,7 +66,7 @@ const BookingPage = () => {
           }
         }
       } catch (err) {
-        console.error("Error fetching favorites:", err);
+
       }
     };
 
@@ -151,7 +151,7 @@ const BookingPage = () => {
         setError(data.message || "Failed to create booking");
       }
     } catch (err) {
-      console.error("Booking submission error:", err);
+
       setError("Server error. Please try again later.");
     } finally {
       setLoading(false);

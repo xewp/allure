@@ -100,7 +100,7 @@ const RegisterPage = () => {
         setError(data.message || "Registration failed. Please try again.");
       }
     } catch (err) {
-      console.error("Registration error:", err);
+
       setError("Unable to connect to server. Please try again.");
     } finally {
       setIsLoading(false);

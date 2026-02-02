@@ -13,18 +13,14 @@ const RegisterPage = () => {
   useEffect(() => {
     const checkSignupStatus = async () => {
       try {
-        console.log("[RegisterPage] Checking signup status...");
         const response = await fetch(`${API_URL}/api/settings/public-settings`);
         const data = await response.json();
-        console.log("[RegisterPage] API Response:", data);
 
         if (data.success) {
           const isEnabled = data.settings.signupEnabled;
-          console.log("[RegisterPage] Signup enabled:", isEnabled);
           setSignupEnabled(isEnabled);
         }
       } catch (err) {
-        console.error("Failed to check signup status:", err);
         // Default to enabled if check fails
       } finally {
         setLoading(false);

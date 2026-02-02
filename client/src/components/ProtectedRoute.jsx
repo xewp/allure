@@ -30,7 +30,7 @@ const ProtectedRoute = () => {
           return;
         }
       } catch (error) {
-        console.error("Invalid user data in localStorage:", error);
+
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         setIsValid(false);
@@ -59,7 +59,7 @@ const ProtectedRoute = () => {
           setIsValid(false);
         }
       } catch (error) {
-        console.error("Session validation error:", error);
+
         // On network error, clear session for security
         localStorage.removeItem("token");
         localStorage.removeItem("user");

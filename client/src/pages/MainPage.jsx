@@ -30,15 +30,7 @@ const MainPage = () => {
         const userId = storedUser.id || storedUser._id;
         const token = localStorage.getItem("token");
 
-        console.log(
-          "DEBUG: userId=",
-          userId,
-          "token=",
-          token ? "exists" : "missing",
-        );
-
         if (!userId || !token) {
-          alert("DEBUG: No userId or token found");
           setPermissionsLoading(false);
           return;
         }
@@ -47,23 +39,14 @@ const MainPage = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log("DEBUG: Response status:", response.status);
-
         if (response.ok) {
           const data = await response.json();
-          console.log("Fetched user permissions:", data.user);
-          console.log("canViewModels value:", data.user.canViewModels);
-          alert(`DEBUG: canViewModels = ${data.user.canViewModels}`); // DEBUG
           setUserPermissions({
             canViewModels: data.user.canViewModels !== false,
           });
-        } else {
-          console.error("Failed to fetch permissions:", response.status);
-          alert(`DEBUG: API failed with status ${response.status}`);
         }
       } catch (error) {
-        console.error("Error fetching user permissions:", error);
-        alert(`DEBUG: Error - ${error.message}`);
+        // Silent error handling
       } finally {
         setPermissionsLoading(false);
       }
@@ -104,7 +87,6 @@ const MainPage = () => {
         setVisibleSections((prev) => new Set([...prev, "grid"]));
       }, 50);
     } catch (error) {
-      console.error("Error fetching models:", error);
       setModels([]);
     } finally {
       setLoading(false);
@@ -142,36 +124,17 @@ const MainPage = () => {
       }
 
       const favorites = await response.json();
-      console.log(
-        "Fetched favorites - RAW DATA:",
-        JSON.stringify(favorites, null, 2),
-      );
 
-      // Filter out any favorites without a valid ID
       const validFavorites = favorites.filter((fav) => {
-        const hasValidId = fav._id && fav._id !== "undefined";
-        if (!hasValidId) {
-          console.warn("Favorite missing valid _id:", fav);
-        }
-        return hasValidId;
+        return fav._id && fav._id !== "undefined";
       });
 
-      console.log(
-        "Valid favorites after filtering - COUNT:",
-        validFavorites.length,
-      );
-      console.log(
-        "Valid favorites - FULL DATA:",
-        JSON.stringify(validFavorites, null, 2),
-      );
       setModels(validFavorites);
 
-      // Fade in animation
       setTimeout(() => {
         setVisibleSections((prev) => new Set([...prev, "grid"]));
       }, 50);
     } catch (error) {
-      console.error("Error fetching favorites:", error);
       setModels([]);
     } finally {
       setLoading(false);
@@ -195,7 +158,6 @@ const MainPage = () => {
 
       return shuffled;
     } catch (error) {
-      console.error("Error fetching carousel models:", error);
       return [];
     }
   };

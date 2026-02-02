@@ -324,21 +324,16 @@ export const loginWithOTP = async (req, res) => {
     });
     
     if (!user) {
-      console.log(`Login attempt - User not found: ${email}`);
       return res.status(401).json({
         success: false,
         message: 'Invalid email/username or password',
       });
     }
 
-    console.log(`Login attempt - User found: ${user.email}, emailVerified: ${user.emailVerified}, approvalStatus: ${user.approvalStatus}, isApproved: ${user.isApproved}`);
-
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log(`Password validation result: ${isPasswordValid}`);
     
     if (!isPasswordValid) {
-      console.log(`Login failed - Invalid password for: ${email}`);
       return res.status(401).json({
         success: false,
         message: 'Invalid email/username or password',

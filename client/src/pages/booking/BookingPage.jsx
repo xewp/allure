@@ -22,6 +22,10 @@ const BookingPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [bookings, setBookings] = useState([]);
+  const [bookingsLoading, setBookingsLoading] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showBookingDetails, setShowBookingDetails] = useState(false);
 
   // Fetch user's favorites and auto-fill name on mount
   useEffect(() => {
@@ -67,12 +71,61 @@ const BookingPage = () => {
           }
         }
       } catch (err) {
-        console.error("Error fetching favorites:", err);
+
       }
     };
 
     fetchFavorites();
+    fetchBookings();
   }, []);
+
+  // Fetch user's bookings
+  const fetchBookings = async () => {
+    setBookingsLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/api/bookings/my-bookings`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setBookings(data.bookings || []);
+        }
+      }
+    } catch (err) {
+      // Silent error handling for production
+    } finally {
+      setBookingsLoading(false);
+    }
+  };
+
+  // Fetch model image if not available in booking
+  const getModelImage = async (modelId, modelCategory) => {
+    try {
+      const endpoint =
+        modelCategory?.toLowerCase() === "foreign" ? "foreign" : "local";
+      const response = await fetch(`${API_URL}/models/${endpoint}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        const models = Array.isArray(data) ? data : data.models || [];
+        const model = models.find((m) => m._id === modelId);
+        return model?.imageUrl || "";
+      }
+    } catch (err) {
+      // Silent error handling
+    }
+    return "";
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -135,6 +188,7 @@ const BookingPage = () => {
         modelId: selectedModelData.modelId,
         modelName: selectedModelData.name,
         modelCategory: selectedModelData.category?.toLowerCase() || "local",
+        modelImageUrl: selectedModelData.imageUrl || "",
       };
 
       const response = await fetch(`${API_URL}/api/bookings`, {
@@ -159,6 +213,9 @@ const BookingPage = () => {
           selectedModel: "",
         });
 
+        // Refresh bookings list
+        fetchBookings();
+
         setTimeout(() => {
           setSuccess(false);
         }, 5000);
@@ -166,7 +223,7 @@ const BookingPage = () => {
         setError(data.message || "Failed to create booking");
       }
     } catch (err) {
-      console.error("Booking submission error:", err);
+
       setError("Server error. Please try again later.");
     } finally {
       setLoading(false);
@@ -456,6 +513,222 @@ const BookingPage = () => {
                   className="flex-1 px-6 py-3 bg-gradient-to-r from-gold-light via-gold to-gold-dark text-black font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Submitting..." : "Confirm Booking"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Booking History Section */}
+      <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
+        <h2 className="font-serif text-3xl md:text-4xl font-bold mb-8 text-center bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent">
+          My Bookings
+        </h2>
+
+        {bookingsLoading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#D8AF7F]"></div>
+            <p className="text-gray-400 mt-4">Loading your bookings...</p>
+          </div>
+        ) : bookings.length === 0 ? (
+          <div className="text-center py-12 bg-black/30 rounded-2xl border border-[#D8AF7F]/20">
+            <p className="text-gray-400 text-lg">No bookings yet</p>
+            <p className="text-gray-500 text-sm mt-2">
+              Your bookings will appear here once you make one
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {bookings.map((booking) => {
+              const getStatusColor = (status) => {
+                switch (status?.toLowerCase()) {
+                  case "confirmed":
+                    return "bg-green-500/20 text-green-400 border-green-500";
+                  case "completed":
+                    return "bg-blue-500/20 text-blue-400 border-blue-500";
+                  case "cancelled":
+                    return "bg-red-500/20 text-red-400 border-red-500";
+                  default:
+                    return "bg-yellow-500/20 text-yellow-400 border-yellow-500";
+                }
+              };
+
+              return (
+                <div
+                  key={booking._id}
+                  onClick={async () => {
+                    // Fetch image if not available
+                    let bookingWithImage = { ...booking };
+                    if (!booking.modelImageUrl) {
+                      const imageUrl = await getModelImage(
+                        booking.modelId,
+                        booking.modelCategory,
+                      );
+                      bookingWithImage.modelImageUrl = imageUrl;
+                    }
+                    setSelectedBooking(bookingWithImage);
+                    setShowBookingDetails(true);
+                  }}
+                  className="bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-2xl border-2 border-[#D8AF7F]/30 p-6 cursor-pointer hover:border-[#D8AF7F] transition-all duration-300 hover:scale-105"
+                >
+                  {/* Status Badge */}
+                  <div className="flex justify-between items-start mb-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(booking.status)}`}
+                    >
+                      {(booking.status || "pending").toUpperCase()}
+                    </span>
+                  </div>
+
+                  {/* Model Name */}
+                  <h3 className="text-xl font-bold text-[#D8AF7F] mb-2">
+                    {booking.modelName}
+                  </h3>
+
+                  {/* Event Name */}
+                  <p className="text-white font-semibold mb-3">
+                    {booking.event}
+                  </p>
+
+                  {/* Date and Time */}
+                  <div className="space-y-1 text-sm text-gray-400">
+                    <p>📅 {new Date(booking.eventDate).toLocaleDateString()}</p>
+                    <p>🕐 {booking.eventTime}</p>
+                    {booking.company && <p>🏢 {booking.company}</p>}
+                  </div>
+
+                  {/* Click to view more */}
+                  <p className="text-[#D8AF7F]/60 text-xs mt-4 text-center">
+                    Click to view details
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Booking Details Modal */}
+      {showBookingDetails && selectedBooking && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-fade-in"
+          onClick={() => setShowBookingDetails(false)}
+        >
+          <div
+            className="relative w-full max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-3xl border-2 border-[#D8AF7F]/40 shadow-2xl overflow-hidden animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="px-8 py-6 border-b border-[#D8AF7F]/30 bg-gradient-to-r from-[#D8AF7F]/10 to-transparent">
+              <h2 className="font-serif text-3xl font-bold text-[#D8AF7F]">
+                Booking Details
+              </h2>
+              <p className="text-gray-400 text-sm mt-2">
+                Booking ID: {selectedBooking._id?.slice(-8).toUpperCase()}
+              </p>
+            </div>
+
+            {/* Content */}
+            <div className="px-8 py-6 max-h-[70vh] overflow-y-auto">
+              {/* Status Badge */}
+              <div className="mb-6">
+                <span
+                  className={`px-4 py-2 rounded-full text-sm font-semibold border ${
+                    selectedBooking.status?.toLowerCase() === "confirmed"
+                      ? "bg-green-500/20 text-green-400 border-green-500"
+                      : selectedBooking.status?.toLowerCase() === "completed"
+                        ? "bg-blue-500/20 text-blue-400 border-blue-500"
+                        : selectedBooking.status?.toLowerCase() === "cancelled"
+                          ? "bg-red-500/20 text-red-400 border-red-500"
+                          : "bg-yellow-500/20 text-yellow-400 border-yellow-500"
+                  }`}
+                >
+                  {(selectedBooking.status || "pending").toUpperCase()}
+                </span>
+              </div>
+
+              {/* Model Information */}
+              <div className="mb-6">
+                <h3 className="text-[#D8AF7F] font-semibold mb-3 text-lg">
+                  Model Information
+                </h3>
+                <div className="bg-black/30 p-4 rounded-xl border border-[#D8AF7F]/20 flex gap-4 items-center">
+                  {selectedBooking.modelImageUrl && (
+                    <img
+                      src={selectedBooking.modelImageUrl}
+                      alt={selectedBooking.modelName}
+                      className="w-24 h-24 md:w-32 md:h-32 rounded-xl object-cover border-2 border-[#D8AF7F]/40 shadow-lg flex-shrink-0"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <p className="text-2xl font-bold text-[#D8AF7F]">
+                      {selectedBooking.modelName}
+                    </p>
+                    <p className="text-gray-300 capitalize mt-1">
+                      {selectedBooking.modelCategory || "Local"} Model
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Event Details */}
+              <div className="mb-6">
+                <h3 className="text-[#D8AF7F] font-semibold mb-3 text-lg">
+                  Event Details
+                </h3>
+                <div className="bg-black/30 p-4 rounded-xl border border-[#D8AF7F]/20 space-y-3">
+                  {selectedBooking.company && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Company:</span>
+                      <span className="text-white font-semibold">
+                        {selectedBooking.company}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Event:</span>
+                    <span className="text-white font-semibold">
+                      {selectedBooking.event}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Date:</span>
+                    <span className="text-white font-semibold">
+                      {new Date(selectedBooking.eventDate).toLocaleDateString(
+                        "en-US",
+                        {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        },
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Time:</span>
+                    <span className="text-white font-semibold">
+                      {selectedBooking.eventTime}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Booked On:</span>
+                    <span className="text-white font-semibold">
+                      {new Date(selectedBooking.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Close Button */}
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setShowBookingDetails(false)}
+                  className="px-8 py-3 bg-gradient-to-r from-gold-light via-gold to-gold-dark text-black font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300"
+                >
+                  Close
                 </button>
               </div>
             </div>
