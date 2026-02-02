@@ -93,10 +93,10 @@ const ResetPasswordPage = () => {
 
       if (response.ok) {
         setSuccess(true);
-        // Redirect to login after 2 seconds
+        // Redirect to login after 5 seconds
         setTimeout(() => {
           navigate("/login");
-        }, 2000);
+        }, 5000);
       } else {
         setError(data.message || "Failed to reset password");
       }

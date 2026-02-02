@@ -144,7 +144,7 @@ const RegisterForm = ({ signupEnabled = true }) => {
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             disabled={!signupEnabled}
-            className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full p-3 md:p-4 rounded-lg bg-[#D8AF7F] placeholder-black/70 text-black focus:outline-none focus:ring-2 focus:ring-[#C9A87C] disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <input
             type="text"
@@ -152,7 +152,7 @@ const RegisterForm = ({ signupEnabled = true }) => {
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             disabled={!signupEnabled}
-            className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full p-3 md:p-4 rounded-lg bg-[#D8AF7F] placeholder-black/70 text-black focus:outline-none focus:ring-2 focus:ring-[#C9A87C] disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -162,7 +162,7 @@ const RegisterForm = ({ signupEnabled = true }) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={!signupEnabled}
-          className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full p-3 md:p-4 rounded-lg bg-[#D8AF7F] placeholder-black/70 text-black focus:outline-none focus:ring-2 focus:ring-[#C9A87C] disabled:opacity-50 disabled:cursor-not-allowed"
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -172,7 +172,7 @@ const RegisterForm = ({ signupEnabled = true }) => {
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             disabled={!signupEnabled}
-            className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full p-3 md:p-4 rounded-lg bg-[#D8AF7F] placeholder-black/70 text-black focus:outline-none focus:ring-2 focus:ring-[#C9A87C] disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <input
             type="number"
@@ -182,7 +182,7 @@ const RegisterForm = ({ signupEnabled = true }) => {
             min="18"
             max="120"
             disabled={!signupEnabled}
-            className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full p-3 md:p-4 rounded-lg bg-[#D8AF7F] placeholder-black/70 text-black focus:outline-none focus:ring-2 focus:ring-[#C9A87C] disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -192,7 +192,7 @@ const RegisterForm = ({ signupEnabled = true }) => {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           disabled={!signupEnabled}
-          className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full p-3 md:p-4 rounded-lg bg-[#D8AF7F] placeholder-black/70 text-black focus:outline-none focus:ring-2 focus:ring-[#C9A87C] disabled:opacity-50 disabled:cursor-not-allowed"
         />
 
         <input
@@ -206,7 +206,7 @@ const RegisterForm = ({ signupEnabled = true }) => {
             }
           }}
           disabled={!signupEnabled}
-          className="w-full p-3 md:p-4 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full p-3 md:p-4 rounded-lg bg-[#D8AF7F] placeholder-black/70 text-black focus:outline-none focus:ring-2 focus:ring-[#C9A87C] disabled:opacity-50 disabled:cursor-not-allowed"
         />
 
         {error && (
@@ -223,10 +223,8 @@ const RegisterForm = ({ signupEnabled = true }) => {
       <button
         onClick={handleRegister}
         disabled={isLoading || !signupEnabled}
-        className={`mt-6 md:mt-8 px-8 py-3 rounded-full bg-black text-gold font-semibold transition-all hover:scale-105 ${
-          isLoading || !signupEnabled
-            ? "opacity-50 cursor-not-allowed"
-            : "hover:shadow-gold"
+        className={`mt-6 md:mt-8 px-8 md:px-10 py-2 md:py-3 text-base md:text-lg rounded-md bg-[#D8AF7F] text-black font-normal transition-all hover:bg-[#C9A87C] ${
+          isLoading || !signupEnabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
         {isLoading

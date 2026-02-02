@@ -15,10 +15,9 @@ export const createBooking = async (req, res) => {
       modelCategory,
     } = req.body;
 
-    // Validate required fields
+    // Validate required fields (company is now optional)
     if (
       !userName ||
-      !company ||
       !event ||
       !eventDate ||
       !eventTime ||

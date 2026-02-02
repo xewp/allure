@@ -97,16 +97,19 @@ export const useMainPageLogic = () => {
 
       const user = JSON.parse(userStr);
       
-      // Validate user object has an _id field
-      if (!user || !user._id) {
-        console.error("Invalid user object in localStorage - missing _id", user);
+      // Get userId - handle both id and _id formats
+      const userId = user.id || user._id;
+      
+      // Validate user object has an id field
+      if (!user || !userId) {
+        console.error("Invalid user object in localStorage - missing id/_id", user);
         setModels([]);
         setLoading(false);
         return;
       }
 
       const response = await fetch(
-        `${API_URL}/api/users/${user._id}/favorites`
+        `${API_URL}/api/users/${userId}/favorites`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

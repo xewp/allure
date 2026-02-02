@@ -330,10 +330,21 @@ const AdminBookings = () => {
                     <td className="p-4">
                       <select
                         value={booking.status}
-                        onChange={(e) =>
-                          updateBookingStatus(booking._id, e.target.value)
-                        }
-                        className={`px-3 py-1 rounded-full text-white text-sm font-semibold ${getStatusColor(
+                        onChange={(e) => {
+                          const newStatus = e.target.value;
+                          const oldStatus = booking.status;
+
+                          // Temporarily update to show selection (will revert if cancelled)
+                          e.target.value = oldStatus;
+
+                          showConfirm(
+                            `Are you sure you want to change this booking status to "${newStatus}"?`,
+                            () => {
+                              updateBookingStatus(booking._id, newStatus);
+                            },
+                          );
+                        }}
+                        className={`px-3 py-1 rounded-full text-white text-sm font-semibold cursor-pointer ${getStatusColor(
                           booking.status,
                         )}`}
                       >

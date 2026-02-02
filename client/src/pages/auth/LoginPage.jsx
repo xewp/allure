@@ -13,7 +13,11 @@ const LoginPage = () => {
   };
 
   return (
-    <AuthLayout title="Login" leftSectionStyle={loginLeftStyle}>
+    <AuthLayout
+      title="Login"
+      leftSectionStyle={loginLeftStyle}
+      titleClassName="text-[#D8AF7F]"
+    >
       <LoginForm />
     </AuthLayout>
   );

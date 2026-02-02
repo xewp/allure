@@ -13,7 +13,7 @@ const bookingSchema = new mongoose.Schema({
   },
   company: {
     type: String,
-    required: true,
+    required: false, // Company is now optional
     trim: true,
   },
   event: {

@@ -9,7 +9,7 @@ const MainPage = () => {
 
   // Initialize activeTab from location.state if available, otherwise default to LOCAL
   const [activeTab, setActiveTab] = useState(
-    location.state?.activeTab || "LOCAL"
+    location.state?.activeTab || "LOCAL",
   );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [models, setModels] = useState([]);
@@ -34,7 +34,7 @@ const MainPage = () => {
           "DEBUG: userId=",
           userId,
           "token=",
-          token ? "exists" : "missing"
+          token ? "exists" : "missing",
         );
 
         if (!userId || !token) {
@@ -89,7 +89,7 @@ const MainPage = () => {
     try {
       const endpoint = category === "LOCAL" ? "local" : "foreign";
       const response = await fetch(
-        `${API_URL}/models/${endpoint}?available=true`
+        `${API_URL}/models/${endpoint}?available=true`,
       );
 
       if (!response.ok) {
@@ -134,7 +134,7 @@ const MainPage = () => {
       }
 
       const response = await fetch(
-        `${API_URL}/api/users/${user._id}/favorites`
+        `${API_URL}/api/users/${user._id}/favorites`,
       );
 
       if (!response.ok) {
@@ -144,7 +144,7 @@ const MainPage = () => {
       const favorites = await response.json();
       console.log(
         "Fetched favorites - RAW DATA:",
-        JSON.stringify(favorites, null, 2)
+        JSON.stringify(favorites, null, 2),
       );
 
       // Filter out any favorites without a valid ID
@@ -158,11 +158,11 @@ const MainPage = () => {
 
       console.log(
         "Valid favorites after filtering - COUNT:",
-        validFavorites.length
+        validFavorites.length,
       );
       console.log(
         "Valid favorites - FULL DATA:",
-        JSON.stringify(validFavorites, null, 2)
+        JSON.stringify(validFavorites, null, 2),
       );
       setModels(validFavorites);
 
@@ -227,7 +227,7 @@ const MainPage = () => {
 
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) =>
-        prevIndex === carouselModels.length - 1 ? 0 : prevIndex + 1
+        prevIndex === carouselModels.length - 1 ? 0 : prevIndex + 1,
       );
     }, 3000); // Change image every 3 seconds
 
@@ -259,15 +259,75 @@ const MainPage = () => {
 
   return (
     <div className="min-h-screen bg-black text-white font-sans flex flex-col">
-      <div className="flex flex-col items-center w-full max-w-6xl mx-auto px-4 pt-4">
-        {/* Page Title */}
-        <h1
-          className="text-2xl md:text-3xl font-bold mb-6"
-          style={{ color: themeColor }}
-        >
-          Power Allure
-        </h1>
+      {/* Header with Title and Navigation */}
+      <header className="w-full bg-black py-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Page Title - Luxury Serif Font */}
+          <h1
+            className="text-center mb-8"
+            style={{
+              fontFamily: "'Playfair Display', 'Georgia', serif",
+              fontSize: "clamp(3rem, 8vw, 5rem)",
+              fontWeight: "700",
+              color: themeColor,
+              letterSpacing: "0.02em",
+              textShadow: `0 2px 20px rgba(216, 175, 127, 0.3)`,
+            }}
+          >
+            Power Allure
+          </h1>
 
+          {/* Navigation Buttons - Matching Header Design */}
+          <nav className="flex flex-wrap justify-center items-center gap-3 md:gap-4">
+            {/* LOCAL Button */}
+            <button
+              onClick={() => handleTabClick("LOCAL")}
+              className={`px-8 py-2 rounded-md font-medium uppercase tracking-wider text-sm transition-all duration-300 ${
+                activeTab === "LOCAL"
+                  ? "border-2 border-[#D8AF7F] text-[#D8AF7F] bg-transparent"
+                  : "border-2 border-[#D8AF7F] bg-white text-black hover:bg-gray-100"
+              }`}
+            >
+              LOCAL
+            </button>
+
+            {/* FOREIGN Button */}
+            <button
+              onClick={() => handleTabClick("FOREIGN")}
+              className={`px-8 py-2 rounded-md font-medium uppercase tracking-wider text-sm transition-all duration-300 ${
+                activeTab === "FOREIGN"
+                  ? "border-2 border-[#D8AF7F] text-[#D8AF7F] bg-transparent"
+                  : "border-2 border-[#D8AF7F] bg-white text-black hover:bg-gray-100"
+              }`}
+            >
+              FOREIGN
+            </button>
+
+            {/* FAVORITES Button */}
+            <button
+              onClick={() => handleTabClick("FAVORITES")}
+              className={`px-8 py-2 rounded-md font-medium uppercase tracking-wider text-sm transition-all duration-300 ${
+                activeTab === "FAVORITES"
+                  ? "border-2 border-[#D8AF7F] text-[#D8AF7F] bg-transparent"
+                  : "border-2 border-[#D8AF7F] bg-white text-black hover:bg-gray-100"
+              }`}
+            >
+              FAVORITES
+            </button>
+
+            {/* PROFILE Button */}
+            <button
+              onClick={() => navigate("/profile")}
+              className="px-8 py-2 rounded-md font-medium uppercase tracking-wider text-sm transition-all duration-300 border-2 border-[#D8AF7F] text-[#D8AF7F] bg-transparent hover:bg-[#D8AF7F]/10"
+            >
+              PROFILE
+            </button>
+          </nav>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <div className="flex flex-col items-center w-full max-w-6xl mx-auto px-4 pt-4">
         {/* Carousel Section */}
         <div className="flex items-center justify-center gap-4 md:gap-8 w-full mb-10">
           {/* Featured Display (Large Central Area) */}
@@ -290,45 +350,6 @@ const MainPage = () => {
               <LoadingSpinner message="Loading carousel" size="default" />
             )}
           </div>
-        </div>
-
-        {/* Navigation Tabs */}
-        <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 lg:gap-10 mb-8 md:mb-12">
-          {/* LOCAL (Gold) */}
-          <button
-            onClick={() => handleTabClick("LOCAL")}
-            className="text-sm md:text-base tracking-widest font-bold uppercase"
-            style={{ color: activeTab === "LOCAL" ? themeColor : "white" }}
-          >
-            Local
-          </button>
-
-          {/* FOREIGN */}
-          <button
-            onClick={() => handleTabClick("FOREIGN")}
-            className="text-sm md:text-base tracking-widest font-bold uppercase transition-colors hover:text-gray-300"
-            style={{ color: activeTab === "FOREIGN" ? themeColor : "white" }}
-          >
-            Foreign
-          </button>
-
-          {/* Favorites (Title Case) */}
-          <button
-            onClick={() => handleTabClick("FAVORITES")}
-            className="text-sm md:text-base lg:text-lg font-bold transition-colors hover:text-gray-300"
-            style={{ color: activeTab === "FAVORITES" ? themeColor : "white" }}
-          >
-            Favorites
-          </button>
-
-          {/* Profile (Title Case) */}
-          <button
-            onClick={() => navigate("/profile")}
-            className="text-sm md:text-base lg:text-lg font-bold transition-colors hover:text-gray-300"
-            style={{ color: activeTab === "PROFILE" ? themeColor : "white" }}
-          >
-            Profile
-          </button>
         </div>
 
         {/* Bottom Grid (Model Cards) */}

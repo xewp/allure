@@ -42,10 +42,10 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
         });
         setEmail("");
 
-        // Close modal after 3 seconds
+        // Close modal after 5 seconds
         setTimeout(() => {
           handleClose();
-        }, 3000);
+        }, 5000);
       } else {
         setMessage({
           type: "error",

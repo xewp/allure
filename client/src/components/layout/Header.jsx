@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import API_URL from "../../config/api";
 
 const Header = ({ activeTab, onTabChange }) => {
@@ -7,14 +7,6 @@ const Header = ({ activeTab, onTabChange }) => {
   const location = useLocation();
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const handleTabClick = (tab) => {
-    if (location.pathname !== "/main") {
-      navigate("/main", { state: { activeTab: tab } });
-    } else if (onTabChange) {
-      onTabChange(tab);
-    }
-  };
 
   const handleBookingClick = async () => {
     if (location.pathname === "/booking") return;
@@ -35,7 +27,7 @@ const Header = ({ activeTab, onTabChange }) => {
       if (response.ok) {
         const favorites = await response.json();
         const validFavorites = favorites.filter(
-          (fav) => fav._id && fav._id !== "undefined"
+          (fav) => fav._id && fav._id !== "undefined",
         );
 
         if (validFavorites.length === 0) {
@@ -54,98 +46,63 @@ const Header = ({ activeTab, onTabChange }) => {
     }
   };
 
-  const NavButton = ({ tab, children }) => {
-    const isActive =
-      tab.toLowerCase() === activeTab?.toLowerCase() ||
-      location.pathname === `/${tab.toLowerCase()}`;
-
-    return (
-      <button
-        onClick={() => handleTabClick(tab)}
-        disabled={loading && tab === "BOOKING"}
-        className={`relative text-lg font-semibold uppercase tracking-wider transition-colors duration-300 group pb-2 ${
-          isActive ? "text-gold" : "text-white hover:text-gold"
-        } ${loading && tab === "BOOKING" ? "opacity-50 cursor-wait" : ""}`}
-      >
-        {children}
-        <span
-          className={`absolute bottom-0 left-0 h-0.5 bg-gold transition-all duration-300 ${
-            isActive ? "w-full" : "w-0 group-hover:w-full"
-          }`}
-        ></span>
-      </button>
-    );
+  const handleTabClick = (tab) => {
+    if (location.pathname !== "/main") {
+      navigate("/main", { state: { activeTab: tab } });
+    } else if (onTabChange) {
+      onTabChange(tab);
+    }
   };
 
   return (
-    <div className="w-full flex justify-center sticky top-0 z-40">
-      <div className="w-full max-w-7xl bg-charcoal/50 backdrop-blur-lg rounded-xl h-20 flex items-center justify-between px-6 my-2 border-b border-white/10">
-        {/* --- LEFT SECTION: Navigation --- */}
-        <div className="flex-1 flex items-center gap-8 text-sm font-medium">
-          <NavButton tab="LOCAL">Local</NavButton>
-          <NavButton tab="FOREIGN">Foreign</NavButton>
+    <>
+      <header className="sticky top-0 z-50 bg-black border-b border-[#D8AF7F]/20 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16 md:h-20">
+            {/* Logo/Brand */}
+            <Link
+              to="/main"
+              className="font-serif text-2xl md:text-3xl font-bold text-[#D8AF7F] hover:text-[#E8BF8F] transition-colors duration-300"
+            >
+              Power Allure
+            </Link>
+
+            {/* Desktop Navigation */}
+            <nav className="flex items-center gap-3 md:gap-4">
+              <button
+                onClick={() =>
+                  navigate("/main", { state: { activeTab: "FAVORITES" } })
+                }
+                className="px-4 md:px-5 py-2 border-2 border-[#D8AF7F] text-[#D8AF7F] rounded-md font-medium uppercase text-xs md:text-sm tracking-wider hover:bg-[#D8AF7F] hover:text-black transition-all duration-300"
+              >
+                FAVORITES
+              </button>
+              <button
+                onClick={handleBookingClick}
+                disabled={loading}
+                className="px-4 md:px-5 py-2 border-2 border-[#D8AF7F] text-[#D8AF7F] rounded-md font-medium uppercase text-xs md:text-sm tracking-wider hover:bg-[#D8AF7F] hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "..." : "BOOKING"}
+              </button>
+              <Link
+                to="/profile"
+                className="px-4 md:px-5 py-2 border-2 border-[#D8AF7F] text-[#D8AF7F] rounded-md font-medium uppercase text-xs md:text-sm tracking-wider hover:bg-[#D8AF7F] hover:text-black transition-all duration-300"
+              >
+                PROFILE
+              </Link>
+            </nav>
+          </div>
         </div>
-
-        {/* --- CENTER SECTION: Logo --- */}
-        <div className="flex-1 flex justify-center">
-          <h1 className="font-serif text-4xl font-bold bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent whitespace-nowrap">
-            Power Allure
-          </h1>
-        </div>
-
-        {/* --- RIGHT SECTION: Navigation & Search --- */}
-        <div className="flex-1 flex items-center justify-end gap-8">
-          <NavButton tab="FAVORITES">Favorites</NavButton>
-
-          {/* Booking Button with dedicated handler */}
-          <button
-            onClick={handleBookingClick}
-            disabled={loading}
-            className={`relative text-lg font-semibold uppercase tracking-wider transition-colors duration-300 group pb-2 ${
-              location.pathname === "/booking"
-                ? "text-gold"
-                : "text-white hover:text-gold"
-            } ${loading ? "opacity-50 cursor-wait" : ""}`}
-          >
-            Booking
-            <span
-              className={`absolute bottom-0 left-0 h-0.5 bg-gold transition-all duration-300 ${
-                location.pathname === "/booking"
-                  ? "w-full"
-                  : "w-0 group-hover:w-full"
-              }`}
-            ></span>
-          </button>
-
-          {/* Profile Button with direct navigation */}
-          <button
-            onClick={() => navigate("/profile")}
-            className={`relative text-lg font-semibold uppercase tracking-wider transition-colors duration-300 group pb-2 ${
-              location.pathname === "/profile"
-                ? "text-gold"
-                : "text-white hover:text-gold"
-            }`}
-          >
-            Profile
-            <span
-              className={`absolute bottom-0 left-0 h-0.5 bg-gold transition-all duration-300 ${
-                location.pathname === "/profile"
-                  ? "w-full"
-                  : "w-0 group-hover:w-full"
-              }`}
-            ></span>
-          </button>
-        </div>
-      </div>
+      </header>
 
       {/* Custom Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in-slow">
-          <div className="bg-charcoal border border-gold/20 p-8 rounded-2xl max-w-md w-full text-center shadow-gold-lg animate-slide-up">
-            <div className="w-16 h-16 bg-gold/10 border border-gold/20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="bg-gray-900 border border-[#D8AF7F]/20 p-8 rounded-2xl max-w-md w-full text-center shadow-lg">
+            <div className="w-16 h-16 bg-[#D8AF7F]/10 border border-[#D8AF7F]/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 text-gold"
+                className="h-8 w-8 text-[#D8AF7F]"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -159,14 +116,14 @@ const Header = ({ activeTab, onTabChange }) => {
               </svg>
             </div>
 
-            <h3 className="text-2xl font-bold text-gold font-serif mb-3">
+            <h3 className="text-2xl font-bold text-[#D8AF7F] font-serif mb-3">
               Action Required
             </h3>
 
             <p className="text-gray-300 mb-8 text-lg leading-relaxed">
               You need to select a model to book. Please check our models and
-              add one to your <span className="text-gold">Favorites</span> list
-              first.
+              add one to your <span className="text-[#D8AF7F]">Favorites</span>{" "}
+              list first.
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -175,13 +132,13 @@ const Header = ({ activeTab, onTabChange }) => {
                   setShowModal(false);
                   if (location.pathname !== "/main") navigate("/main");
                 }}
-                className="group relative inline-flex items-center gap-3 px-8 py-3 bg-gold text-black font-semibold text-base rounded-full overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-gold"
+                className="px-8 py-3 bg-[#D8AF7F] text-black font-semibold text-base rounded-md hover:bg-[#C9A87C] transition-all duration-300"
               >
                 Browse Models
               </button>
               <button
                 onClick={() => setShowModal(false)}
-                className="px-8 py-3 border-2 border-warm-gray text-gray-300 font-semibold rounded-full hover:bg-warm-gray hover:text-white transition-all duration-300"
+                className="px-8 py-3 border-2 border-gray-600 text-gray-300 font-semibold rounded-md hover:bg-gray-800 transition-all duration-300"
               >
                 Cancel
               </button>
@@ -189,7 +146,7 @@ const Header = ({ activeTab, onTabChange }) => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

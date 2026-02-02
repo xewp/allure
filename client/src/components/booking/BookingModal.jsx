@@ -12,6 +12,7 @@ const BookingModal = ({ isOpen, onClose, modelData, onBookingSuccess }) => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [apiError, setApiError] = useState("");
 
   // Close modal on ESC key
@@ -59,10 +60,7 @@ const BookingModal = ({ isOpen, onClose, modelData, onBookingSuccess }) => {
   const validateForm = () => {
     const newErrors = {};
 
-    // Company validation
-    if (!formData.company.trim()) {
-      newErrors.company = "Company name is required";
-    }
+    // Company is now optional - no validation needed
 
     // Event validation
     if (!formData.event.trim()) {
@@ -97,6 +95,11 @@ const BookingModal = ({ isOpen, onClose, modelData, onBookingSuccess }) => {
       return;
     }
 
+    // Show confirmation modal instead of submitting directly
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmBooking = async () => {
     setLoading(true);
     setApiError("");
 
@@ -104,7 +107,10 @@ const BookingModal = ({ isOpen, onClose, modelData, onBookingSuccess }) => {
       const token = localStorage.getItem("token");
       const userData = JSON.parse(localStorage.getItem("user") || "{}");
 
-      if (!token || !userData._id) {
+      // Get userId - handle both id and _id formats
+      const userId = userData.id || userData._id;
+
+      if (!token || !userId) {
         throw new Error("Please log in to make a booking");
       }
 
@@ -153,14 +159,137 @@ const BookingModal = ({ isOpen, onClose, modelData, onBookingSuccess }) => {
       }, 2000);
     } catch (error) {
       setApiError(
-        error.message || "Failed to create booking. Please try again."
+        error.message || "Failed to create booking. Please try again.",
       );
     } finally {
       setLoading(false);
+      setShowConfirmation(false);
     }
   };
 
   if (!isOpen || !modelData) return null;
+
+  // Confirmation Modal Content
+  if (showConfirmation) {
+    const confirmationContent = (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in"
+        onClick={() => setShowConfirmation(false)}
+      >
+        <div
+          className="relative w-full max-w-3xl bg-gradient-to-br from-charcoal via-gray-900 to-black rounded-3xl border border-gold/40 shadow-2xl overflow-hidden animate-scale-in"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="relative z-10 px-8 py-6 border-b border-gold/30 bg-gradient-to-r from-gold/10 to-transparent">
+            <h2 className="font-serif text-3xl md:text-4xl font-bold bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent">
+              Confirm Your Booking
+            </h2>
+            <p className="text-gray-400 text-sm mt-2">
+              Please review your booking details before confirming
+            </p>
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10 px-8 py-6 max-h-[70vh] overflow-y-auto">
+            {/* Model Section */}
+            <div className="mb-6">
+              <h3 className="text-gold font-semibold mb-3 text-lg">
+                Model Information
+              </h3>
+              <div className="flex gap-4 items-start bg-black/30 p-4 rounded-xl border border-gold/20">
+                {/* Model Image */}
+                <div className="flex-shrink-0">
+                  <img
+                    src={modelData.imageUrl}
+                    alt={modelData.name}
+                    className="w-24 h-24 md:w-32 md:h-32 rounded-xl object-cover border-2 border-gold/40 shadow-lg"
+                  />
+                </div>
+                {/* Model Details */}
+                <div className="flex-1">
+                  <p className="text-2xl font-bold text-gold">
+                    {modelData.name}
+                  </p>
+                  <p className="text-gray-300 capitalize mt-1">
+                    {modelData.category || "Foreign"} Model
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Booking Details Section */}
+            <div className="mb-6">
+              <h3 className="text-gold font-semibold mb-3 text-lg">
+                Event Details
+              </h3>
+              <div className="bg-black/30 p-4 rounded-xl border border-gold/20 space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Company:</span>
+                  <span className="text-white font-semibold">
+                    {formData.company}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Event:</span>
+                  <span className="text-white font-semibold">
+                    {formData.event}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Date:</span>
+                  <span className="text-white font-semibold">
+                    {new Date(formData.eventDate).toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Time:</span>
+                  <span className="text-white font-semibold">
+                    {formData.eventTime}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Important Notice */}
+            <div className="mb-6 p-4 bg-gold/10 border border-gold/30 rounded-xl">
+              <p className="text-gold-light text-sm">
+                <span className="font-bold">⚠ Note:</span> Please double-check
+                all details above. Your booking will be submitted for admin
+                approval.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+              <button
+                type="button"
+                onClick={() => setShowConfirmation(false)}
+                className="flex-1 px-6 py-3 border-2 border-gray-500/30 text-gray-300 font-semibold rounded-xl hover:bg-gray-500/10 hover:border-gray-400/50 transition-all duration-300"
+              >
+                Go Back & Edit
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmBooking}
+                disabled={loading}
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-gold-light via-gold to-gold-dark text-black font-semibold rounded-xl hover:shadow-gold-lg hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "Submitting..." : "Confirm Booking"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+    return createPortal(confirmationContent, document.body);
+  }
 
   const modalContent = (
     <div
@@ -222,7 +351,7 @@ const BookingModal = ({ isOpen, onClose, modelData, onBookingSuccess }) => {
             {/* Company Field */}
             <div>
               <label className="block text-sm font-semibold text-gray-300 mb-2">
-                Company <span className="text-red-400">*</span>
+                Company
               </label>
               <input
                 type="text"
@@ -232,7 +361,7 @@ const BookingModal = ({ isOpen, onClose, modelData, onBookingSuccess }) => {
                 className={`w-full px-4 py-3 rounded-xl bg-black/40 border ${
                   errors.company ? "border-red-500" : "border-gold/30"
                 } focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 text-white placeholder-gray-500 transition-all duration-300`}
-                placeholder="Your company name"
+                placeholder="Your company name (optional)"
               />
               {errors.company && (
                 <p className="mt-1 text-sm text-red-400">{errors.company}</p>

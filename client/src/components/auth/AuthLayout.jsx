@@ -9,7 +9,12 @@ import { useNavigate, useLocation } from "react-router-dom";
  * - Intersection Observer animations
  * - Responsive layout
  */
-const AuthLayout = ({ children, title, leftSectionStyle = {} }) => {
+const AuthLayout = ({
+  children,
+  title,
+  leftSectionStyle = {},
+  titleClassName = "",
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [visibleSections, setVisibleSections] = useState(new Set());
@@ -54,47 +59,44 @@ const AuthLayout = ({ children, title, leftSectionStyle = {} }) => {
   const mergedStyle = { ...defaultLeftStyle, ...leftSectionStyle };
 
   return (
-    <div className="flex h-screen w-full bg-[#D8AF7F]">
-      {/* Left Section with Blueish Gradient Background and Diagonal Cut - Hidden on Mobile */}
+    <div className="flex h-screen w-full bg-black">
+      {/* Left Section with Gradient Background and Rounded Corners - Hidden on Mobile */}
       <div
         data-section="left"
-        className={`hidden md:flex relative md:w-1/2 h-full bg-gradient-to-br from-black via-gray-900 to-black flex-col ${
-          mergedStyle.justifyContent
-        } ${mergedStyle.paddingX} ${
-          mergedStyle.marginLeft
-        } z-10 transition-all duration-1000 ${
+        className={`hidden md:flex relative md:w-1/2 h-full bg-gradient-to-b from-[#3a3a3a] via-[#5a5a5a] to-[#D8AF7F] flex-col justify-between p-8 md:p-10 z-10 transition-all duration-1000 rounded-3xl m-6 ${
           visibleSections.has("left")
             ? "opacity-100 translate-x-0"
             : "opacity-0 -translate-x-10"
         }`}
-        style={{ clipPath: "polygon(0 0, 100% 0, 60% 100%, 0 100%)" }}
       >
         <h1
-          className={`font-serif ${mergedStyle.headingSize} font-bold mb-4 leading-tight bg-gradient-to-r from-gold-light to-gold bg-clip-text text-transparent`}
+          className={`font-serif text-3xl md:text-4xl font-normal leading-tight text-[#D8AF7F]`}
         >
-          POWER ALLURE
+          Power Allure
         </h1>
-        <p
-          className={`text-gold ${mergedStyle.subheadingSize} font-light tracking-wide`}
-        >
-          Feel the power. Own the allure
+        <p className={`text-2xl md:text-3xl tracking-wide`}>
+          <span className="text-black font-bold">Feel The</span>{" "}
+          <span className="text-black/60 font-light">Power.</span>
+          <br />
+          <span className="text-black font-bold">Own The</span>{" "}
+          <span className="text-black/60 font-light">Allure</span>
           {/* Hidden Easter egg: clickable period on login page */}
           {location.pathname === "/login" ? (
             <span
               onClick={() => navigate("/register")}
-              className="cursor-pointer hover:text-gold-light transition-colors duration-300"
+              className="cursor-pointer hover:text-black transition-colors duration-300 text-black/60 font-light"
               title="Psst... click me!"
             >
               .
             </span>
           ) : (
-            <span>.</span>
+            <span className="text-black/60 font-light">.</span>
           )}
         </p>
       </div>
 
       {/* Right Section with Tan Background and Form Content */}
-      <div className="w-full md:w-auto md:absolute md:inset-0 flex md:justify-end justify-center items-center z-0">
+      <div className="w-full md:w-auto md:absolute md:inset-0 flex md:justify-end justify-center items-center z-0 bg-black">
         <div
           data-section="right"
           className={`w-full md:w-1/2 flex flex-col items-center px-4 md:px-8 py-8 transition-all duration-1000 delay-300 overflow-y-auto max-h-screen ${
@@ -104,7 +106,9 @@ const AuthLayout = ({ children, title, leftSectionStyle = {} }) => {
           }`}
         >
           {title && (
-            <h2 className="font-serif text-4xl md:text-5xl font-bold mb-6 md:mb-8 text-black">
+            <h2
+              className={`font-serif text-4xl md:text-5xl font-bold mb-6 md:mb-8 ${titleClassName || "text-black"}`}
+            >
               {title}
             </h2>
           )}
