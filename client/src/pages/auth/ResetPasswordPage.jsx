@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import AuthLayout from "../../components/auth/AuthLayout";
 import API_URL from "../../config/api";
 
 const ResetPasswordPage = () => {
@@ -46,7 +45,6 @@ const ResetPasswordPage = () => {
           setError(data.message || "Invalid or expired reset token");
         }
       } catch (err) {
-
         setError("Unable to verify reset link. Please try again.");
       } finally {
         setVerifying(false);
@@ -101,104 +99,114 @@ const ResetPasswordPage = () => {
         setError(data.message || "Failed to reset password");
       }
     } catch (err) {
-
       setError("Unable to connect to server. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Custom styling for reset password page
-  const resetPasswordStyle = {
-    justifyContent: "justify-start pt-20 md:pt-32",
-    paddingX: "px-4 md:px-0",
-    marginLeft: "md:-ml-36",
-    headingSize: "text-[70px] md:text-[90px]",
-    subheadingSize: "text-xl md:text-2xl",
-  };
-
-  if (verifying) {
-    return (
-      <AuthLayout title="Verifying..." leftSectionStyle={resetPasswordStyle}>
-        <div className="w-full max-w-sm md:w-96 flex flex-col items-center gap-4">
-          <div className="w-16 h-16 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-black/60 text-center">Verifying reset link...</p>
+  const renderContent = () => {
+    if (verifying) {
+      return (
+        <div className="flex flex-col items-center gap-6 py-8">
+          <div className="w-16 h-16 border-4 border-[#333] border-t-[#D8AF7F] rounded-full animate-spin"></div>
+          <p className="text-gray-400 font-medium tracking-wider">Verifying link...</p>
         </div>
-      </AuthLayout>
-    );
-  }
+      );
+    }
 
-  if (!validToken) {
-    return (
-      <AuthLayout title="Invalid Link" leftSectionStyle={resetPasswordStyle}>
-        <div className="w-full max-w-sm md:w-96 flex flex-col items-center gap-4">
-          <div className="text-6xl mb-4">⚠️</div>
-          <p className="text-red-600 text-center font-semibold">{error}</p>
+    if (!validToken) {
+      return (
+        <div className="flex flex-col items-center gap-6 py-8 text-center">
+          <div className="text-5xl">⚠️</div>
+          <p className="text-red-400 font-bold">{error}</p>
           <button
             onClick={() => navigate("/login")}
-            className="mt-4 px-8 py-3 text-lg rounded-full bg-black text-gold font-semibold hover:scale-105 transition-all"
+            className="mt-4 px-8 py-4 rounded-full bg-[#333] text-white font-bold text-sm uppercase tracking-widest transition-all hover:bg-[#444]"
           >
             Back to Login
           </button>
         </div>
-      </AuthLayout>
-    );
-  }
+      );
+    }
 
-  if (success) {
-    return (
-      <AuthLayout title="Success!" leftSectionStyle={resetPasswordStyle}>
-        <div className="w-full max-w-sm md:w-96 flex flex-col items-center gap-4">
-          <div className="text-6xl mb-4">✓</div>
-          <p className="text-green-600 text-center font-semibold text-lg">
-            Password reset successfully!
-          </p>
-          <p className="text-black/60 text-center">
-            Redirecting to login page...
-          </p>
+    if (success) {
+      return (
+        <div className="flex flex-col items-center gap-6 py-8 text-center">
+          <div className="text-5xl text-green-500">✓</div>
+          <h2 className="text-2xl font-bold text-[#D8AF7F]">Success!</h2>
+          <p className="text-gray-400">Password reset successfully.</p>
+          <p className="text-sm text-gray-500 mt-4">Redirecting to login...</p>
         </div>
-      </AuthLayout>
-    );
-  }
+      );
+    }
 
-  return (
-    <AuthLayout title="Reset Password" leftSectionStyle={resetPasswordStyle}>
-      <div className="w-full max-w-sm md:w-96 flex flex-col gap-4">
-        <input
-          type="password"
-          placeholder="New password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          className="w-full p-4 md:p-5 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-black transition-all"
-        />
-        <input
-          type="password"
-          placeholder="Confirm new password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === "Enter") {
-              handleSubmit();
-            }
-          }}
-          className="w-full p-4 md:p-5 rounded-xl bg-[#c5c4c4] placeholder-gray-600 text-black text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-black transition-all"
-        />
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="relative">
+          <label className="block text-xs font-bold text-[#D8AF7F] uppercase tracking-wider mb-2">
+            New Password
+          </label>
+          <input
+            type="password"
+            placeholder="Min 6 characters"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="w-full pb-2 border-b-2 border-gray-600 bg-transparent text-white text-base focus:border-[#D8AF7F] focus:outline-none transition-colors placeholder-gray-500"
+          />
+        </div>
+        <div className="relative">
+          <label className="block text-xs font-bold text-[#D8AF7F] uppercase tracking-wider mb-2">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            placeholder="Re-enter password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                handleSubmit();
+              }
+            }}
+            className="w-full pb-2 border-b-2 border-gray-600 bg-transparent text-white text-base focus:border-[#D8AF7F] focus:outline-none transition-colors placeholder-gray-500"
+          />
+        </div>
+        
         {error && (
-          <div className="text-red-600 text-sm font-semibold text-center bg-red-100 p-3 rounded-lg border border-red-300">
+          <div className="text-red-400 text-sm font-bold text-center bg-red-950/50 p-3 rounded-lg border border-red-900/50">
             {error}
           </div>
         )}
+        
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className={`mt-4 w-full py-4 rounded-full bg-[#D8AF7F] text-black font-bold text-sm uppercase tracking-widest transition-all hover:bg-[#C9A87C] disabled:opacity-50 disabled:cursor-not-allowed`}
+        >
+          {loading ? "Resetting..." : "Reset Password"}
+        </button>
       </div>
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        className={`mt-6 md:mt-8 px-10 md:px-12 py-3 md:py-4 text-lg md:text-xl rounded-full bg-black text-gold font-semibold transition-all hover:scale-105 ${
-          loading ? "opacity-50 cursor-not-allowed" : "hover:shadow-gold"
-        }`}
-      >
-        {loading ? "Resetting..." : "Reset Password"}
-      </button>
-    </AuthLayout>
+    );
+  };
+
+  return (
+    <div className="flex min-h-screen w-full items-center justify-center bg-black font-sans">
+      <div className="w-full max-w-md mx-4 px-6 py-12 md:px-10 bg-[#1A1A1A] shadow-2xl rounded-2xl border border-[#333] flex flex-col">
+        
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-bold tracking-tight text-[#D8AF7F] mb-2 font-serif">
+            Power Allure
+          </h1>
+          <p className="text-sm text-gray-400 font-medium">
+            Reset Your Password
+          </p>
+        </div>
+
+        {renderContent()}
+
+      </div>
+    </div>
   );
 };
 

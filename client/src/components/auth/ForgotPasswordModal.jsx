@@ -77,18 +77,18 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
       onClick={handleClose}
     >
       <div
-        className="relative w-full max-w-md bg-gradient-to-br from-[#D8AF7F] via-[#C5A27D] to-[#B89968] rounded-3xl border-2 border-gold/30 shadow-2xl overflow-hidden animate-scale-in"
+        className="relative w-full max-w-md bg-[#1A1A1A] rounded-2xl border border-[#333] shadow-2xl overflow-hidden animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="relative px-8 py-6 bg-black/20 border-b border-black/10">
+        <div className="relative px-8 py-6 border-b border-[#333]">
           <div className="flex items-center justify-between">
-            <h2 className="font-serif text-3xl font-bold text-black">
+            <h2 className="font-serif text-3xl font-bold text-[#D8AF7F]">
               Forgot Password?
             </h2>
             <button
               onClick={handleClose}
-              className="text-black/60 hover:text-black transition-colors duration-300 text-3xl leading-none"
+              className="text-gray-500 hover:text-white transition-colors duration-300 text-3xl leading-none"
               aria-label="Close modal"
             >
               ×
@@ -110,31 +110,31 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          <p className="text-black/80 text-sm mb-6">
+          <p className="text-gray-400 text-sm mb-6">
             Enter your email address and we'll send you a link to reset your
             password.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-black/80 mb-2">
+              <label className="block text-xs font-bold text-[#D8AF7F] uppercase tracking-wider mb-2">
                 Email Address
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/50 border-2 border-black/20 focus:border-black focus:outline-none focus:ring-2 focus:ring-black/10 text-black placeholder-black/40 transition-all duration-300"
+                className="w-full pb-2 border-b-2 border-gray-600 bg-transparent text-white text-base focus:border-[#D8AF7F] focus:outline-none transition-colors placeholder-gray-500"
                 placeholder="Enter your email"
                 disabled={loading}
               />
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-3 pt-4">
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 px-6 py-3 border-2 border-black/30 text-black font-semibold rounded-xl hover:bg-black/10 transition-all duration-300"
+                className="flex-1 py-4 rounded-full bg-[#333] text-white font-bold text-sm uppercase tracking-widest transition-all hover:bg-[#444]"
                 disabled={loading}
               >
                 Cancel
@@ -142,9 +142,9 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-6 py-3 bg-black text-gold font-semibold rounded-xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="flex-1 py-4 rounded-full bg-[#D8AF7F] text-black font-bold text-sm uppercase tracking-widest transition-all hover:bg-[#C9A87C] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Sending..." : "Send Reset Link"}
+                {loading ? "Sending..." : "Send Link"}
               </button>
             </div>
           </form>
