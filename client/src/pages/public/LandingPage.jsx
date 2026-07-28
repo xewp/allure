@@ -43,7 +43,7 @@ const LandingPage = () => {
         >
           {/* Main Headline */}
           <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl font-bold mb-6 bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent leading-tight tracking-tight">
-            POWER ALLURE
+            AURA SELECT
           </h1>
 
           {/* Tagline */}

@@ -58,7 +58,7 @@ const AdminLogin = () => {
         
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold tracking-tight text-[#D8AF7F] font-serif mb-2">
-            Power Allure
+            Aura Select
           </h1>
           <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">
             Admin Portal

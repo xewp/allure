@@ -1,6 +1,6 @@
-# Power Allure Admin Dashboard
+# Aura Select Admin Dashboard
 
-Standalone admin application for managing Power Allure models, users, and bookings.
+Standalone admin application for managing Aura Select models, users, and bookings.
 
 ## Setup
 

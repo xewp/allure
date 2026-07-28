@@ -19,17 +19,17 @@ const AboutPage = () => {
   const features = [
     {
       title: "Trained, professional talent",
-      text: "At POWER ALLURE, we take pride in offering trained, professional talent who understand the demands of the industry. Our models are prepared, disciplined, and capable of meeting the highest standards.",
+      text: "At AURA SELECT, we take pride in offering trained, professional talent who understand the demands of the industry. Our models are prepared, disciplined, and capable of meeting the highest standards.",
       image: why,
     },
     {
       title: "VIP-ready and experienced",
-      text: "At POWER ALLURE, VIP-ready and experienced. Trained to handle exclusive gatherings, prestigious functions, and high-end clientele with confidence and grace.",
+      text: "At AURA SELECT, VIP-ready and experienced. Trained to handle exclusive gatherings, prestigious functions, and high-end clientele with confidence and grace.",
       image: why1,
     },
     {
       title: "Discreet and reliable",
-      text: "At POWER ALLURE, your event and brand are handled with the utmost professionalism. We maintain strict confidentiality and ensure our models arrive prepared, punctual, and dependable for every engagement.",
+      text: "At AURA SELECT, your event and brand are handled with the utmost professionalism. We maintain strict confidentiality and ensure our models arrive prepared, punctual, and dependable for every engagement.",
       image: why2,
     },
   ];
@@ -137,14 +137,14 @@ const AboutPage = () => {
             <div className="absolute top-0 left-0 w-[65%] h-[60%] z-10 rounded-2xl overflow-hidden shadow-elegant">
               <img
                 src={ourModel}
-                alt="Power Allure Model"
+                alt="Aura Select Model"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="absolute bottom-0 right-0 w-[65%] h-[55%] z-20 rounded-2xl overflow-hidden shadow-elegant">
               <img
                 src={ourModel1}
-                alt="Power Allure Model"
+                alt="Aura Select Model"
                 className="w-full h-full object-cover"
               />
             </div>

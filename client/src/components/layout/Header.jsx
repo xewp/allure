@@ -64,7 +64,7 @@ const Header = ({ activeTab, onTabChange }) => {
               to="/main"
               className="font-serif text-2xl md:text-3xl font-bold text-[#D8AF7F] hover:text-[#E8BF8F] transition-colors duration-300"
             >
-              Power Allure
+              Aura Select
             </Link>
 
             {/* Desktop Navigation */}

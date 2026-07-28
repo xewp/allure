@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
  * AuthLayout - Shared layout component for authentication pages (Login/Register)
  * Features:
  * - Diagonal cut black/tan design
- * - POWER ALLURE branding section
+ * - AURA SELECT branding section
  * - Intersection Observer animations
  * - Responsive layout
  */
@@ -72,7 +72,7 @@ const AuthLayout = ({
         <h1
           className={`font-serif text-3xl md:text-4xl font-normal leading-tight text-[#D8AF7F]`}
         >
-          Power Allure
+          Aura Select
         </h1>
         <p className={`text-2xl md:text-3xl tracking-wide`}>
           <span className="text-black font-bold">Feel The</span>{" "}

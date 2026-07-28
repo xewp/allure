@@ -236,7 +236,7 @@ const MainPage = () => {
               textShadow: `0 2px 20px rgba(216, 175, 127, 0.3)`,
             }}
           >
-            Power Allure
+            Aura Select
           </h1>
 
           {/* Navigation Buttons - Matching Header Design */}

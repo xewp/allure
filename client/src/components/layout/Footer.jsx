@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Brand Column */}
           <div>
             <h2 className="font-serif text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gold-light to-gold bg-clip-text text-transparent inline-block">
-              POWER ALLURE
+              AURA SELECT
             </h2>
             <p className="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto md:mx-0">
               Elevating events through elegance, professionalism, and charisma.
@@ -133,7 +133,7 @@ const Footer = () => {
           <div className="text-center md:text-right">
             <p className="text-gray-500 text-sm">
               © {new Date().getFullYear()}{" "}
-              <span className="text-gold font-semibold">Power Allure</span>. All
+              <span className="text-gold font-semibold">Aura Select</span>. All
               rights reserved.
             </p>
             <p className="text-gray-600 text-xs mt-1">

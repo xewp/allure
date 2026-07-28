@@ -121,7 +121,7 @@ const LoginPage = () => {
       <div className="w-full max-w-md mx-4 px-6 py-12 md:px-10 bg-[#1A1A1A] shadow-2xl rounded-2xl border border-[#333] flex flex-col">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold tracking-tight text-[#D8AF7F] mb-2 font-serif">
-            Power Allure
+            Aura Select
           </h1>
           <p className="text-sm text-gray-400 font-medium">
             Sign in to your account

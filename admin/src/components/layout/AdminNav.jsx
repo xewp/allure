@@ -52,7 +52,7 @@ const AdminNav = () => {
       {/* Logo/Title */}
       <div className="p-6 border-b" style={{ borderColor: themeColor }}>
         <h1 className="text-2xl font-bold" style={{ color: themeColor }}>
-          Power Allure
+          Aura Select
         </h1>
         <p className="text-sm text-gray-400 mt-1">Admin Panel</p>
         {isSuperadmin && (

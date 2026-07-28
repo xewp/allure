@@ -196,7 +196,7 @@ const ResetPasswordPage = () => {
         
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold tracking-tight text-[#D8AF7F] mb-2 font-serif">
-            Power Allure
+            Aura Select
           </h1>
           <p className="text-sm text-gray-400 font-medium">
             Reset Your Password

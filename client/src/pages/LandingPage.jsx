@@ -20,7 +20,7 @@ const LandingPage = () => {
           >
             Welcome to
             <br />
-            Power Allure
+            Aura Select
           </h1>
           <p
             className="text-base md:text-xl lg:text-4xl mb-6 md:mb-8 max-w-4xl font-extralight animate-fade-in-up animation-delay-300"

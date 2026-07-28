@@ -11,7 +11,7 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto px-8">
         {/* Company Name */}
         <h2 className="text-4xl font-bold italic text-center text-black mb-6">
-          POWER ALLURE
+          AURA SELECT
         </h2>
 
         {/* Contact Information */}

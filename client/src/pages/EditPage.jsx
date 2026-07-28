@@ -175,7 +175,7 @@ const EditPage = () => {
       {/* Header Brand */}
       <header className="w-full py-8 text-center">
         <h1 className="text-[#C5A27D] text-2xl font-semibold tracking-widest uppercase">
-          Power Allure
+          Aura Select
         </h1>
       </header>
 

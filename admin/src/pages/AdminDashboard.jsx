@@ -131,7 +131,7 @@ const AdminDashboard = () => {
         >
           Dashboard
         </h1>
-        <p className="text-gray-400">Welcome to Power Allure Admin Panel</p>
+        <p className="text-gray-400">Welcome to Aura Select Admin Panel</p>
       </div>
 
       {/* Stats Grid */}

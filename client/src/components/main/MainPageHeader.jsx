@@ -29,7 +29,7 @@ export const MainPageHeader = ({ activeTab, handleTabClick, navigate }) => {
   return (
     <>
       <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold mb-10 tracking-wide text-center bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent">
-        POWER ALLURE
+        AURA SELECT
       </h1>
       <div className="flex flex-wrap justify-center items-center gap-20 md:gap-22 mb-12">
         <TabButton

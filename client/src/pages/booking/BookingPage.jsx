@@ -263,7 +263,7 @@ const BookingPage = () => {
             </p>
 
             <p className="text-[#D8AF7F] text-base md:text-lg leading-relaxed font-light">
-              Reach out to Power Allure and let us deliver elegance, discretion,
+              Reach out to Aura Select and let us deliver elegance, discretion,
               and excellence.
             </p>
           </div>
