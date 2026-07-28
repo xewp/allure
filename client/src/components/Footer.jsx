@@ -19,10 +19,10 @@ const Footer = () => {
           <div className="flex items-center gap-2">
             <span className="font-medium">Email:</span>
             <a
-              href="mailto:info@powerallure.com.ph"
+              href="mailto:info@auraselect.com.ph"
               className="hover:underline"
             >
-              info@powerallure.com.ph
+              info@auraselect.com.ph
             </a>
           </div>
 

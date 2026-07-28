@@ -53,7 +53,7 @@ content = re.sub(
 
 # More refined replacements for specific patterns in mailOptions
 content = re.sub(
-    r'const mailOptions = \{[\s\S]*?from: `"Power Allure" <\$\{process\.env\.EMAIL_FROM\}>`,[\s\S]*?to: email,[\s\S]*?subject: (.*?),[\s\S]*?html: (`[\s\S]*?`),[\s\S]*?\};',
+    r'const mailOptions = \{[\s\S]*?from: `"Aura Select" <\$\{process\.env\.EMAIL_FROM\}>`,[\s\S]*?to: email,[\s\S]*?subject: (.*?),[\s\S]*?html: (`[\s\S]*?`),[\s\S]*?\};',
     lambda m: f"const subject = {m.group(1)};\n  const html = {m.group(2)};\n  const text = `Plain text version`;", # placeholder
     content
 )

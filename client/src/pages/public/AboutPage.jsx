@@ -38,7 +38,7 @@ const AboutPage = () => {
   const services = [
     {
       title: "Event PR & Promotions",
-      text: "Ensure your events shine with PowerAllure's PR professionals. We provide polished representatives who communicate your brand with elegance and impact.",
+      text: "Ensure your events shine with AuraSelect's PR professionals. We provide polished representatives who communicate your brand with elegance and impact.",
     },
     {
       title: "Brand Ambassadors & Models",
@@ -114,7 +114,7 @@ const AboutPage = () => {
               ABOUT US
             </h2>
             <p className="text-lg md:text-xl font-light leading-relaxed text-gray-300">
-              PowerAllure was founded with a single mission: to elevate every
+              AuraSelect was founded with a single mission: to elevate every
               event, brand, and experience through elegance, professionalism,
               and charisma. What started as a vision to provide premium talent
               for high-profile events quickly became a trusted partner for

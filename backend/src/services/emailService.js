@@ -8,7 +8,7 @@ import { log } from '../utils/logger.js';
  * @returns {Promise<void>}
  */
 export const sendOTPEmail = async (email, otp) => {
-  const subject = 'Verify Your Email - Power Allure';
+  const subject = 'Verify Your Email - Aura Select';
   
   const html = `
       <!DOCTYPE html>
@@ -167,7 +167,7 @@ export const sendOTPEmail = async (email, otp) => {
       <body>
         <div class="container">
           <div class="header">
-            <div class="logo">Power Allure</div>
+            <div class="logo">Aura Select</div>
             <div class="subtitle">Email Verification</div>
           </div>
           
@@ -175,7 +175,7 @@ export const sendOTPEmail = async (email, otp) => {
             <div class="greeting">Welcome,</div>
             
             <p class="message">
-              Thank you for registering with Power Allure. To complete your registration and verify your email address, please use the verification code below:
+              Thank you for registering with Aura Select. To complete your registration and verify your email address, please use the verification code below:
             </p>
             
             <div class="otp-container">
@@ -200,7 +200,7 @@ export const sendOTPEmail = async (email, otp) => {
           </div>
           
           <div class="footer">
-            <p>© ${new Date().getFullYear()} Power Allure. All Rights Reserved.</p>
+            <p>© ${new Date().getFullYear()} Aura Select. All Rights Reserved.</p>
             <p style="color: #4b5563; margin-top: 5px;">Premium Model Management Services</p>
           </div>
         </div>
@@ -209,11 +209,11 @@ export const sendOTPEmail = async (email, otp) => {
     `;
 
   const text = `
-    Power Allure - Email Verification
+    Aura Select - Email Verification
     
     Welcome!
     
-    Thank you for registering with Power Allure. Your verification code is:
+    Thank you for registering with Aura Select. Your verification code is:
     
     ${otp}
     
@@ -224,7 +224,7 @@ export const sendOTPEmail = async (email, otp) => {
     
     Security Notice: If you didn't request this code, please ignore this email.
     
-    © ${new Date().getFullYear()} Power Allure. All Rights Reserved.
+    © ${new Date().getFullYear()} Aura Select. All Rights Reserved.
   `;
 
   try {
@@ -249,8 +249,8 @@ export const sendOTPEmail = async (email, otp) => {
  */
 export const sendApprovalEmail = async (email, approved) => {
   const subject = approved 
-    ? '🎉 Welcome to Power Allure - Account Approved!' 
-    : 'Power Allure - Account Registration Update';
+    ? '🎉 Welcome to Aura Select - Account Approved!' 
+    : 'Aura Select - Account Registration Update';
     
   const html = approved ? `
       <!DOCTYPE html>
@@ -407,12 +407,12 @@ export const sendApprovalEmail = async (email, approved) => {
         <div class="container">
           <div class="header">
             <div class="success-icon">✓</div>
-            <div class="logo">Power Allure</div>
+            <div class="logo">Aura Select</div>
             <div class="subtitle">Account Approved</div>
           </div>
           
           <div class="content">
-            <div class="greeting">Welcome to Power Allure!</div>
+            <div class="greeting">Welcome to Aura Select!</div>
             
             <p class="message">
               Congratulations! Your account has been reviewed and approved by our administrators. You now have full access to our premium platform.
@@ -454,7 +454,7 @@ export const sendApprovalEmail = async (email, approved) => {
           </div>
           
           <div class="footer">
-            <p>© ${new Date().getFullYear()} Power Allure. All Rights Reserved.</p>
+            <p>© ${new Date().getFullYear()} Aura Select. All Rights Reserved.</p>
             <p style="color: #4b5563; margin-top: 5px;">Premium Model Management Services</p>
           </div>
         </div>
@@ -530,18 +530,18 @@ export const sendApprovalEmail = async (email, approved) => {
       <body>
         <div class="container">
           <div class="header">
-            <div class="logo">Power Allure</div>
+            <div class="logo">Aura Select</div>
             <div class="subtitle">Account Registration Update</div>
           </div>
           
           <div class="content">
-            <p class="message">Thank you for your interest in Power Allure.</p>
+            <p class="message">Thank you for your interest in Aura Select.</p>
             <p class="message">Unfortunately, we are unable to approve your account at this time.</p>
             <p class="message">If you believe this is an error or have questions, please contact our support team.</p>
           </div>
           
           <div class="footer">
-            <p>© ${new Date().getFullYear()} Power Allure. All Rights Reserved.</p>
+            <p>© ${new Date().getFullYear()} Aura Select. All Rights Reserved.</p>
           </div>
         </div>
       </body>
@@ -549,8 +549,8 @@ export const sendApprovalEmail = async (email, approved) => {
     `;
 
   const text = approved ? 
-    `Power Allure - Account Approved\n\nCongratulations! Your account has been approved. You can now sign in.\n\n© ${new Date().getFullYear()} Power Allure. All Rights Reserved.` :
-    `Power Allure - Account Registration Update\n\nThank you for your interest. Unfortunately, we are unable to approve your account at this time.\n\n© ${new Date().getFullYear()} Power Allure. All Rights Reserved.`;
+    `Aura Select - Account Approved\n\nCongratulations! Your account has been approved. You can now sign in.\n\n© ${new Date().getFullYear()} Aura Select. All Rights Reserved.` :
+    `Aura Select - Account Registration Update\n\nThank you for your interest. Unfortunately, we are unable to approve your account at this time.\n\n© ${new Date().getFullYear()} Aura Select. All Rights Reserved.`;
 
   try {
     await sendEmail(email, subject, html, text);
@@ -573,7 +573,7 @@ export const sendPasswordResetEmail = async (email, token, userId) => {
  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
   const resetUrl = `${clientUrl}/reset-password?token=${token}&userId=${userId}`;
   
-  const subject = 'Reset Your Password - Power Allure';
+  const subject = 'Reset Your Password - Aura Select';
   const html = `
       <!DOCTYPE html>
       <html>
@@ -718,7 +718,7 @@ export const sendPasswordResetEmail = async (email, token, userId) => {
       <body>
         <div class="container">
           <div class="header">
-            <div class="logo">Power Allure</div>
+            <div class="logo">Aura Select</div>
             <div class="subtitle">Password Reset Request</div>
           </div>
           
@@ -726,7 +726,7 @@ export const sendPasswordResetEmail = async (email, token, userId) => {
             <div class="greeting">Password Reset Requested</div>
             
             <p class="message">
-              We received a request to reset your password for your Power Allure account. Click the button below to create a new password:
+              We received a request to reset your password for your Aura Select account. Click the button below to create a new password:
             </p>
             
             <div class="button-container">
@@ -748,7 +748,7 @@ export const sendPasswordResetEmail = async (email, token, userId) => {
           </div>
           
           <div class="footer">
-            <p>© ${new Date().getFullYear()} Power Allure. All Rights Reserved.</p>
+            <p>© ${new Date().getFullYear()} Aura Select. All Rights Reserved.</p>
             <p style="color: #4b5563; margin-top: 5px;">Premium Model Management Services</p>
           </div>
         </div>
@@ -757,7 +757,7 @@ export const sendPasswordResetEmail = async (email, token, userId) => {
     `;
   
   const text = `
-    Power Allure - Password Reset Request
+    Aura Select - Password Reset Request
     
     We received a request to reset your password.
     
@@ -768,7 +768,7 @@ export const sendPasswordResetEmail = async (email, token, userId) => {
     
     If you didn't request this password reset, please ignore this email.
     
-    © ${new Date().getFullYear()} Power Allure. All Rights Reserved.
+    © ${new Date().getFullYear()} Aura Select. All Rights Reserved.
   `;
 
   try {
@@ -790,7 +790,7 @@ export const sendPasswordResetEmail = async (email, token, userId) => {
  * @returns {Promise<void>}
  */
 export const sendPasswordResetConfirmation = async (email) => {
-  const subject = '✓ Password Successfully Changed - Power Allure';
+  const subject = '✓ Password Successfully Changed - Aura Select';
   const html = `
       <!DOCTYPE html>
       <html>
@@ -876,17 +876,17 @@ export const sendPasswordResetConfirmation = async (email) => {
         <div class="container">
           <div class="header">
             <div class="success-icon">✓</div>
-            <div class="logo">Power Allure</div>
+            <div class="logo">Aura Select</div>
             <div class="subtitle">Password Changed</div>
           </div>
           
           <div class="content">
             <p class="message">
-              Your password has been successfully changed. You can now log in to your Power Allure account with your new password.
+              Your password has been successfully changed. You can now log in to your Aura Select account with your new password.
             </p>
             
             <div class="info-box">
-              🔒 <strong>Security Tip:</strong> Never share your password with anyone. Power Allure will never ask for your password via email.
+              🔒 <strong>Security Tip:</strong> Never share your password with anyone. Aura Select will never ask for your password via email.
             </div>
             
             <p class="message">
@@ -895,7 +895,7 @@ export const sendPasswordResetConfirmation = async (email) => {
           </div>
           
           <div class="footer">
-            <p>© ${new Date().getFullYear()} Power Allure. All Rights Reserved.</p>
+            <p>© ${new Date().getFullYear()} Aura Select. All Rights Reserved.</p>
             <p style="color: #4b5563; margin-top: 5px;">Premium Model Management Services</p>
           </div>
         </div>
@@ -904,7 +904,7 @@ export const sendPasswordResetConfirmation = async (email) => {
     `;
   
   const text = `
-    Power Allure - Password Changed Successfully
+    Aura Select - Password Changed Successfully
     
     Your password has been successfully changed.
     
@@ -912,7 +912,7 @@ export const sendPasswordResetConfirmation = async (email) => {
     
     If you didn't make this change, please contact support immediately.
     
-    © ${new Date().getFullYear()} Power Allure. All Rights Reserved.
+    © ${new Date().getFullYear()} Aura Select. All Rights Reserved.
   `;
 
   try {

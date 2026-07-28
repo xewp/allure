@@ -5,7 +5,7 @@ import readline from "readline";
 import AdminUser from "../src/models/AdminUser.js";
 
 // MongoDB connection string - update with your connection string
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/power-allure";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/aura-select";
 console.log(`Connecting to MongoDB at: ${MONGODB_URI}`);
 
 // Create readline interface for user input

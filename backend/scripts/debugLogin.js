@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import AdminUser from "../src/models/AdminUser.js";
 
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/power-allure";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/aura-select";
 
 async function debugLogin() {
   try {

@@ -17,7 +17,7 @@ This guide walks you through deploying your full-stack application on Render's f
 2. **Create Cluster**:
    - Click "Create" → "Shared" (FREE tier)
    - Choose a cloud provider & region (closest to you)
-   - Cluster Name: `powerallure` (or any name)
+   - Cluster Name: `auraselect` (or any name)
 3. **Database Access**:
    - Go to "Database Access" → "Add New Database User"
    - Username: `your_username`
@@ -32,8 +32,8 @@ This guide walks you through deploying your full-stack application on Render's f
    - Choose "Connect your application"
    - Copy the connection string
    - Replace `<password>` with your actual password
-   - Replace `<dbname>` with your database name (e.g., `powerallure`)
-   - Example: `mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/powerallure?retryWrites=true&w=majority`
+   - Replace `<dbname>` with your database name (e.g., `auraselect`)
+   - Example: `mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/auraselect?retryWrites=true&w=majority`
 
 ---
 
@@ -45,7 +45,7 @@ This guide walks you through deploying your full-stack application on Render's f
    - Connect your GitHub repository
    - Configure:
      ```
-     Name: powerallure-backend (or your choice)
+     Name: auraselect-backend (or your choice)
      Region: Choose closest region
      Branch: main (or your branch)
      Root Directory: backend
@@ -65,7 +65,7 @@ This guide walks you through deploying your full-stack application on Render's f
    CLOUDINARY_CLOUD_NAME=<your_cloudinary_cloud_name>
    CLOUDINARY_API_KEY=<your_cloudinary_api_key>
    CLOUDINARY_API_SECRET=<your_cloudinary_api_secret>
-   FRONTEND_URL=https://powerallure.onrender.com
+   FRONTEND_URL=https://auraselect.onrender.com
    ```
 
    > **Note**: For FRONTEND_URL, use a placeholder for now. Update it after deploying the frontend in Step 3.
@@ -78,7 +78,7 @@ This guide walks you through deploying your full-stack application on Render's f
 
 4. **Create Service**: Click "Create Web Service"
 5. **Wait for Deployment**: First deployment takes ~5 minutes
-6. **Save Backend URL**: Copy your backend URL (e.g., `https://powerallure-backend.onrender.com`)
+6. **Save Backend URL**: Copy your backend URL (e.g., `https://auraselect-backend.onrender.com`)
 
 ---
 
@@ -90,7 +90,7 @@ This guide walks you through deploying your full-stack application on Render's f
    - Connect your GitHub repository
    - Configure:
      ```
-     Name: powerallure (or your choice)
+     Name: auraselect (or your choice)
      Branch: main
      Root Directory: client
      Build Command: npm install && npm run build
@@ -106,11 +106,11 @@ This guide walks you through deploying your full-stack application on Render's f
    VITE_API_URL=<your_backend_url_from_step_2>
    ```
 
-   Example: `VITE_API_URL=https://powerallure-backend.onrender.com`
+   Example: `VITE_API_URL=https://auraselect-backend.onrender.com`
 
 3. **Create Static Site**: Click "Create Static Site"
 4. **Wait for Deployment**: Takes ~3-5 minutes
-5. **Save Frontend URL**: Copy your frontend URL (e.g., `https://powerallure.onrender.com`)
+5. **Save Frontend URL**: Copy your frontend URL (e.g., `https://auraselect.onrender.com`)
 
 ---
 
@@ -122,7 +122,7 @@ Now that you have your frontend URL, update the backend:
 2. Go to "Environment" tab
 3. **Update** the `FRONTEND_URL` variable with your actual frontend URL:
    ```
-   FRONTEND_URL=https://powerallure.onrender.com
+   FRONTEND_URL=https://auraselect.onrender.com
    ```
 4. Click "Save Changes"
 5. Render will automatically redeploy your backend

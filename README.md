@@ -1,4 +1,4 @@
-# 🌟 Power Allure - Model Booking Platform
+# 🌟 Aura Select - Model Booking Platform
 
 A full-stack model and talent booking platform with separate admin and client interfaces, featuring single-device session management, secure authentication, and comprehensive booking management.
 
@@ -7,7 +7,7 @@ A full-stack model and talent booking platform with separate admin and client in
 ## 📁 Project Structure
 
 ```
-power-allure/
+aura-select/
 ├── admin/          # Admin panel (Vite + React)
 ├── backend/        # Express.js REST API
 ├── client/         # Client application (Vite + React)
@@ -95,8 +95,8 @@ power-allure/
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-org/power-allure.git
-cd power-allure
+git clone https://github.com/your-org/aura-select.git
+cd aura-select
 ```
 
 ### 2. Backend Setup
@@ -352,7 +352,7 @@ git push origin main
 
 ## 📄 License
 
-© 2025 Power Allure. All rights reserved.
+© 2025 Aura Select. All rights reserved.
 
 ---
 

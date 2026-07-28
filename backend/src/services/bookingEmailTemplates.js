@@ -5,7 +5,7 @@ import { log } from '../utils/logger.js';
  * Send booking submission confirmation email
  */
 export const sendBookingSubmittedEmail = async (email, bookingData) => {
-  const subject = 'Booking Request Received - Power Allure';
+  const subject = 'Booking Request Received - Aura Select';
   
   const html = `
     <!DOCTYPE html>
@@ -37,7 +37,7 @@ export const sendBookingSubmittedEmail = async (email, bookingData) => {
     <body>
       <div class="container">
         <div class="header">
-          <div class="logo">Power Allure</div>
+          <div class="logo">Aura Select</div>
           <div class="subtitle">Booking Request</div>
         </div>
         <div class="content">
@@ -56,14 +56,14 @@ export const sendBookingSubmittedEmail = async (email, bookingData) => {
           <p class="message">You will receive a confirmation email once your booking has been reviewed and approved by our team.</p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Power Allure. All Rights Reserved.</p>
+          <p>© ${new Date().getFullYear()} Aura Select. All Rights Reserved.</p>
         </div>
       </div>
     </body>
     </html>
   `;
   
-  const text = `Power Allure - Booking Request Received\n\nHello ${bookingData.userName},\n\nYour booking request has been received:\nModel: ${bookingData.modelName}\nEvent: ${bookingData.event}\nDate: ${bookingData.eventDate}\nTime: ${bookingData.eventTime}\n\nStatus: Pending Approval\n\n© ${new Date().getFullYear()} Power Allure`;
+  const text = `Aura Select - Booking Request Received\n\nHello ${bookingData.userName},\n\nYour booking request has been received:\nModel: ${bookingData.modelName}\nEvent: ${bookingData.event}\nDate: ${bookingData.eventDate}\nTime: ${bookingData.eventTime}\n\nStatus: Pending Approval\n\n© ${new Date().getFullYear()} Aura Select`;
 
   try {
     await sendEmail(email, subject, html, text);
@@ -77,7 +77,7 @@ export const sendBookingSubmittedEmail = async (email, bookingData) => {
  * Send booking confirmed email
  */
 export const sendBookingConfirmedEmail = async (email, bookingData) => {
-  const subject = '✓ Booking Confirmed - Power Allure';
+  const subject = '✓ Booking Confirmed - Aura Select';
   
   const html = `
     <!DOCTYPE html>
@@ -111,7 +111,7 @@ export const sendBookingConfirmedEmail = async (email, bookingData) => {
       <div class="container">
         <div class="header">
           <div class="success-icon">✓</div>
-          <div class="logo">Power Allure</div>
+          <div class="logo">Aura Select</div>
           <div class="subtitle">Booking Confirmed</div>
         </div>
         <div class="content">
@@ -130,14 +130,14 @@ export const sendBookingConfirmedEmail = async (email, bookingData) => {
           <p class="message">If you have any questions, please don't hesitate to contact us.</p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Power Allure. All Rights Reserved.</p>
+          <p>© ${new Date().getFullYear()} Aura Select. All Rights Reserved.</p>
         </div>
       </div>
     </body>
     </html>
   `;
   
-  const text = `Power Allure - Booking Confirmed!\n\nCongratulations ${bookingData.userName}!\n\nYour booking has been confirmed:\nModel: ${bookingData.modelName}\nEvent: ${bookingData.event}\nDate: ${bookingData.eventDate}\nTime: ${bookingData.eventTime}\n\n© ${new Date().getFullYear()} Power Allure`;
+  const text = `Aura Select - Booking Confirmed!\n\nCongratulations ${bookingData.userName}!\n\nYour booking has been confirmed:\nModel: ${bookingData.modelName}\nEvent: ${bookingData.event}\nDate: ${bookingData.eventDate}\nTime: ${bookingData.eventTime}\n\n© ${new Date().getFullYear()} Aura Select`;
 
   try {
     await sendEmail(email, subject, html, text);
@@ -151,7 +151,7 @@ export const sendBookingConfirmedEmail = async (email, bookingData) => {
  * Send booking cancelled email
  */
 export const sendBookingCancelledEmail = async (email, bookingData) => {
-  const subject = 'Booking Cancelled - Power Allure';
+  const subject = 'Booking Cancelled - Aura Select';
   
   const html = `
     <!DOCTYPE html>
@@ -183,7 +183,7 @@ export const sendBookingCancelledEmail = async (email, bookingData) => {
     <body>
       <div class="container">
         <div class="header"> 
-          <div class="logo">Power Allure</div>
+          <div class="logo">Aura Select</div>
           <div class="subtitle">Booking Cancelled</div>
         </div>
         <div class="content">
@@ -202,14 +202,14 @@ export const sendBookingCancelledEmail = async (email, bookingData) => {
           <p class="message">If you have any questions or concerns, please contact our support team.</p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Power Allure. All Rights Reserved.</p>
+          <p>© ${new Date().getFullYear()} Aura Select. All Rights Reserved.</p>
         </div>
       </div>
     </body>
     </html>
   `;
   
-  const text = `Power Allure - Booking Cancelled\n\nHello ${bookingData.userName},\n\nYour booking has been cancelled:\nModel: ${bookingData.modelName}\nEvent: ${bookingData.event}\nDate: ${bookingData.eventDate}\nTime: ${bookingData.eventTime}\n\n© ${new Date().getFullYear()} Power Allure`;
+  const text = `Aura Select - Booking Cancelled\n\nHello ${bookingData.userName},\n\nYour booking has been cancelled:\nModel: ${bookingData.modelName}\nEvent: ${bookingData.event}\nDate: ${bookingData.eventDate}\nTime: ${bookingData.eventTime}\n\n© ${new Date().getFullYear()} Aura Select`;
 
   try {
     await sendEmail(email, subject, html, text);

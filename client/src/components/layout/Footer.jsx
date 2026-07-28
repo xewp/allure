@@ -44,10 +44,10 @@ const Footer = () => {
                   />
                 </svg>
                 <a
-                  href="mailto:info@powerallure.com.ph"
+                  href="mailto:info@auraselect.com.ph"
                   className="hover:text-gold transition-colors"
                 >
-                  info@powerallure.com.ph
+                  info@auraselect.com.ph
                 </a>
               </div>
               <div className="flex items-center justify-center md:justify-end gap-3">

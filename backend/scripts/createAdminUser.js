@@ -38,7 +38,7 @@ const createAdminUser = async () => {
     const adminUser = new AdminUser({
       username: "admin",
       password: hashedPassword,
-      email: "admin@powerallure.com",
+      email: "admin@auraselect.com",
       role: "admin",
     });
 
@@ -48,7 +48,7 @@ const createAdminUser = async () => {
     console.log("==========================================");
     console.log("Username: admin");
     console.log("Password: admin123");
-    console.log("Email: admin@powerallure.com");
+    console.log("Email: admin@auraselect.com");
     console.log("==========================================");
     console.log("⚠️  IMPORTANT: Change this password after first login!");
 

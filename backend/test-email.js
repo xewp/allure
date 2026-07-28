@@ -33,7 +33,7 @@ transporter.verify((error, success) => {
     
     // Send test email
     const mailOptions = {
-      from: `"Power Allure Test" <${process.env.EMAIL_FROM}>`,
+      from: `"Aura Select Test" <${process.env.EMAIL_FROM}>`,
       to: process.env.SMTP_USER, // Send to yourself
       subject: 'Test Email - Nodemailer Configuration',
       html: `

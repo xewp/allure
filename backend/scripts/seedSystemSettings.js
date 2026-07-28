@@ -3,7 +3,7 @@ import AdminUser from "../src/models/AdminUser.js";
 import SystemSettings from "../src/models/SystemSettings.js";
 
 // MongoDB connection string - update with your connection string
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/power-allure";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/aura-select";
 
 // Default system settings
 const defaultSettings = [
