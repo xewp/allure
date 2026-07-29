@@ -6,8 +6,7 @@ import AboutPage from "./pages/public/AboutPage";
 import ErrorPage from "./pages/public/ErrorPage";
 import MaintenancePage from "./pages/public/MaintenancePage";
 // Auth pages
-import LoginPage from "./pages/auth/LoginPage";
-import RegisterPage from "./pages/auth/RegisterPage";
+import AuthPage from "./pages/auth/AuthPage";
 import OTPVerificationPage from "./pages/auth/OTPVerificationPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 // Model pages
@@ -62,8 +61,8 @@ function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/about" element={<AboutPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/login" element={<AuthPage />} />
+      <Route path="/register" element={<AuthPage />} />
       <Route path="/verify-otp" element={<OTPVerificationPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
 
