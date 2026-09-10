@@ -36,29 +36,36 @@ const corsOptions = {
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     
+    const cleanOrigin = origin.replace(/\/$/, '');
+
     // Local development origins
     const localOrigins = [
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:3000',
+      'http://127.0.0.1:5173',
     ];
     
-    // Parse production frontend URLs from environment variable (comma-separated)
-    const productionOrigins = process.env.FRONTEND_URLS 
-      ? process.env.FRONTEND_URLS.split(',').map(url => url.trim()).filter(Boolean)
+    // Parse production frontend URLs from environment variables
+    const envUrls = process.env.FRONTEND_URLS || process.env.FRONTEND_URL || '';
+    const productionOrigins = envUrls 
+      ? envUrls.split(',').map(url => url.trim().replace(/\/$/, '')).filter(Boolean)
       : [];
+
+    const defaultRenderOrigins = [
+      'https://aura-select.onrender.com',
+      'https://auraselect.onrender.com',
+    ];
+
+    const allowedOrigins = [...localOrigins, ...productionOrigins, ...defaultRenderOrigins];
+
+    const isAllowed = allowedOrigins.includes(cleanOrigin) || cleanOrigin.endsWith('.onrender.com');
     
-    // Combine all allowed origins
-    const allowedOrigins = [...localOrigins, ...productionOrigins];
-    
-    // Debug logging (only in debug mode)
-    debugLog('CORS', 'Request from origin', { origin, allowedOrigins });
-    
-    if (allowedOrigins.includes(origin)) {
+    if (isAllowed) {
       callback(null, true);
     } else {
       log.warn('CORS BLOCKED - Origin not allowed', { origin });
-      callback(new Error('Not allowed by CORS'));
+      callback(null, false);
     }
   },
   credentials: true,
