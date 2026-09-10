@@ -18,7 +18,7 @@ dotenv.config();
 const TARGET_URL = process.argv[2] 
   || process.env.BACKEND_URL 
   || process.env.FRONTEND_URL 
-  || 'http://localhost:5000';
+  || 'https://allure-5pyb.onrender.com';
 
 const HEALTH_ENDPOINT = TARGET_URL.endsWith('/') 
   ? `${TARGET_URL}api/health` 

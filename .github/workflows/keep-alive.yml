@@ -14,8 +14,7 @@ jobs:
         run: |
           URL="${{ secrets.BACKEND_URL }}"
           if [ -z "$URL" ]; then
-            # Default backend URL on Render (or replace with your live URL)
-            URL="https://auraselect-backend.onrender.com/api/health"
+            URL="https://allure-5pyb.onrender.com/api/health"
           fi
           echo "Pinging backend at: $URL"
           RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" "$URL")
