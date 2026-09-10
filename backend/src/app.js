@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import mongoose from "mongoose";
 import helmetConfig from "./config/helmet.config.js";
 import { checkMaintenanceMode } from "./middleware/checkMaintenanceMode.js";
 import { log, debugLog } from "./utils/logger.js";
@@ -90,6 +91,17 @@ app.get("/", (req, res) => {
   res.status(200).json({
     status: "OK",
     service: "Backend API running"
+  });
+});
+
+// Health check endpoint for keep-alive services
+app.get("/api/health", (req, res) => {
+  const dbConnected = mongoose.connection.readyState === 1;
+  res.status(dbConnected ? 200 : 503).json({
+    status: dbConnected ? "OK" : "DEGRADED",
+    service: "Backend API running",
+    database: dbConnected ? "connected" : "disconnected",
+    timestamp: new Date().toISOString()
   });
 });
 

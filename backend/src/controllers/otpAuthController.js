@@ -4,6 +4,10 @@ import User from '../models/User.js';
 import SystemSettings from '../models/SystemSettings.js';
 import { generateOTP, hashOTP, verifyOTP as verifyOTPUtil, isOTPExpired, calculateOTPExpiry } from '../utils/otpUtils.js';
 import { sendOTPEmail } from '../services/emailService.js';
+import { recordFailedLogin, resetLoginRateLimit } from '../services/security/loginRateLimiter.js';
+import { recordAccountFailure, resetAccountLock } from '../services/security/accountLockService.js';
+import securityLogger from '../services/security/securityLogger.js';
+import securityConfig from '../config/security.config.js';
 
 /**
  * Register a new user with OTP email verification
@@ -30,12 +34,12 @@ export const registerWithOTP = async (req, res) => {
       });
     }
 
-    //Check if user already exists
+    //Check if user already exists — use generic message to prevent enumeration
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return res.status(409).json({
         success: false,
-        message: 'Email is already registered',
+        message: 'Unable to complete registration. Please try a different email address.',
       });
     }
 
@@ -303,10 +307,19 @@ export const resendOTP = async (req, res) => {
 /**
  * Login with email verification and admin approval checks
  * Only allows login for verified AND approved users
+ *
+ * Security enhancements:
+ * - Records failed attempts (IP + account level)
+ * - Adds configurable delay on failure to slow automated attacks
+ * - Returns remainingAttempts and lockedUntil in response
+ * - Uses generic error messages to prevent user enumeration
+ * - Resets counters on successful login
  */
 export const loginWithOTP = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const ip = req.clientIP || req.ip;
+    const userAgent = req.get('user-agent');
 
     if (!email || !password) {
       return res.status(400).json({
@@ -324,9 +337,27 @@ export const loginWithOTP = async (req, res) => {
     });
     
     if (!user) {
+      // Record failed attempt even for non-existent users (prevents enumeration timing)
+      const ipResult = recordFailedLogin(ip);
+      const accountResult = recordAccountFailure(email, ip);
+
+      // Use the most restrictive result
+      const remainingAttempts = Math.min(ipResult.remainingAttempts, accountResult.remainingAttempts);
+      const lockedUntil = ipResult.lockedUntil || accountResult.lockedUntil || null;
+
+      securityLogger.logLoginAttempt({
+        ip, email, success: false, attemptCount: securityConfig.login.maxAttempts - remainingAttempts,
+        userAgent, reason: 'user not found',
+      });
+
+      // Delay response to slow automated attacks
+      await delay(securityConfig.login.delayMs);
+
       return res.status(401).json({
         success: false,
         message: 'Invalid email/username or password',
+        remainingAttempts,
+        lockedUntil,
       });
     }
 
@@ -334,9 +365,26 @@ export const loginWithOTP = async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     
     if (!isPasswordValid) {
+      // Record failed attempt for both IP and account
+      const ipResult = recordFailedLogin(ip);
+      const accountResult = recordAccountFailure(email, ip);
+
+      const remainingAttempts = Math.min(ipResult.remainingAttempts, accountResult.remainingAttempts);
+      const lockedUntil = ipResult.lockedUntil || accountResult.lockedUntil || null;
+
+      securityLogger.logLoginAttempt({
+        ip, email, success: false, attemptCount: securityConfig.login.maxAttempts - remainingAttempts,
+        userAgent, reason: 'invalid password',
+      });
+
+      // Delay response to slow automated attacks
+      await delay(securityConfig.login.delayMs);
+
       return res.status(401).json({
         success: false,
         message: 'Invalid email/username or password',
+        remainingAttempts,
+        lockedUntil,
       });
     }
 
@@ -372,6 +420,14 @@ export const loginWithOTP = async (req, res) => {
         requiresApproval: true,
       });
     }
+
+    // ── Successful login — reset all security counters ──
+    resetLoginRateLimit(ip);
+    resetAccountLock(email);
+
+    securityLogger.logLoginAttempt({
+      ip, email, success: true, attemptCount: 0, userAgent, reason: null,
+    });
 
     // Generate JWT token
     const token = jwt.sign(
@@ -413,3 +469,12 @@ export const loginWithOTP = async (req, res) => {
     });
   }
 };
+
+/**
+ * Utility: async delay for slowing automated attacks.
+ * Adds jitter to prevent timing analysis.
+ */
+function delay(baseMs) {
+  const jitter = Math.floor(Math.random() * 500); // 0–500ms jitter
+  return new Promise((resolve) => setTimeout(resolve, baseMs + jitter));
+}

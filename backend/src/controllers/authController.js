@@ -2,10 +2,16 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import SystemSettings from "../models/SystemSettings.js";
+import { recordFailedLogin, resetLoginRateLimit } from '../services/security/loginRateLimiter.js';
+import { recordAccountFailure, resetAccountLock } from '../services/security/accountLockService.js';
+import securityLogger from '../services/security/securityLogger.js';
+import securityConfig from '../config/security.config.js';
 
 export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
+    const ip = req.clientIP || req.ip;
+    const userAgent = req.get('user-agent');
 
     // Validate input
     if (!username || !password) {
@@ -37,9 +43,25 @@ export const login = async (req, res) => {
     const user = await User.findOne({ username: sanitizedUsername });
 
     if (!user) {
+      // Record failed attempt even for non-existent users
+      const ipResult = recordFailedLogin(ip);
+      const accountResult = recordAccountFailure(username, ip);
+      const remainingAttempts = Math.min(ipResult.remainingAttempts, accountResult.remainingAttempts);
+      const lockedUntil = ipResult.lockedUntil || accountResult.lockedUntil || null;
+
+      securityLogger.logLoginAttempt({
+        ip, email: username, success: false,
+        attemptCount: securityConfig.login.maxAttempts - remainingAttempts,
+        userAgent, reason: 'user not found',
+      });
+
+      await delayResponse(securityConfig.login.delayMs);
+
       return res.status(401).json({
         success: false,
         message: "Invalid username or password",
+        remainingAttempts,
+        lockedUntil,
       });
     }
 
@@ -56,11 +78,34 @@ export const login = async (req, res) => {
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      const ipResult = recordFailedLogin(ip);
+      const accountResult = recordAccountFailure(username, ip);
+      const remainingAttempts = Math.min(ipResult.remainingAttempts, accountResult.remainingAttempts);
+      const lockedUntil = ipResult.lockedUntil || accountResult.lockedUntil || null;
+
+      securityLogger.logLoginAttempt({
+        ip, email: username, success: false,
+        attemptCount: securityConfig.login.maxAttempts - remainingAttempts,
+        userAgent, reason: 'invalid password',
+      });
+
+      await delayResponse(securityConfig.login.delayMs);
+
       return res.status(401).json({
         success: false,
         message: "Invalid username or password",
+        remainingAttempts,
+        lockedUntil,
       });
     }
+
+    // ── Successful login — reset all security counters ──
+    resetLoginRateLimit(ip);
+    resetAccountLock(username);
+
+    securityLogger.logLoginAttempt({
+      ip, email: username, success: true, attemptCount: 0, userAgent, reason: null,
+    });
 
     // Create and sign a JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -99,6 +144,12 @@ export const login = async (req, res) => {
     });
   }
 };
+
+/** Async delay with jitter for legacy login */
+function delayResponse(baseMs) {
+  const jitter = Math.floor(Math.random() * 500);
+  return new Promise((resolve) => setTimeout(resolve, baseMs + jitter));
+}
 
 export const register = async (req, res) => {
   try {
