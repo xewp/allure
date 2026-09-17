@@ -339,18 +339,18 @@ const LoginForm = () => {
           </motion.div>
         )}
 
-        {/* Demo Test Account Fill Button */}
-        <div className="p-3 bg-[#141414] border border-[#262626] rounded-xl flex items-center justify-between gap-3 text-xs">
-          <div className="flex flex-col gap-0.5">
-            <div className="flex items-center gap-1.5 text-gray-300 font-medium">
-              <svg className="w-3.5 h-3.5 text-[#D8AF7F]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        {/* Demo Test Account Quick Fill */}
+        <div className="p-3.5 bg-[#141414] border border-[#2a2a2a] rounded-xl flex items-center justify-between gap-3 text-xs group hover:border-[#D8AF7F]/40 transition-all duration-300">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#D8AF7F]/10 border border-[#D8AF7F]/20 flex items-center justify-center text-[#D8AF7F] group-hover:scale-105 transition-transform">
+              <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 0121 9z" />
               </svg>
-              <span>Test Account</span>
             </div>
-            <p className="text-[11px] text-gray-400">
-              User: <span className="font-mono text-[#D8AF7F] font-semibold">slimeboy</span> &nbsp;|&nbsp; Pass: <span className="font-mono text-[#D8AF7F] font-semibold">test123</span>
-            </p>
+            <div className="flex flex-col">
+              <span className="text-gray-200 font-medium text-xs">Demo Account</span>
+              <span className="text-[11px] text-gray-500">Auto-fill credentials for instant access</span>
+            </div>
           </div>
           <button
             type="button"
@@ -359,9 +359,9 @@ const LoginForm = () => {
               setPassword("test123");
               setError("");
             }}
-            className="px-3 py-1.5 bg-[#D8AF7F] hover:bg-[#c49a6c] text-black rounded-lg text-xs font-semibold transition-all hover:shadow-[0_0_12px_rgba(216,175,127,0.3)] active:scale-95 flex-shrink-0"
+            className="px-3.5 py-1.5 bg-[#D8AF7F] hover:bg-[#c49a6c] text-black rounded-lg text-xs font-semibold transition-all hover:shadow-[0_0_12px_rgba(216,175,127,0.3)] active:scale-95 flex-shrink-0"
           >
-            Use Demo
+            Fill Demo
           </button>
         </div>
 

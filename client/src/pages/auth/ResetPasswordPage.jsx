@@ -191,8 +191,17 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-black font-sans">
-      <div className="w-full max-w-md mx-4 px-6 py-12 md:px-10 bg-[#1A1A1A] shadow-2xl rounded-2xl border border-[#333] flex flex-col">
+    <div className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black font-sans relative overflow-hidden">
+      {/* Ambient Decorative Lighting */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 right-10 w-72 h-72 bg-gradient-to-br from-[#D8AF7F]/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
+        <div
+          className="absolute bottom-20 left-10 w-96 h-96 bg-gradient-to-tl from-[#D8AF7F]/10 to-transparent rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        ></div>
+      </div>
+
+      <div className="w-full max-w-md mx-4 px-6 py-12 md:px-10 bg-[#1A1A1A] shadow-2xl rounded-2xl border border-[#333] flex flex-col relative z-10">
         
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold tracking-tight text-[#D8AF7F] mb-2 font-serif">

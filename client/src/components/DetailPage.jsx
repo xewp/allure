@@ -206,10 +206,18 @@ const DetailPage = () => {
 
   return (
     <div
-      className={`min-h-screen bg-black text-white p-8 font-sans transition-all duration-1000 ${
+      className={`min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white p-8 font-sans relative overflow-hidden transition-all duration-1000 ${
         mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
+      {/* Ambient Decorative Lighting */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-[#D8AF7F]/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
+        <div
+          className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-tl from-[#D8AF7F]/10 to-transparent rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        ></div>
+      </div>
       <Header activeTab={activeTab} onTabChange={setActiveTab} />
 
       <button

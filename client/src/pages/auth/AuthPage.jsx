@@ -15,9 +15,18 @@ const AuthPage = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen w-full bg-black font-sans overflow-hidden">
+    <div className="flex min-h-screen w-full bg-gradient-to-br from-black via-gray-900 to-black font-sans relative overflow-hidden">
+      {/* Ambient Decorative Lighting */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-20 right-10 w-72 h-72 bg-gradient-to-br from-[#D8AF7F]/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
+        <div
+          className="absolute bottom-20 left-10 w-96 h-96 bg-gradient-to-tl from-[#D8AF7F]/10 to-transparent rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        ></div>
+      </div>
+
       <div 
-        className={`flex w-full min-h-screen transition-all duration-700 ease-in-out ${isLogin ? 'flex-col md:flex-row' : 'flex-col md:flex-row-reverse'}`}
+        className={`flex w-full min-h-screen transition-all duration-700 ease-in-out relative z-10 ${isLogin ? 'flex-col md:flex-row' : 'flex-col md:flex-row-reverse'}`}
       >
         {/* Branding Panel */}
         <motion.div 
@@ -52,7 +61,7 @@ const AuthPage = () => {
         {/* Form Panel */}
         <motion.div 
           layout
-          className="w-full md:w-[45%] flex-1 bg-black flex items-center justify-center p-6 md:p-12 z-20"
+          className="w-full md:w-[45%] flex-1 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center p-6 md:p-12 z-20"
           transition={{ type: "spring", stiffness: 90, damping: 20, mass: 1 }}
         >
           <div className="w-full max-w-md py-8">
