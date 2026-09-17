@@ -31,7 +31,7 @@ const EditPage = () => {
 
   // Load user data from localStorage on mount
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "null");
     if (user) {
       setUserData({
         firstName: user.firstName || "",
@@ -50,8 +50,8 @@ const EditPage = () => {
     setMessage({ type: "", text: "" });
 
     try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const token = localStorage.getItem("token");
+      const user = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "null");
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
       const response = await fetch(
         `http://localhost:5000/api/users/${user._id}`,
@@ -71,7 +71,8 @@ const EditPage = () => {
       const data = await response.json();
 
       if (data.success) {
-        // Update localStorage with new user data
+        // Update sessionStorage & localStorage with new user data
+        sessionStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("user", JSON.stringify(data.user));
         setMessage({ type: "success", text: "Profile updated successfully!" });
 
@@ -118,8 +119,8 @@ const EditPage = () => {
     setLoading(true);
 
     try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const token = localStorage.getItem("token");
+      const user = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "null");
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
       const response = await fetch(
         `http://localhost:5000/api/users/${user._id}/change-password`,

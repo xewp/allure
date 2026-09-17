@@ -11,7 +11,7 @@ const FavoritesPage = () => {
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      const user = JSON.parse(localStorage.getItem("user"));
+      const user = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "null");
       if (user && user._id) {
         try {
           const response = await fetch(

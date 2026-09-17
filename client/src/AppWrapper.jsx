@@ -6,10 +6,12 @@ const AppWrapper = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
     if (token) {
       const decodedToken = jwtDecode(token);
       if (decodedToken.exp * 1000 < Date.now()) {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("user");
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         navigate("/login");

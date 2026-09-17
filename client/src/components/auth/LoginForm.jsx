@@ -39,6 +39,8 @@ const LoginForm = () => {
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
 
   useEffect(() => {
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
@@ -131,8 +133,8 @@ const LoginForm = () => {
         setLockedUntil(null);
         setIsLocked(false);
 
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        sessionStorage.setItem("token", data.token);
+        sessionStorage.setItem("user", JSON.stringify(data.user));
         navigate("/main");
       } else {
         // ── Handle security metadata ──

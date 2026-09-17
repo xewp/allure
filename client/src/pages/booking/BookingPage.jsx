@@ -31,8 +31,8 @@ const BookingPage = () => {
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const userData = JSON.parse(localStorage.getItem("user") || "{}");
+        const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+        const userData = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "{}");
         const userId = userData.id || userData._id;
 
         if (!token || !userId) {
@@ -83,7 +83,7 @@ const BookingPage = () => {
   const fetchBookings = async () => {
     setBookingsLoading(true);
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
       if (!token) {
         return;
@@ -160,7 +160,7 @@ const BookingPage = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
       if (!token) {
         setError("Please log in to make a booking");

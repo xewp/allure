@@ -13,7 +13,7 @@ const Header = ({ activeTab, onTabChange }) => {
 
     try {
       setLoading(true);
-      const userStr = localStorage.getItem("user");
+      const userStr = sessionStorage.getItem("user") || localStorage.getItem("user");
 
       if (!userStr) {
         navigate("/booking");

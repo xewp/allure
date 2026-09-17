@@ -28,7 +28,7 @@ const Header = ({ activeTab, onTabChange }) => {
 
     try {
       setLoading(true);
-      const userStr = localStorage.getItem("user");
+      const userStr = sessionStorage.getItem("user") || localStorage.getItem("user");
 
       // If not logged in, let them go to booking (protected route will handle it)
       if (!userStr) {

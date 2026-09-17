@@ -8,8 +8,8 @@ const ProtectedRoute = () => {
 
   useEffect(() => {
     const validateSession = async () => {
-      const token = localStorage.getItem("token");
-      const userString = localStorage.getItem("user");
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+      const userString = sessionStorage.getItem("user") || localStorage.getItem("user");
 
       // If no token or user, redirect to login
       if (!token || !userString) {
@@ -23,6 +23,8 @@ const ProtectedRoute = () => {
         const user = JSON.parse(userString);
 
         if (!user || typeof user !== "object") {
+          sessionStorage.removeItem("token");
+          sessionStorage.removeItem("user");
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           setIsValid(false);
@@ -30,7 +32,8 @@ const ProtectedRoute = () => {
           return;
         }
       } catch (error) {
-
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("user");
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         setIsValid(false);
@@ -54,13 +57,16 @@ const ProtectedRoute = () => {
           setIsValid(true);
         } else {
           // Session has been invalidated
+          sessionStorage.removeItem("token");
+          sessionStorage.removeItem("user");
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           setIsValid(false);
         }
       } catch (error) {
-
         // On network error, clear session for security
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("user");
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         setIsValid(false);

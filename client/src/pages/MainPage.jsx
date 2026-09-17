@@ -26,9 +26,9 @@ const MainPage = () => {
     const fetchUserPermissions = async () => {
       alert("DEBUG: Starting permission fetch"); // DEBUG
       try {
-        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const storedUser = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "{}");
         const userId = storedUser.id || storedUser._id;
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
         if (!userId || !token) {
           setPermissionsLoading(false);

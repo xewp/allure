@@ -252,7 +252,7 @@ const AboutPage = () => {
           {/* Book Now Button */}
           <button
             onClick={() => {
-              const token = localStorage.getItem("token");
+              const token = sessionStorage.getItem("token") || localStorage.getItem("token");
               if (token) {
                 navigate("/booking");
               } else {

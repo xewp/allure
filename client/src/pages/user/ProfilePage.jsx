@@ -19,8 +19,8 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+        const storedUser = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "{}");
 
         // Support both old (_id) and new (id) user object formats
         const userId = storedUser.id || storedUser._id;
@@ -55,6 +55,8 @@ const ProfilePage = () => {
   }, []);
 
   const handleLogout = () => {
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/");
@@ -80,17 +82,17 @@ const ProfilePage = () => {
     setShowOTPModal(false);
     // Refresh user data to show updated verification status
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
       const userId = user._id;
       const response = await fetch(`${API_URL}/api/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
       setUser(data.user);
-      // Update localStorage
-      const storedUser = JSON.parse(localStorage.getItem("user"));
+      // Update sessionStorage & localStorage
+      const storedUser = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "{}");
       storedUser.emailVerified = true;
-      localStorage.setItem("user", JSON.stringify(storedUser));
+      sessionStorage.setItem("user", JSON.stringify(storedUser));
     } catch (err) {
 
     }

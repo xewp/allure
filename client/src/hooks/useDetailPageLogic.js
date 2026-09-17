@@ -39,7 +39,7 @@ export const useDetailPageLogic = () => {
         setModelData(data);
 
         // Check if model is in user's favorites (convert both IDs to strings for comparison)
-        const user = JSON.parse(localStorage.getItem("user"));
+        const user = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "null");
         if (user?.favorites && Array.isArray(user.favorites)) {
           const isFav = user.favorites.some((fav) => String(fav.modelId) === String(data._id));
           setIsFavorite(isFav);
@@ -64,7 +64,7 @@ export const useDetailPageLogic = () => {
   // Re-check favorite status whenever modelData changes or component remounts
   useEffect(() => {
     if (modelData) {
-      const user = JSON.parse(localStorage.getItem("user"));
+      const user = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "null");
       if (user?.favorites && Array.isArray(user.favorites)) {
         const isFav = user.favorites.some((fav) => String(fav.modelId) === String(modelData._id));
         setIsFavorite(isFav);
@@ -84,7 +84,7 @@ export const useDetailPageLogic = () => {
 
   const toggleFavorite = async () => {
     if (!modelData) return;
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "null");
     if (!user) {
       navigate("/login");
       return;
@@ -126,7 +126,7 @@ export const useDetailPageLogic = () => {
           _id: updatedUser._id || user._id, // Ensure _id is preserved
         };
         
-        localStorage.setItem("user", JSON.stringify(mergedUser));
+        sessionStorage.setItem("user", JSON.stringify(mergedUser));
         setIsFavorite(!isFavorite);
         
         // Dispatch custom event to notify other components about favorites change

@@ -18,9 +18,9 @@ export const useMainPageLogic = () => {
   useEffect(() => {
     const fetchUserPermissions = async () => {
       try {
-        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const storedUser = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "{}");
         const userId = storedUser.id || storedUser._id;
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
         if (!userId || !token) {
           setPermissionsLoading(false);
@@ -87,7 +87,7 @@ export const useMainPageLogic = () => {
   const fetchFavorites = async () => {
     setLoading(true);
     try {
-      const userStr = localStorage.getItem("user");
+      const userStr = sessionStorage.getItem("user") || localStorage.getItem("user");
       if (!userStr) {
         console.warn("No user found in localStorage");
         setModels([]);
@@ -175,7 +175,7 @@ export const useMainPageLogic = () => {
   useEffect(() => {
     const updateFavorites = () => {
       try {
-        const user = JSON.parse(localStorage.getItem("user"));
+        const user = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "null");
         setUserFavorites(user?.favorites || []);
       } catch {
         setUserFavorites([]);

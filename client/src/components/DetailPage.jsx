@@ -82,7 +82,7 @@ const DetailPage = () => {
         setModelData(data);
 
         // Check if model is already in favorites
-        const user = JSON.parse(localStorage.getItem("user"));
+        const user = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "null");
         if (user && user.favorites) {
           const isAlreadyFavorite = user.favorites.some(
             (fav) => fav.modelId === data._id
@@ -122,7 +122,7 @@ const DetailPage = () => {
 
   const toggleFavorite = async () => {
     if (!modelData) return;
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "null");
     if (!user) {
       alert("Please login to add favorites");
       return;

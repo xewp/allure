@@ -137,7 +137,7 @@ const EditProfileModal = ({ isOpen, onClose, userData, onUpdateSuccess }) => {
     setApiError("");
 
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
       const response = await fetch(`${API_URL}/api/users/${userData._id}`, {
         method: "PUT",
         headers: {
@@ -153,8 +153,9 @@ const EditProfileModal = ({ isOpen, onClose, userData, onUpdateSuccess }) => {
         throw new Error(data.message || "Failed to update profile");
       }
 
-      // Update localStorage with new user data
+      // Update sessionStorage & localStorage with new user data
       const updatedUser = { ...userData, ...data.user };
+      sessionStorage.setItem("user", JSON.stringify(updatedUser));
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
       // Show success message
@@ -187,7 +188,7 @@ const EditProfileModal = ({ isOpen, onClose, userData, onUpdateSuccess }) => {
     setPasswordApiError("");
 
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token") || localStorage.getItem("token");
       const response = await fetch(
         `${API_URL}/api/users/${userData._id}/change-password`,
         {
