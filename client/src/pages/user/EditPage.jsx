@@ -35,91 +35,102 @@ const EditPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white font-sans">
+    <div className="min-h-screen bg-porcelain font-sans text-obsidian">
       <Header activeTab="PROFILE" />
 
-      <main className="flex items-center justify-center min-h-[calc(100vh-160px)] p-4 md:p-8 animate-fade-in">
-        <div className="w-full max-w-5xl bg-charcoal rounded-3xl border border-gold/20 shadow-elegant p-8 md:p-12 flex flex-col lg:flex-row gap-12 items-center">
-          {/* Left Side - Text Content */}
-          <div className="w-full lg:w-1/2 space-y-6 text-center lg:text-left">
-            <h2 className="font-serif text-5xl md:text-6xl font-bold leading-tight bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent">
-              Update Profile
-            </h2>
-            <p className="text-gray-300 text-lg leading-relaxed">
+      <main className="min-h-[calc(100vh-160px)] px-4 pb-28 pt-8 sm:px-6 lg:px-8 lg:pb-16 lg:pt-12">
+        <div className="mx-auto grid w-full max-w-5xl border border-obsidian/10 bg-white lg:grid-cols-[0.8fr_1.2fr]">
+          <section className="relative overflow-hidden bg-ink p-7 text-porcelain sm:p-10 lg:p-12" aria-labelledby="edit-page-title">
+            <div className="absolute -bottom-20 -right-20 h-56 w-56 rounded-full border border-brass/20" aria-hidden="true" />
+            <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.28em] text-brass">VELORA account</p>
+            <h1 id="edit-page-title" className="font-serif text-4xl leading-tight sm:text-5xl">
+              Update your profile
+            </h1>
+            <p className="mt-5 max-w-sm text-sm leading-7 text-taupe">
               Keep your account details up to date. Changes saved here will be
               reflected across your profile.
             </p>
-          </div>
+            <button
+              type="button"
+              onClick={() => navigate("/profile")}
+              className="relative mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-brass underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass"
+            >
+              Back to profile
+            </button>
+          </section>
 
-          {/* Right Side - Form */}
-          <div className="w-full lg:w-1/2">
-            <div className="bg-gold rounded-3xl p-8 shadow-lg">
+          <section className="p-6 sm:p-10 lg:p-12" aria-label="Profile details form">
               {success && (
-                <div className="mb-4 p-3 bg-green-500 text-white rounded-lg text-center">
+                <div className="mb-6 rounded-lg border border-success/30 bg-success/10 p-4 text-sm font-medium text-success" role="status">
                   ✓ Profile updated successfully!
                 </div>
               )}
               {error && (
-                <div className="mb-4 p-3 bg-red-500 text-white rounded-lg text-center">
+                <div className="mb-6 rounded-lg border border-danger/30 bg-danger/10 p-4 text-sm font-medium text-danger" role="alert">
                   {error}
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-bold text-black/70 mb-2 ml-4">
+                  <label htmlFor="edit-full-name" className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-warm-gray">
                     Full Name
                   </label>
                   <input
+                    id="edit-full-name"
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
+                    autoComplete="name"
                     placeholder="Enter your full name"
-                    className="w-full px-4 py-3 rounded-full bg-gold-dark border-none focus:outline-none focus:ring-2 focus:ring-charcoal/50 text-black placeholder-black/60"
+                    className="w-full rounded-lg border border-obsidian/20 bg-white px-4 py-3.5 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:border-oxblood focus:ring-2 focus:ring-oxblood/15"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-black/70 mb-2 ml-4">
+                  <label htmlFor="edit-email" className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-warm-gray">
                     Email Address
                   </label>
                   <input
+                    id="edit-email"
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
+                    autoComplete="email"
                     placeholder="Enter your email"
-                    className="w-full px-4 py-3 rounded-full bg-gold-dark border-none focus:outline-none focus:ring-2 focus:ring-charcoal/50 text-black placeholder-black/60"
+                    className="w-full rounded-lg border border-obsidian/20 bg-white px-4 py-3.5 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:border-oxblood focus:ring-2 focus:ring-oxblood/15"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-black/70 mb-2 ml-4">
+                  <label htmlFor="edit-password" className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-warm-gray">
                     New Password
                   </label>
                   <input
+                    id="edit-password"
                     type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
+                    autoComplete="new-password"
                     placeholder="Enter a new password (optional)"
-                    className="w-full px-4 py-3 rounded-full bg-gold-dark border-none focus:outline-none focus:ring-2 focus:ring-charcoal/50 text-black placeholder-black/60"
+                    className="w-full rounded-lg border border-obsidian/20 bg-white px-4 py-3.5 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:border-oxblood focus:ring-2 focus:ring-oxblood/15"
                   />
                 </div>
 
-                <div className="flex justify-center pt-4">
+                <div className="pt-3">
                   <button
                     type="submit"
                     disabled={loading}
-                    className="bg-charcoal text-white px-10 py-3 rounded-full font-semibold hover:bg-warm-gray transition-colors duration-300 shadow-md disabled:opacity-50"
+                    className="w-full rounded-lg bg-oxblood px-10 py-3.5 text-sm font-semibold text-white transition hover:bg-oxblood-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {loading ? "Saving..." : "Save Changes"}
                   </button>
                 </div>
               </form>
-            </div>
-          </div>
+          </section>
         </div>
       </main>
       <Footer />

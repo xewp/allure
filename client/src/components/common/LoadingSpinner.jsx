@@ -8,25 +8,23 @@ const LoadingSpinner = ({ message = "Loading...", size = "default" }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-6">
-      {/* Spinner */}
-      <div className="flex items-center justify-center space-x-2">
+    <div className="flex flex-col items-center justify-center gap-5" role="status" aria-live="polite">
+      <div className="flex items-center justify-center space-x-2" aria-hidden="true">
         <div
-          className={`${sizeClasses[size]} bg-gold rounded-full animate-elegant-spinner`}
+          className={`${sizeClasses[size]} animate-elegant-spinner rounded-full bg-oxblood`}
           style={{ animationDelay: "-0.32s" }}
         ></div>
         <div
-          className={`${sizeClasses[size]} bg-gold rounded-full animate-elegant-spinner`}
+          className={`${sizeClasses[size]} animate-elegant-spinner rounded-full bg-brass`}
           style={{ animationDelay: "-0.16s" }}
         ></div>
         <div
-          className={`${sizeClasses[size]} bg-gold rounded-full animate-elegant-spinner`}
+          className={`${sizeClasses[size]} animate-elegant-spinner rounded-full bg-porcelain`}
         ></div>
       </div>
 
-      {/* Loading text */}
       {message && (
-        <p className="text-gold text-lg font-medium tracking-wider">
+        <p className="text-sm font-medium tracking-[0.12em] text-taupe">
           {message}
         </p>
       )}

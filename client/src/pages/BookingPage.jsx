@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 
 const BookingPage = () => {
   const themeColor = "#dcb887";
   const [activeTab, setActiveTab] = useState("LOCAL");
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -65,8 +63,8 @@ const BookingPage = () => {
             }
           }
         }
-      } catch (err) {
-
+      } catch {
+        // Leave the favorites list empty when account data is unavailable.
       }
     };
 
@@ -150,8 +148,7 @@ const BookingPage = () => {
       } else {
         setError(data.message || "Failed to create booking");
       }
-    } catch (err) {
-
+    } catch {
       setError("Server error. Please try again later.");
     } finally {
       setLoading(false);

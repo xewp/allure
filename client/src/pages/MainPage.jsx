@@ -14,12 +14,11 @@ const MainPage = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [visibleSections, setVisibleSections] = useState(new Set());
+  const [_visibleSections, setVisibleSections] = useState(new Set());
   const [userPermissions, setUserPermissions] = useState(null); // Track user permissions
   const [permissionsLoading, setPermissionsLoading] = useState(true);
 
   const themeColor = "#D8AF7F"; // Gold
-  const arrowBgColor = "#3e3e3e"; // Dark grey for carousel buttons
 
   // Fetch user permissions on mount
   useEffect(() => {
@@ -45,7 +44,7 @@ const MainPage = () => {
             canViewModels: data.user.canViewModels !== false,
           });
         }
-      } catch (error) {
+      } catch {
         // Silent error handling
       } finally {
         setPermissionsLoading(false);
@@ -86,7 +85,7 @@ const MainPage = () => {
       setTimeout(() => {
         setVisibleSections((prev) => new Set([...prev, "grid"]));
       }, 50);
-    } catch (error) {
+    } catch {
       setModels([]);
     } finally {
       setLoading(false);
@@ -134,7 +133,7 @@ const MainPage = () => {
       setTimeout(() => {
         setVisibleSections((prev) => new Set([...prev, "grid"]));
       }, 50);
-    } catch (error) {
+    } catch {
       setModels([]);
     } finally {
       setLoading(false);
@@ -157,7 +156,7 @@ const MainPage = () => {
       const shuffled = combined.sort(() => Math.random() - 0.5);
 
       return shuffled;
-    } catch (error) {
+    } catch {
       return [];
     }
   };

@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import API_URL from "../config/api";
 
 export const useDetailPageLogic = () => {
-  const { name } = useParams(); // Get name from URL (for display only)
   const location = useLocation();
   const navigate = useNavigate();
 

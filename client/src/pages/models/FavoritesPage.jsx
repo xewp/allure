@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/Header";
-import LoadingSpinner from "../../components/common/LoadingSpinner";
+import {
+  ModelGrid,
+  ModelGridSkeleton,
+} from "../../components/main/ModelGrid";
 import API_URL from "../../config/api";
 
 const FavoritesPage = () => {
@@ -11,21 +14,28 @@ const FavoritesPage = () => {
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      const user = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "null");
-      if (user && user._id) {
+      const user = JSON.parse(
+        sessionStorage.getItem("user") ||
+          localStorage.getItem("user") ||
+          "null",
+      );
+      const userId = user?._id || user?.id;
+
+      if (userId) {
         try {
           const response = await fetch(
-            `${API_URL}/api/users/${user._id}/favorites`
+            `${API_URL}/api/users/${userId}/favorites`,
           );
           if (response.ok) {
             const data = await response.json();
             const validFavorites = data.filter(
-              (fav) => fav._id && fav._id !== "undefined"
+              (favorite) =>
+                favorite._id && favorite._id !== "undefined",
             );
             setFavorites(validFavorites);
           }
-        } catch (error) {
-
+        } catch {
+          // Keep the saved collection empty when it cannot be loaded.
         }
       }
       setLoading(false);
@@ -33,7 +43,6 @@ const FavoritesPage = () => {
 
     fetchFavorites();
 
-    // Listen for favorites updates
     const handleFavoritesUpdate = () => {
       fetchFavorites();
     };
@@ -45,42 +54,57 @@ const FavoritesPage = () => {
     };
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center">
-        <LoadingSpinner message="Loading your collection" size="large" />
-      </div>
-    );
-  }
+  const handleCardClick = (model) => {
+    const modelSlug = (model.name || "talent")
+      .toLowerCase()
+      .replace(/\s+/g, "-");
+
+    navigate(`/model/${modelSlug}`, {
+      state: {
+        selectedImage: model.imageUrl,
+        category: model.category?.toUpperCase() || "FAVORITES",
+        modelId: model._id,
+      },
+    });
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
+    <div className="min-h-screen overflow-x-hidden bg-obsidian font-sans text-porcelain">
       <Header activeTab="FAVORITES" onTabChange={() => {}} />
 
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12">
-        {/* Elegant Header */}
-        <div className="text-center mb-16">
-          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold mb-4 bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent">
-            Your Collection
-          </h1>
-          {favorites.length > 0 && (
-            <div className="flex items-center justify-center gap-3 mt-6">
-              <div className="h-px w-16 bg-gradient-to-r from-transparent to-gold"></div>
-              <p className="text-gold text-lg">
-                {favorites.length} {favorites.length === 1 ? "Model" : "Models"}{" "}
-                Saved
-              </p>
-              <div className="h-px w-16 bg-gradient-to-l from-transparent to-gold"></div>
-            </div>
-          )}
-        </div>
+      <main className="mx-auto w-full max-w-7xl px-2.5 pb-28 pt-8 sm:px-6 sm:pt-10 lg:px-8 lg:pt-14">
+        <header className="mb-7 grid gap-5 text-left md:grid-cols-[minmax(0,1fr)_auto] md:items-end lg:mb-10">
+          <div>
+            <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-brass sm:text-xs">
+              Your shortlist
+            </p>
+            <h1 className="font-serif text-4xl font-semibold leading-none text-porcelain sm:text-5xl lg:text-6xl">
+              Saved talent
+            </h1>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-taupe sm:text-base">
+              A considered collection of the people you want to remember,
+              compare, and bring into your next event.
+            </p>
+          </div>
 
-        {favorites.length === 0 ? (
-          /* Elegant Empty State */
-          <div className="flex flex-col items-center justify-center py-20 px-4">
-            <div className="w-32 h-32 mb-8 rounded-full bg-gold/10 flex items-center justify-center">
+          {!loading && favorites.length > 0 && (
+            <p className="border-l border-brass/50 pl-4 text-sm text-taupe md:text-right">
+              <span className="block font-serif text-3xl text-porcelain">
+                {favorites.length.toString().padStart(2, "0")}
+              </span>
+              {favorites.length === 1 ? "profile saved" : "profiles saved"}
+            </p>
+          )}
+        </header>
+
+        {loading ? (
+          <ModelGridSkeleton />
+        ) : favorites.length === 0 ? (
+          <section className="flex min-h-[50vh] flex-col items-center justify-center rounded-2xl border border-porcelain/10 bg-ink px-6 py-16 text-center">
+            <span className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-brass/30 bg-brass/10 text-brass">
               <svg
-                className="w-16 h-16 text-gold"
+                aria-hidden="true"
+                className="h-7 w-7"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -89,124 +113,61 @@ const FavoritesPage = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={1.5}
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0Z"
                 />
               </svg>
-            </div>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-gold mb-4">
-              No Favorites Yet
+            </span>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-brass">
+              Build your shortlist
+            </p>
+            <h2 className="mt-3 font-serif text-3xl font-semibold text-porcelain sm:text-4xl">
+              No favorites yet
             </h2>
-            <p className="text-gray-400 text-lg text-center max-w-md mb-8">
-              Start building your collection of exceptional talent. Explore our
-              models and add your favorites.
+            <p className="mt-3 max-w-md leading-relaxed text-taupe">
+              Explore the directory and save the talent that feels right for
+              your campaign or event.
             </p>
             <button
+              type="button"
               onClick={() => navigate("/main")}
-              className="px-8 py-3 bg-gold text-black font-semibold rounded-full hover:bg-gold-light transition-all duration-300 hover:scale-105 shadow-gold"
+              className="mt-8 min-h-11 rounded-lg bg-oxblood px-6 py-3 text-sm font-semibold text-porcelain transition-colors hover:bg-oxblood/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
             >
-              Browse Models
+              Browse talent
             </button>
-          </div>
+          </section>
         ) : (
-          /* Premium Grid Layout */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {favorites.map((fav, index) => (
-              <div
-                key={`${fav._id}-${index}`}
-                onClick={() => navigate(`/model/${fav._id}`)}
-                className="group relative rounded-2xl overflow-hidden cursor-pointer transform transition-all duration-500 hover:scale-105 animate-fade-in-up"
-                style={{
-                  animationDelay: `${index * 100}ms`,
-                  background: `linear-gradient(135deg, rgba(216, 175, 127, 0.1), rgba(216, 175, 127, 0.2))`,
-                  padding: "2px",
-                }}
-              >
-                <div className="relative h-96 bg-gradient-to-br from-gray-900 to-black rounded-[1rem] overflow-hidden">
-                  {fav.imageUrl ? (
-                    <>
-                      <img
-                        src={fav.imageUrl}
-                        alt={fav.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
+          <>
+            <ModelGrid
+              featuredModels={[]}
+              regularModels={favorites}
+              handleCardClick={handleCardClick}
+              allModelsAreFavorites
+            />
 
-                      {/* Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-
-                      {/* Category Badge */}
-                      <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-gold/20 backdrop-blur-md border border-gold/50">
-                        <span className="text-gold text-xs font-semibold uppercase tracking-wider">
-                          {fav.category || "Local"}
-                        </span>
-                      </div>
-
-                      {/* Favorite Heart (Always Visible) */}
-                      <div className="absolute top-4 right-4">
-                        <div className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
-                          <svg
-                            className="w-6 h-6 text-gold fill-gold"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                          </svg>
-                        </div>
-                      </div>
-
-                      {/* Model Info */}
-                      <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                        <h3 className="text-2xl font-bold text-gold mb-1">
-                          {fav.name}
-                        </h3>
-                        {fav.age && (
-                          <p className="text-white/70 text-sm">
-                            Age: {fav.age}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Hover Glow */}
-                      <div
-                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-[1rem]"
-                        style={{
-                          boxShadow: `inset 0 0 60px rgba(216, 175, 127, 0.3)`,
-                        }}
-                      ></div>
-                    </>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-500">
-                      No Image Available
-                    </div>
-                  )}
-                </div>
-
-                {/* Border Glow on Hover */}
-                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none shadow-gold-lg"></div>
+            <section className="mb-6 mt-2 grid gap-6 rounded-2xl border border-porcelain/10 bg-ink p-6 text-left sm:p-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-center lg:p-10">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-brass">
+                  Ready when you are
+                </p>
+                <h2 className="mt-2 font-serif text-3xl font-semibold text-porcelain sm:text-4xl">
+                  Turn your shortlist into a booking.
+                </h2>
+                <p className="mt-3 max-w-xl leading-relaxed text-taupe">
+                  Share your event details and preferred talent with the
+                  VELORA team.
+                </p>
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* Book Now CTA */}
-        {favorites.length > 0 && (
-          <div className="mt-20 text-center">
-            <div className="inline-block p-8 rounded-3xl bg-gradient-to-br from-warm-gray/30 to-charcoal/30 backdrop-blur-sm border border-gold/20">
-              <h3 className="font-serif text-3xl md:text-4xl font-bold text-gold mb-4">
-                Ready to Book?
-              </h3>
-              <p className="text-gray-300 mb-6 max-w-md mx-auto">
-                Transform your event with our exceptional talent. Book your
-                favorite models now.
-              </p>
               <button
+                type="button"
                 onClick={() => navigate("/booking")}
-                className="px-10 py-4 bg-gold text-black font-semibold text-lg rounded-full hover:bg-white transition-all duration-300 hover:scale-105 shadow-gold"
+                className="min-h-12 rounded-lg bg-oxblood px-7 py-3 text-sm font-semibold text-porcelain transition-colors hover:bg-oxblood/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
               >
-                Book Now
+                Start a booking
               </button>
-            </div>
-          </div>
+            </section>
+          </>
         )}
-      </div>
+      </main>
     </div>
   );
 };

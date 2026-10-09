@@ -31,7 +31,7 @@ const ProtectedRoute = () => {
           setLoading(false);
           return;
         }
-      } catch (error) {
+      } catch {
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("user");
         localStorage.removeItem("token");
@@ -63,7 +63,7 @@ const ProtectedRoute = () => {
           localStorage.removeItem("user");
           setIsValid(false);
         }
-      } catch (error) {
+      } catch {
         // On network error, clear session for security
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("user");

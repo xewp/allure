@@ -59,7 +59,10 @@ const corsOptions = {
 
     const allowedOrigins = [...localOrigins, ...productionOrigins, ...defaultRenderOrigins];
 
-    const isAllowed = allowedOrigins.includes(cleanOrigin) || cleanOrigin.endsWith('.onrender.com');
+    // Allow local network IPs (192.168.x.x, 10.x.x.x, 172.16-31.x.x) for LAN access during development
+    const isLocalNetwork = /^http:\/\/(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})(:\d+)?$/.test(cleanOrigin);
+
+    const isAllowed = allowedOrigins.includes(cleanOrigin) || cleanOrigin.endsWith('.onrender.com') || isLocalNetwork;
     
     if (isAllowed) {
       callback(null, true);

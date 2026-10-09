@@ -4,8 +4,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 /**
  * AuthLayout - Shared layout component for authentication pages (Login/Register)
  * Features:
- * - Diagonal cut black/tan design
- * - AURA SELECT branding section
+ * - Editorial split design
+ * - VELORA branding section
  * - Intersection Observer animations
  * - Responsive layout
  */
@@ -59,47 +59,43 @@ const AuthLayout = ({
   const mergedStyle = { ...defaultLeftStyle, ...leftSectionStyle };
 
   return (
-    <div className="flex h-screen w-full bg-black">
-      {/* Left Section with Gradient Background and Rounded Corners - Hidden on Mobile */}
+    <div className="flex min-h-screen w-full bg-porcelain text-obsidian">
       <div
         data-section="left"
-        className={`hidden md:flex relative md:w-1/2 h-full bg-gradient-to-b from-[#3a3a3a] via-[#5a5a5a] to-[#D8AF7F] flex-col justify-between p-8 md:p-10 z-10 transition-all duration-1000 rounded-3xl m-6 ${
+        data-heading-scale={mergedStyle.headingSize}
+        className={`relative z-10 hidden min-h-screen w-1/2 flex-col justify-between overflow-hidden border-r border-porcelain/10 bg-ink p-10 transition-all duration-700 md:flex lg:p-16 ${
           visibleSections.has("left")
             ? "opacity-100 translate-x-0"
             : "opacity-0 -translate-x-10"
         }`}
       >
         <h1
-          className={`font-serif text-3xl md:text-4xl font-normal leading-tight text-[#D8AF7F]`}
+          className="font-serif text-4xl font-normal leading-tight tracking-[0.14em] text-porcelain"
         >
-          Aura Select
+          VELORA
         </h1>
-        <p className={`text-2xl md:text-3xl tracking-wide`}>
-          <span className="text-black font-bold">Feel The</span>{" "}
-          <span className="text-black/60 font-light">Power.</span>
+        <p className="font-serif text-4xl leading-tight text-porcelain lg:text-5xl">
+          <span>Curated talent.</span>
           <br />
-          <span className="text-black font-bold">Own The</span>{" "}
-          <span className="text-black/60 font-light">Allure</span>
-          {/* Hidden Easter egg: clickable period on login page */}
+          <span className="text-brass">Unforgettable presence</span>
           {location.pathname === "/login" ? (
             <span
               onClick={() => navigate("/register")}
-              className="cursor-pointer hover:text-black transition-colors duration-300 text-black/60 font-light"
-              title="Psst... click me!"
+              className="cursor-pointer text-brass transition-colors duration-300 hover:text-brass-light"
+              title="Create an account"
             >
               .
             </span>
           ) : (
-            <span className="text-black/60 font-light">.</span>
+            <span className="text-brass">.</span>
           )}
         </p>
       </div>
 
-      {/* Right Section with Tan Background and Form Content */}
-      <div className="w-full md:w-auto md:absolute md:inset-0 flex md:justify-end justify-center items-center z-0 bg-black">
+      <div className="z-0 flex min-h-screen w-full items-center justify-center bg-porcelain md:absolute md:inset-0 md:w-auto md:justify-end">
         <div
           data-section="right"
-          className={`w-full md:w-1/2 flex flex-col items-center px-4 md:px-8 py-8 transition-all duration-1000 delay-300 overflow-y-auto max-h-screen ${
+          className={`flex w-full flex-col items-center overflow-y-auto px-5 py-10 transition-all duration-700 delay-200 md:max-h-screen md:w-1/2 md:px-10 ${
             visibleSections.has("right")
               ? "opacity-100 translate-x-0"
               : "opacity-0 translate-x-10"
@@ -107,7 +103,7 @@ const AuthLayout = ({
         >
           {title && (
             <h2
-              className={`font-serif text-4xl md:text-5xl font-bold mb-6 md:mb-8 ${titleClassName || "text-black"}`}
+              className={`mb-6 font-serif text-4xl font-normal md:mb-8 md:text-5xl ${titleClassName || "text-obsidian"}`}
             >
               {title}
             </h2>

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import LoginForm from '../../components/auth/LoginForm';
 import RegisterForm from '../../components/auth/RegisterForm';
 
@@ -15,83 +15,100 @@ const AuthPage = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen w-full bg-gradient-to-br from-black via-gray-900 to-black font-sans relative overflow-hidden">
-      {/* Ambient Decorative Lighting */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-gradient-to-br from-[#D8AF7F]/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-20 left-10 w-96 h-96 bg-gradient-to-tl from-[#D8AF7F]/10 to-transparent rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        ></div>
-      </div>
-
-      <div 
-        className={`flex w-full min-h-screen transition-all duration-700 ease-in-out relative z-10 ${isLogin ? 'flex-col md:flex-row' : 'flex-col md:flex-row-reverse'}`}
-      >
-        {/* Branding Panel */}
-        <motion.div 
+    <main className="min-h-screen bg-obsidian font-sans text-porcelain">
+      <div className="grid min-h-screen lg:grid-cols-[minmax(0,1.08fr)_minmax(440px,0.92fr)]">
+        <Motion.section
           layout
-          className="relative w-full md:w-[55%] h-[20vh] md:h-screen bg-[#111] flex flex-col justify-between p-8 md:p-16 z-10 overflow-hidden md:sticky md:top-0"
-          transition={{ type: "spring", stiffness: 90, damping: 20, mass: 1 }}
+          className="relative hidden min-h-screen overflow-hidden border-r border-porcelain/10 bg-ink p-10 lg:flex lg:flex-col lg:justify-between xl:p-16"
+          transition={{ duration: 0.35, ease: "easeOut" }}
+          aria-label="VELORA brand introduction"
         >
-          {/* Subtle gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-black via-[#1a1510] to-[#2a2015] opacity-80" />
-          
-          {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D8AF7F] rounded-full blur-[150px] opacity-10 translate-x-1/2 -translate-y-1/2 mix-blend-screen" />
-          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-black rounded-full blur-[100px] opacity-60 -translate-x-1/3 translate-y-1/3" />
-
-          <div className="relative z-10 cursor-pointer" onClick={() => navigate('/')}>
-            <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-[#D8AF7F] font-serif">
-              Aura Select
-            </h1>
+          <div className="absolute inset-0" aria-hidden="true">
+            <div className="absolute inset-y-0 right-0 w-px bg-brass/30" />
+            <div className="absolute -right-28 top-24 h-80 w-80 rounded-full border border-brass/20" />
+            <div className="absolute -right-12 top-40 h-52 w-52 rounded-full border border-brass/10" />
+            <div className="absolute bottom-0 left-0 h-1/2 w-full bg-gradient-to-t from-obsidian/60 to-transparent" />
           </div>
-          
-          <div className="relative z-10 mt-auto hidden md:block">
-            <h2 className="text-3xl md:text-5xl font-light text-white leading-tight mb-4">
-              Elevate your <span className="font-bold text-[#D8AF7F]">standard.</span><br />
-              Embrace the <span className="font-bold text-[#D8AF7F]">exclusive.</span>
-            </h2>
-            <p className="text-gray-400 text-sm md:text-base max-w-md">
-              Experience the pinnacle of luxury and exclusivity. Join Aura Select today and elevate your lifestyle.
+
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="relative z-10 w-fit text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass focus-visible:ring-offset-4 focus-visible:ring-offset-ink"
+            aria-label="VELORA home"
+          >
+            <span className="block font-serif text-4xl tracking-[0.14em] text-porcelain">VELORA</span>
+            <span className="mt-2 block text-[10px] font-semibold tracking-[0.38em] text-brass">
+              TALENT &amp; EVENTS
+            </span>
+          </button>
+
+          <div className="relative z-10 max-w-xl">
+            <p className="mb-6 text-xs font-semibold uppercase tracking-[0.32em] text-brass">
+              Private client access
+            </p>
+            <h1 className="font-serif text-5xl leading-[1.06] text-porcelain xl:text-7xl">
+              Curated talent.<br />Unforgettable presence.
+            </h1>
+            <p className="mt-7 max-w-md text-base leading-7 text-taupe">
+              Discover distinctive talent and manage every booking through one considered experience.
             </p>
           </div>
-        </motion.div>
 
-        {/* Form Panel */}
-        <motion.div 
-          layout
-          className="w-full md:w-[45%] flex-1 bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center p-6 md:p-12 z-20"
-          transition={{ type: "spring", stiffness: 90, damping: 20, mass: 1 }}
-        >
-          <div className="w-full max-w-md py-8">
+          <p className="relative z-10 text-xs tracking-[0.18em] text-taupe/70">
+            SELECTED WITH INTENTION
+          </p>
+        </Motion.section>
+
+        <section className="flex min-h-screen flex-col bg-porcelain text-obsidian">
+          <header className="flex items-center justify-between border-b border-obsidian/10 px-5 py-5 sm:px-8 lg:hidden">
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
+              aria-label="VELORA home"
+            >
+              <span className="block font-serif text-2xl tracking-[0.12em]">VELORA</span>
+              <span className="block text-[8px] font-semibold tracking-[0.3em] text-oxblood">TALENT &amp; EVENTS</span>
+            </button>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-taupe">
+              {isLogin ? "Client sign in" : "Request access"}
+            </span>
+          </header>
+
+          <Motion.div
+            layout
+            className="flex flex-1 items-start justify-center px-5 py-10 sm:px-10 lg:items-center lg:px-12 lg:py-16 xl:px-20"
+            transition={{ duration: 0.35, ease: "easeOut" }}
+          >
+            <div className="w-full max-w-md">
             <AnimatePresence mode="wait">
               {isLogin ? (
-                <motion.div
+                <Motion.div
                   key="login"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
                 >
                   <LoginForm />
-                </motion.div>
+                </Motion.div>
               ) : (
-                <motion.div
+                <Motion.div
                   key="register"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
                 >
                   <RegisterForm />
-                </motion.div>
+                </Motion.div>
               )}
             </AnimatePresence>
-          </div>
-        </motion.div>
+            </div>
+          </Motion.div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 };
 

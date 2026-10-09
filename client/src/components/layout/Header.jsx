@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import API_URL from "../../config/api";
+import MobileNav from "./MobileNav";
 
 const Header = ({ activeTab, onTabChange }) => {
   const navigate = useNavigate();
@@ -8,12 +9,24 @@ const Header = ({ activeTab, onTabChange }) => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (!showModal) return undefined;
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") setShowModal(false);
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [showModal]);
+
   const handleBookingClick = async () => {
     if (location.pathname === "/booking") return;
 
     try {
       setLoading(true);
-      const userStr = sessionStorage.getItem("user") || localStorage.getItem("user");
+      const userStr =
+        sessionStorage.getItem("user") || localStorage.getItem("user");
 
       if (!userStr) {
         navigate("/booking");
@@ -27,7 +40,7 @@ const Header = ({ activeTab, onTabChange }) => {
       if (response.ok) {
         const favorites = await response.json();
         const validFavorites = favorites.filter(
-          (fav) => fav._id && fav._id !== "undefined",
+          (favorite) => favorite._id && favorite._id !== "undefined",
         );
 
         if (validFavorites.length === 0) {
@@ -38,71 +51,121 @@ const Header = ({ activeTab, onTabChange }) => {
       } else {
         navigate("/booking");
       }
-    } catch (error) {
-
+    } catch {
       navigate("/booking");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleTabClick = (tab) => {
-    if (location.pathname !== "/main") {
-      navigate("/main", { state: { activeTab: tab } });
-    } else if (onTabChange) {
-      onTabChange(tab);
+  const handleDiscoverClick = () => {
+    const directoryTab = activeTab === "FOREIGN" ? "FOREIGN" : "LOCAL";
+
+    if (location.pathname === "/main" && onTabChange) {
+      onTabChange(directoryTab);
+      return;
     }
+
+    navigate("/main", { state: { activeTab: directoryTab } });
   };
+
+  const discoverIsActive =
+    location.pathname === "/main" || location.pathname.startsWith("/model/");
+  const favoritesIsActive = location.pathname === "/favorites";
+  const bookingIsActive = location.pathname === "/booking";
+  const profileIsActive =
+    location.pathname === "/profile" || location.pathname === "/edit";
+
+  const navItemClass = (isActive) =>
+    `rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian lg:px-4 ${
+      isActive
+        ? "bg-porcelain text-obsidian"
+        : "text-taupe hover:bg-porcelain/5 hover:text-porcelain"
+    }`;
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-black border-b border-[#D8AF7F]/20 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 md:h-20">
-            {/* Logo/Brand */}
-            <Link
-              to="/main"
-              className="font-serif text-2xl md:text-3xl font-bold text-[#D8AF7F] hover:text-[#E8BF8F] transition-colors duration-300"
-            >
-              Aura Select
-            </Link>
+      <header className="sticky top-0 z-40 border-b border-porcelain/10 bg-obsidian/95 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
+          <Link
+            to="/main"
+            aria-label="VELORA talent directory"
+            className="group inline-flex items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian"
+          >
+            <span className="flex h-9 w-9 items-center justify-center border border-brass/60 font-serif text-lg font-semibold text-brass transition-colors group-hover:bg-brass group-hover:text-obsidian">
+              V
+            </span>
+            <span className="flex flex-col text-left leading-none">
+              <span className="font-serif text-xl font-semibold tracking-[0.16em] text-porcelain sm:text-2xl">
+                VELORA
+              </span>
+              <span className="mt-1 hidden text-[8px] font-semibold tracking-[0.28em] text-taupe min-[360px]:block">
+                TALENT &amp; EVENTS
+              </span>
+            </span>
+          </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="flex items-center gap-3 md:gap-4">
-              <button
-                onClick={() =>
-                  navigate("/main", { state: { activeTab: "FAVORITES" } })
-                }
-                className="px-4 md:px-5 py-2 border-2 border-[#D8AF7F] text-[#D8AF7F] rounded-md font-medium uppercase text-xs md:text-sm tracking-wider hover:bg-[#D8AF7F] hover:text-black transition-all duration-300"
-              >
-                FAVORITES
-              </button>
-              <button
-                onClick={handleBookingClick}
-                disabled={loading}
-                className="px-4 md:px-5 py-2 border-2 border-[#D8AF7F] text-[#D8AF7F] rounded-md font-medium uppercase text-xs md:text-sm tracking-wider hover:bg-[#D8AF7F] hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? "..." : "BOOKING"}
-              </button>
-              <Link
-                to="/profile"
-                className="px-4 md:px-5 py-2 border-2 border-[#D8AF7F] text-[#D8AF7F] rounded-md font-medium uppercase text-xs md:text-sm tracking-wider hover:bg-[#D8AF7F] hover:text-black transition-all duration-300"
-              >
-                PROFILE
-              </Link>
-            </nav>
-          </div>
+          <nav
+            aria-label="Primary account navigation"
+            className="hidden items-center gap-1 md:flex"
+          >
+            <button
+              type="button"
+              onClick={handleDiscoverClick}
+              className={navItemClass(discoverIsActive)}
+            >
+              Discover
+            </button>
+            <Link
+              to="/favorites"
+              className={navItemClass(favoritesIsActive)}
+            >
+              Favorites
+            </Link>
+            <button
+              type="button"
+              onClick={handleBookingClick}
+              disabled={loading}
+              className={`${navItemClass(bookingIsActive)} disabled:cursor-wait disabled:opacity-50`}
+            >
+              {loading ? "Checking…" : "Bookings"}
+            </button>
+            <Link to="/profile" className={navItemClass(profileIsActive)}>
+              Profile
+            </Link>
+          </nav>
+
+          <span className="text-right text-[9px] font-semibold uppercase tracking-[0.2em] text-taupe md:hidden">
+            Curated
+            <br />
+            talent
+          </span>
         </div>
       </header>
 
-      {/* Custom Modal */}
+      <MobileNav
+        onBookingClick={handleBookingClick}
+        bookingLoading={loading}
+      />
+
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in-slow">
-          <div className="bg-gray-900 border border-[#D8AF7F]/20 p-8 rounded-2xl max-w-md w-full text-center shadow-lg">
-            <div className="w-16 h-16 bg-[#D8AF7F]/10 border border-[#D8AF7F]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-obsidian/85 p-4 backdrop-blur-sm"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setShowModal(false);
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="favorites-required-title"
+            className="w-full max-w-md rounded-2xl border border-porcelain/10 bg-ink p-6 text-left shadow-2xl sm:p-8"
+          >
+            <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full border border-brass/40 bg-brass/10 text-brass">
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 text-[#D8AF7F]"
+                aria-hidden="true"
+                className="h-6 w-6"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -110,40 +173,46 @@ const Header = ({ activeTab, onTabChange }) => {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  strokeWidth={1.7}
+                  d="M12 8.25v4.5m0 3h.008v.008H12v-.008ZM10.29 3.86 2.82 17.06a1.5 1.5 0 0 0 1.3 2.24h15.76a1.5 1.5 0 0 0 1.3-2.24L13.71 3.86a1.5 1.5 0 0 0-2.42 0Z"
                 />
               </svg>
             </div>
 
-            <h3 className="text-2xl font-bold text-[#D8AF7F] font-serif mb-3">
-              Action Required
-            </h3>
-
-            <p className="text-gray-300 mb-8 text-lg leading-relaxed">
-              You need to select a model to book. Please check our models and
-              add one to your <span className="text-[#D8AF7F]">Favorites</span>{" "}
-              list first.
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-brass">
+              One quick step
+            </p>
+            <h2
+              id="favorites-required-title"
+              className="font-serif text-3xl font-semibold text-porcelain"
+            >
+              Select talent before booking
+            </h2>
+            <p className="mt-3 leading-relaxed text-taupe">
+              Save at least one model to your favorites, then return to create
+              your booking request.
             </p>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                className="min-h-11 rounded-lg border border-porcelain/15 px-5 py-2.5 font-semibold text-porcelain transition-colors hover:bg-porcelain/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass"
+              >
+                Not now
+              </button>
+              <button
+                type="button"
                 onClick={() => {
                   setShowModal(false);
-                  if (location.pathname !== "/main") navigate("/main");
+                  navigate("/main");
                 }}
-                className="px-8 py-3 bg-[#D8AF7F] text-black font-semibold text-base rounded-md hover:bg-[#C9A87C] transition-all duration-300"
+                className="min-h-11 rounded-lg bg-oxblood px-5 py-2.5 font-semibold text-porcelain transition-colors hover:bg-oxblood/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass"
               >
-                Browse Models
-              </button>
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-8 py-3 border-2 border-gray-600 text-gray-300 font-semibold rounded-md hover:bg-gray-800 transition-all duration-300"
-              >
-                Cancel
+                Browse talent
               </button>
             </div>
-          </div>
+          </section>
         </div>
       )}
     </>

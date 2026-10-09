@@ -31,7 +31,7 @@ const ProtectedRoute = () => {
           setLoading(false);
           return;
         }
-      } catch (error) {
+      } catch {
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("user");
         localStorage.removeItem("token");
@@ -63,7 +63,7 @@ const ProtectedRoute = () => {
           localStorage.removeItem("user");
           setIsValid(false);
         }
-      } catch (error) {
+      } catch {
         // On network error, clear session for security
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("user");
@@ -81,18 +81,17 @@ const ProtectedRoute = () => {
   // Show loading state while validating
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          background:
-            "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
-        }}
-      >
-        <div style={{ color: "#D8AF7F", fontSize: "20px" }}>
-          Validating session...
+      <div className="flex min-h-screen items-center justify-center bg-obsidian px-4 text-porcelain">
+        <div className="text-center" role="status" aria-live="polite">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center border border-brass/60 font-serif text-xl text-brass">
+            V
+          </div>
+          <div className="mx-auto mt-5 h-px w-20 overflow-hidden bg-porcelain/10">
+            <div className="h-full w-1/2 animate-pulse bg-oxblood" />
+          </div>
+          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-taupe">
+            Preparing your collection
+          </p>
         </div>
       </div>
     );

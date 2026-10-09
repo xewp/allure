@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API_URL from "../../config/api";
 import OTPModal from "../../components/auth/OTPModal";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const RegisterForm = () => {
         if (data.success) {
           setSignupEnabled(data.settings.signupEnabled);
         }
-      } catch (err) {
+      } catch {
         // Default to enabled
       } finally {
         setLoadingConfig(false);
@@ -47,12 +47,12 @@ const RegisterForm = () => {
   const [registeredEmail, setRegisteredEmail] = useState("");
 
   const validateEmail = (email) => {
-    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
     return emailRegex.test(email);
   };
 
   const validatePhoneNumber = (phone) => {
-    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+    const phoneRegex = /^[\d\s+()-]+$/;
     return phoneRegex.test(phone) && phone.length >= 7;
   };
 
@@ -137,7 +137,7 @@ const RegisterForm = () => {
       } else {
         setError(data.message || "Registration failed. Please try again.");
       }
-    } catch (err) {
+    } catch {
       setError("Unable to connect to server. Please try again.");
     } finally {
       setIsLoading(false);
@@ -145,8 +145,8 @@ const RegisterForm = () => {
   };
 
   const renderInput = (id, label, type, value, onChange, placeholder, extraProps = {}) => (
-    <div className="group w-full">
-      <label className="block text-xs font-medium text-gray-400 mb-1.5 transition-colors group-focus-within:text-[#D8AF7F]" htmlFor={id}>
+    <div className="w-full">
+      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-warm-gray" htmlFor={id}>
         {label}
       </label>
       <input
@@ -154,8 +154,8 @@ const RegisterForm = () => {
         type={type}
         value={value}
         onChange={onChange}
-        disabled={!signupEnabled}
-        className="w-full px-4 py-3 bg-[#111] border border-[#222] rounded-xl text-white text-sm focus:border-[#D8AF7F] focus:ring-1 focus:ring-[#D8AF7F] outline-none transition-all placeholder-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={!signupEnabled || loadingConfig}
+        className="w-full rounded-lg border border-obsidian/20 bg-white px-4 py-3.5 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:border-oxblood focus:ring-2 focus:ring-oxblood/15 disabled:cursor-not-allowed disabled:bg-obsidian/5 disabled:opacity-60"
         placeholder={placeholder}
         {...extraProps}
       />
@@ -166,73 +166,76 @@ const RegisterForm = () => {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="mb-10">
-        <h2 className="text-3xl font-semibold text-white mb-2 tracking-tight">Create an account</h2>
-        <p className="text-gray-400 text-sm">Join Aura Select and elevate your lifestyle.</p>
+      <div className="mb-9">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-oxblood">
+          Membership application
+        </p>
+        <h2 className="font-serif text-4xl leading-tight text-obsidian sm:text-5xl">Create your account</h2>
+        <p className="mt-3 text-sm leading-6 text-warm-gray">Join VELORA to explore our roster and request talent.</p>
         
-        {/* Progress Bar */}
-        <div className="mt-6 flex gap-2">
+        <div className="mt-7 flex gap-2" aria-label={`Registration step ${step} of ${totalSteps}`}>
           {[1, 2, 3].map((i) => (
             <div 
               key={i} 
-              className={`h-1 flex-1 rounded-full transition-colors duration-300 ${i <= step ? 'bg-[#D8AF7F]' : 'bg-[#222]'}`}
+              className={`h-0.5 flex-1 transition-colors duration-300 ${i <= step ? "bg-oxblood" : "bg-obsidian/15"}`}
             />
           ))}
         </div>
+        <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-taupe">Step {step} of {totalSteps}</p>
       </div>
 
       {!signupEnabled && (
-        <div className="mb-6 flex items-center gap-2 text-orange-400 bg-orange-500/10 p-3 rounded-lg text-xs font-medium border border-orange-500/20">
-          ⚠️ New user registrations are currently disabled.
+        <div className="mb-6 flex items-center gap-2 rounded-lg border border-brass/50 bg-brass/15 p-3 text-xs font-medium text-obsidian" role="status">
+          New user registrations are currently unavailable.
         </div>
       )}
 
-      <div className="relative min-h-[220px]">
+      <div className="relative min-h-[230px]">
         <AnimatePresence mode="wait">
           {step === 1 && (
-            <motion.div 
+            <Motion.div 
               key="step1"
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
               transition={{ duration: 0.2 }}
-              className="flex flex-col gap-5"
+              className="flex flex-col gap-6"
             >
-              <div className="grid grid-cols-2 gap-4">
-                {renderInput("firstName", "First Name", "text", firstName, (e) => setFirstName(e.target.value), "John")}
-                {renderInput("lastName", "Last Name", "text", lastName, (e) => setLastName(e.target.value), "Doe")}
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {renderInput("firstName", "First name", "text", firstName, (e) => setFirstName(e.target.value), "First name", { autoComplete: "given-name" })}
+                {renderInput("lastName", "Last name", "text", lastName, (e) => setLastName(e.target.value), "Last name", { autoComplete: "family-name" })}
               </div>
-              {renderInput("age", "Age", "number", age, (e) => setAge(e.target.value), "18+", { min: "18", max: "120" })}
-            </motion.div>
+              {renderInput("age", "Age", "number", age, (e) => setAge(e.target.value), "18 or older", { min: "18", max: "120", inputMode: "numeric" })}
+            </Motion.div>
           )}
 
           {step === 2 && (
-            <motion.div 
+            <Motion.div 
               key="step2"
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
               transition={{ duration: 0.2 }}
-              className="flex flex-col gap-5"
+              className="flex flex-col gap-6"
             >
-              {renderInput("email", "Email Address", "email", email, (e) => setEmail(e.target.value), "john@example.com")}
-              {renderInput("phone", "Phone Number", "tel", phoneNumber, (e) => setPhoneNumber(e.target.value), "+1 (555) 000-0000")}
-            </motion.div>
+              {renderInput("email", "Email address", "email", email, (e) => setEmail(e.target.value), "name@example.com", { autoComplete: "email" })}
+              {renderInput("phone", "Phone number", "tel", phoneNumber, (e) => setPhoneNumber(e.target.value), "+61 400 000 000", { autoComplete: "tel" })}
+            </Motion.div>
           )}
 
           {step === 3 && (
-            <motion.div 
+            <Motion.div 
               key="step3"
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
               transition={{ duration: 0.2 }}
-              className="flex flex-col gap-5"
+              className="flex flex-col gap-6"
             >
-              {renderInput("username", "Username", "text", username, (e) => setUsername(e.target.value), "johndoe")}
+              {renderInput("username", "Username", "text", username, (e) => setUsername(e.target.value), "Choose a username", { autoComplete: "username" })}
               
-              <div className="group w-full">
-                <label className="block text-xs font-medium text-gray-400 mb-1.5 transition-colors group-focus-within:text-[#D8AF7F]" htmlFor="password">
+              <div className="w-full">
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-warm-gray" htmlFor="password">
                   Password
                 </label>
                 <div className="relative">
@@ -243,13 +246,15 @@ const RegisterForm = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && signupEnabled && handleRegister()}
                     disabled={!signupEnabled}
-                    className="w-full px-4 py-3 bg-[#111] border border-[#222] rounded-xl text-white text-sm focus:border-[#D8AF7F] focus:ring-1 focus:ring-[#D8AF7F] outline-none transition-all pr-12 placeholder-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                    placeholder="Min 6 characters"
+                    autoComplete="new-password"
+                    className="w-full rounded-lg border border-obsidian/20 bg-white py-3.5 pl-4 pr-12 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:border-oxblood focus:ring-2 focus:ring-oxblood/15 disabled:cursor-not-allowed disabled:bg-obsidian/5 disabled:opacity-60"
+                    placeholder="At least 6 characters"
                   />
                   <button 
                     type="button" 
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                    className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center text-warm-gray transition hover:text-oxblood focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? (
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
@@ -259,31 +264,31 @@ const RegisterForm = () => {
                   </button>
                 </div>
               </div>
-            </motion.div>
+            </Motion.div>
           )}
         </AnimatePresence>
       </div>
 
       {error && (
-        <div className="mt-5 flex items-center gap-2 text-red-400 bg-red-500/10 p-3 rounded-lg text-xs font-medium border border-red-500/20">
+        <div className="mt-5 flex items-center gap-2 rounded-lg border border-danger/30 bg-danger/10 p-3 text-xs font-medium text-danger" role="alert">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <span>{error}</span>
         </div>
       )}
       
       {success && (
-        <div className="mt-5 flex items-center gap-2 text-green-400 bg-green-500/10 p-3 rounded-lg text-xs font-medium border border-green-500/20">
+        <div className="mt-5 flex items-center gap-2 rounded-lg border border-success/30 bg-success/10 p-3 text-xs font-medium text-success" role="status">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           <span>{success}</span>
         </div>
       )}
 
-      <div className="flex gap-3 mt-8">
+      <div className="mt-8 flex gap-3">
         {step > 1 && (
           <button
             onClick={handleBack}
             disabled={isLoading}
-            className="px-6 py-3.5 rounded-xl bg-[#222] text-white font-semibold text-sm transition-all hover:bg-[#333]"
+            className="rounded-lg border border-obsidian/20 px-6 py-3.5 text-sm font-semibold text-obsidian transition hover:border-oxblood hover:text-oxblood focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
           >
             Back
           </button>
@@ -292,8 +297,8 @@ const RegisterForm = () => {
         {step < totalSteps ? (
           <button
             onClick={handleNext}
-            disabled={!signupEnabled}
-            className="flex-1 py-3.5 rounded-xl bg-white text-black font-semibold text-sm transition-all hover:bg-[#D8AF7F] disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!signupEnabled || loadingConfig}
+            className="flex-1 rounded-lg bg-oxblood py-3.5 text-sm font-semibold text-white transition hover:bg-oxblood-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Continue
           </button>
@@ -301,15 +306,15 @@ const RegisterForm = () => {
           <button
             onClick={handleRegister}
             disabled={isLoading || !signupEnabled}
-            className={`flex-1 py-3.5 rounded-xl bg-white text-black font-semibold text-sm transition-all duration-300 ${
+            className={`flex-1 rounded-lg bg-oxblood py-3.5 text-sm font-semibold text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood focus-visible:ring-offset-2 ${
               isLoading || !signupEnabled
                 ? "opacity-70 cursor-not-allowed"
-                : "hover:bg-[#D8AF7F] hover:shadow-[0_0_20px_rgba(216,175,127,0.3)] hover:-translate-y-0.5 active:translate-y-0"
+                : "hover:bg-oxblood-dark"
             }`}
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <svg className="h-4 w-4 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 Submitting...
               </span>
             ) : "Complete Setup"}
@@ -317,10 +322,10 @@ const RegisterForm = () => {
         )}
       </div>
 
-      <div className="mt-8 text-center">
-        <p className="text-sm text-gray-500">
+      <div className="mt-8 border-t border-obsidian/10 pt-6 text-center">
+        <p className="text-sm text-warm-gray">
           Already have an account?{" "}
-          <Link to="/login" className="text-white font-medium hover:text-[#D8AF7F] transition-colors">
+          <Link to="/login" className="font-semibold text-oxblood underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood">
             Sign in
           </Link>
         </p>

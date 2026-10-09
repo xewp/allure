@@ -11,13 +11,29 @@ export default {
         'sans': ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
-        gold: {
-          DEFAULT: '#D8AF7F',
-          light: '#dcb887',
-          dark: '#c9a876',
+        obsidian: '#0B0B0D',
+        ink: '#151418',
+        porcelain: '#F4F0E8',
+        oxblood: {
+          DEFAULT: '#7C2339',
+          light: '#9A344F',
+          dark: '#5E192B',
         },
-        charcoal: '#1a1a1a',
-        'warm-gray': '#4F4949',
+        brass: {
+          DEFAULT: '#C5A46D',
+          light: '#D8BE92',
+          dark: '#9B7B49',
+        },
+        taupe: '#AAA19A',
+        success: '#39705B',
+        danger: '#A94444',
+        gold: {
+          DEFAULT: '#C5A46D',
+          light: '#D8BE92',
+          dark: '#9B7B49',
+        },
+        charcoal: '#151418',
+        'warm-gray': '#625D59',
       },
       spacing: {
         '18': '4.5rem',
@@ -34,9 +50,10 @@ export default {
         '9xl': '7rem',
       },
       boxShadow: {
-        'gold': '0 0 24px rgba(216, 175, 127, 0.3)',
-        'gold-lg': '0 0 32px rgba(216, 175, 127, 0.5)',
-        'elegant': '0 4px 24px rgba(0, 0, 0, 0.4)',
+        'gold': '0 12px 32px rgba(11, 11, 13, 0.18)',
+        'gold-lg': '0 18px 48px rgba(11, 11, 13, 0.24)',
+        'elegant': '0 16px 45px rgba(11, 11, 13, 0.22)',
+        'editorial': '0 20px 60px rgba(11, 11, 13, 0.16)',
       },
       animation: {
         'fade-in-slow': 'fadeIn 0.8s ease-out forwards',

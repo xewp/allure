@@ -1,22 +1,55 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const ImageZoomModal = ({ isOpen, imageUrl, altText, onClose }) => {
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !imageUrl) return null;
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 animate-fade-in"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-obsidian/95 p-3 backdrop-blur-md"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Expanded image of ${altText}`}
     >
-      <div className="relative w-screen h-screen p-4 md:p-8" onClick={(e) => e.stopPropagation()}>
-        <img src={imageUrl} alt={altText} className="w-full h-full object-contain rounded-lg" />
+      <div
+        className="relative h-full w-full"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <img
+          src={imageUrl}
+          alt={altText}
+          className="h-full w-full object-contain"
+        />
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75 transition-colors"
+          className="absolute right-1 top-1 flex h-11 w-11 items-center justify-center rounded-full border border-porcelain/20 bg-obsidian/75 text-porcelain backdrop-blur-md transition-colors hover:bg-porcelain hover:text-obsidian focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass sm:right-3 sm:top-3"
           aria-label="Close image view"
         >
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            aria-hidden="true"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.8}
+              d="M6 18 18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>

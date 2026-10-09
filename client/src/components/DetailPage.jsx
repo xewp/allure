@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Header from "./Header";
 import LoadingSpinner from "./LoadingSpinner";
 import API_URL from "../config/api";
 
 const DetailPage = () => {
-  const { name } = useParams(); // Get name from URL (for display only)
   const location = useLocation();
   const navigate = useNavigate();
   const themeColor = "#D8AF7F";
@@ -20,7 +19,7 @@ const DetailPage = () => {
   const [modelData, setModelData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [visibleSections, setVisibleSections] = useState(
+  const [_visibleSections, setVisibleSections] = useState(
     new Set(["gallery", "details"])
   );
   const [mounted, setMounted] = useState(false);
@@ -89,7 +88,7 @@ const DetailPage = () => {
           );
           setIsFavorite(isAlreadyFavorite);
         }
-      } catch (error) {
+      } catch {
 
         setModelData(null);
       } finally {
@@ -172,8 +171,8 @@ const DetailPage = () => {
         }
         localStorage.setItem("user", JSON.stringify(user));
       }
-    } catch (error) {
-
+    } catch {
+      // Keep the existing favorite state when the request cannot be completed.
     }
   };
 

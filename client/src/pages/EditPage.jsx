@@ -85,8 +85,7 @@ const EditPage = () => {
           text: data.message || "Failed to update profile",
         });
       }
-    } catch (error) {
-
+    } catch {
       setMessage({
         type: "error",
         text: "An error occurred while updating profile",
@@ -160,8 +159,7 @@ const EditPage = () => {
           text: data.message || "Failed to change password",
         });
       }
-    } catch (error) {
-
+    } catch {
       setPasswordMessage({
         type: "error",
         text: "An error occurred while changing password",

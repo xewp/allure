@@ -93,17 +93,26 @@ const ProfilePage = () => {
       const storedUser = JSON.parse(sessionStorage.getItem("user") || localStorage.getItem("user") || "{}");
       storedUser.emailVerified = true;
       sessionStorage.setItem("user", JSON.stringify(storedUser));
-    } catch (err) {
-
+    } catch {
+      // Keep the existing profile visible if the verification refresh fails.
     }
   };
 
+  const initials = `${user?.firstName?.charAt(0) || ""}${user?.lastName?.charAt(0) || ""}`.toUpperCase();
+  const memberSince = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString("en-AU", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "Not available";
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block w-16 h-16 border-4 border-gold border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-xl text-gray-300">Loading profile...</p>
+      <div className="flex min-h-screen items-center justify-center bg-porcelain text-obsidian">
+        <div className="text-center" role="status">
+          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-obsidian/15 border-t-oxblood" />
+          <p className="text-sm font-medium text-warm-gray">Loading your account...</p>
         </div>
       </div>
     );
@@ -111,23 +120,23 @@ const ProfilePage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white flex flex-col">
+      <div className="flex min-h-screen flex-col bg-porcelain text-obsidian">
         <Header activeTab="PROFILE" />
-        <div className="flex-grow flex items-center justify-center">
-          <div className="text-center max-w-md">
-            <div className="text-6xl mb-4">⚠️</div>
-            <h2 className="text-2xl font-bold text-red-400 mb-2">
+        <main className="flex flex-grow items-center justify-center px-5 py-16">
+          <div className="max-w-md text-center" role="alert">
+            <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-danger/30 bg-danger/10 font-serif text-2xl text-danger">!</div>
+            <h2 className="mb-2 font-serif text-3xl">
               Error Loading Profile
             </h2>
-            <p className="text-gray-400 mb-6">{error}</p>
+            <p className="mb-7 text-sm leading-6 text-warm-gray">{error}</p>
             <button
               onClick={() => navigate("/main")}
-              className="px-8 py-3 bg-gold text-black font-semibold rounded-full hover:scale-105 transition-all duration-300"
+              className="rounded-lg bg-oxblood px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-oxblood-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood focus-visible:ring-offset-2"
             >
-              Go to Home
+              Browse talent
             </button>
           </div>
-        </div>
+        </main>
         <Footer />
       </div>
     );
@@ -135,130 +144,108 @@ const ProfilePage = () => {
 
   return (
     <div
-      className={`min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white flex flex-col font-sans relative overflow-hidden transition-opacity duration-500 ${
+      className={`relative flex min-h-screen flex-col overflow-hidden bg-porcelain font-sans text-obsidian transition-opacity duration-500 ${
         mounted ? "opacity-100" : "opacity-0"
       }`}
     >
-      {/* Decorative Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-gold/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-tl from-gold/10 to-transparent rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        ></div>
-      </div>
-
       <Header activeTab="PROFILE" />
 
-      <main className="flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10">
-        <div className="w-full max-w-5xl bg-charcoal/60 backdrop-blur-xl rounded-3xl border border-gold/20 shadow-gold-lg p-8 md:p-12 lg:p-16 animate-fade-in-slow hover:border-gold/40 transition-all duration-500">
-          {/* Profile Header Section */}
-          <div className="text-center mb-12">
-            <div className="relative inline-block mb-6">
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-gold/30 shadow-gold-lg overflow-hidden mx-auto hover:border-gold/60 hover:shadow-gold transition-all duration-500 group bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center">
-                <span className="text-6xl md:text-7xl font-bold text-gold">
-                  {user?.firstName?.charAt(0).toUpperCase()}
-                  {user?.lastName?.charAt(0).toUpperCase()}
+      <main className="relative z-10 flex-grow px-4 pb-28 pt-8 sm:px-6 lg:px-8 lg:pb-16 lg:pt-12">
+        <div className="mx-auto w-full max-w-6xl">
+          <section className="relative overflow-hidden bg-ink px-6 py-9 text-porcelain sm:px-9 lg:px-12 lg:py-12">
+            <div className="absolute inset-y-0 right-0 w-1/3 border-l border-porcelain/10" aria-hidden="true" />
+            <div className="relative flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
+              <div className="flex items-center gap-5 sm:gap-7">
+                <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full border border-brass/50 bg-brass/10 font-serif text-3xl text-brass sm:h-24 sm:w-24 sm:text-4xl" aria-hidden="true">
+                  {initials || "V"}
+                </div>
+                <div>
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-brass">VELORA account</p>
+                  <h1 className="font-serif text-3xl leading-tight sm:text-5xl">{user?.firstName} {user?.lastName}</h1>
+                  <p className="mt-2 text-sm text-taupe">Your details, access, and account security.</p>
+                </div>
+              </div>
+              <button
+                onClick={handleEditProfile}
+                className="w-full rounded-lg bg-porcelain px-5 py-3 text-sm font-semibold text-obsidian transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass sm:w-auto"
+              >
+                Edit profile
+              </button>
+            </div>
+          </section>
+
+          <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.55fr)_minmax(280px,0.75fr)]">
+            <section className="border border-obsidian/10 bg-white p-5 sm:p-8" aria-labelledby="personal-details-title">
+              <div className="mb-7 flex items-center justify-between gap-4 border-b border-obsidian/10 pb-5">
+                <div>
+                  <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-oxblood">Account</p>
+                  <h2 id="personal-details-title" className="font-serif text-2xl sm:text-3xl">Personal details</h2>
+                </div>
+                <span className={`rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] ${user?.emailVerified ? "bg-success/10 text-success" : "bg-brass/20 text-brass-dark"}`}>
+                  {user?.emailVerified ? "Verified" : "Verification pending"}
                 </span>
               </div>
-            </div>
 
-            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold mb-3 bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent animate-title-entrance leading-tight">
-              {user?.firstName} {user?.lastName}
-            </h2>
-            <p className="text-lg md:text-xl text-gray-300/80 font-light tracking-wide">
-              Welcome to your personal dashboard
-            </p>
-          </div>
-
-          {/* Profile Information Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-            {/* Email */}
-            <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 border border-gold/10 hover:border-gold/30 transition-all duration-300">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-gold/20 flex items-center justify-center">
-                  <span className="text-gold text-xl">✉</span>
+              <dl className="grid gap-x-8 sm:grid-cols-2">
+                <div className="border-b border-obsidian/10 py-5 sm:pt-0">
+                  <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-taupe">Email address</dt>
+                  <dd className="mt-2 break-all text-sm font-medium text-obsidian">{user?.email || "Not provided"}</dd>
                 </div>
-                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
-                  Email Address
-                </h3>
-              </div>
-              <p className="text-lg text-white font-medium pl-13">
-                {user?.email}
-              </p>
-            </div>
-
-            {/* Phone Number */}
-            <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 border border-gold/10 hover:border-gold/30 transition-all duration-300">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-gold/20 flex items-center justify-center">
-                  <span className="text-gold text-xl">📱</span>
+                <div className="border-b border-obsidian/10 py-5 sm:pt-0">
+                  <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-taupe">Phone number</dt>
+                  <dd className="mt-2 text-sm font-medium text-obsidian">{user?.phoneNumber || "Not provided"}</dd>
                 </div>
-                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
-                  Phone Number
-                </h3>
-              </div>
-              <p className="text-lg text-white font-medium pl-13">
-                {user?.phoneNumber}
-              </p>
-            </div>
-
-            {/* Age */}
-            <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 border border-gold/10 hover:border-gold/30 transition-all duration-300">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-gold/20 flex items-center justify-center">
-                  <span className="text-gold text-xl">🎂</span>
+                <div className="border-b border-obsidian/10 py-5">
+                  <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-taupe">Age</dt>
+                  <dd className="mt-2 text-sm font-medium text-obsidian">{user?.age ? `${user.age} years` : "Not provided"}</dd>
                 </div>
-                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
-                  Age
-                </h3>
-              </div>
-              <p className="text-lg text-white font-medium pl-13">
-                {user?.age} years old
-              </p>
-            </div>
-
-            {/* Member Since */}
-            <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 border border-gold/10 hover:border-gold/30 transition-all duration-300">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg bg-gold/20 flex items-center justify-center">
-                  <span className="text-gold text-xl">📅</span>
+                <div className="border-b border-obsidian/10 py-5">
+                  <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-taupe">Member since</dt>
+                  <dd className="mt-2 text-sm font-medium text-obsidian">{memberSince}</dd>
                 </div>
-                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
-                  Member Since
-                </h3>
-              </div>
-              <p className="text-lg text-white font-medium pl-13">
-                {new Date(user?.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-            </div>
-          </div>
+              </dl>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap justify-center gap-4 pt-6 border-t border-gold/20">
-            <button
-              onClick={() => navigate("/main")}
-              className="group relative px-8 py-3 bg-gold text-black font-semibold text-base rounded-full overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-gold-lg"
-            >
-              <span className="relative z-10">Home</span>
-              <div className="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-            </button>
-            <button
-              onClick={handleEditProfile}
-              className="px-8 py-3 border-2 border-gold/50 text-gold font-semibold text-base rounded-full hover:bg-gold/10 hover:border-gold transition-all duration-300"
-            >
-              Edit Profile
-            </button>
-            <button
-              onClick={handleLogout}
-              className="px-8 py-3 border-2 border-gray-500/30 text-gray-300 font-semibold text-base rounded-full hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/50 transition-all duration-300"
-            >
-              Logout
-            </button>
+              {!user?.emailVerified && (
+                <div className="mt-7 flex flex-col gap-4 border border-brass/40 bg-brass/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-obsidian">Verify your email address</p>
+                    <p className="mt-1 text-xs leading-5 text-warm-gray">Confirm your email to keep your account secure.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleVerifyEmail}
+                    className="flex-shrink-0 rounded-lg bg-obsidian px-5 py-3 text-xs font-semibold text-white transition hover:bg-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
+                  >
+                    Verify email
+                  </button>
+                </div>
+              )}
+            </section>
+
+            <aside className="border border-obsidian/10 bg-white p-5 sm:p-8" aria-labelledby="account-actions-title">
+              <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-oxblood">Shortcuts</p>
+              <h2 id="account-actions-title" className="font-serif text-2xl sm:text-3xl">Account actions</h2>
+              <div className="mt-7 flex flex-col">
+                <button
+                  onClick={() => navigate("/main")}
+                  className="flex items-center justify-between border-t border-obsidian/10 py-4 text-left text-sm font-semibold transition hover:text-oxblood focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
+                >
+                  Browse talent <span aria-hidden="true">→</span>
+                </button>
+                <button
+                  onClick={handleEditProfile}
+                  className="flex items-center justify-between border-t border-obsidian/10 py-4 text-left text-sm font-semibold transition hover:text-oxblood focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
+                >
+                  Edit details &amp; password <span aria-hidden="true">→</span>
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center justify-between border-y border-obsidian/10 py-4 text-left text-sm font-semibold text-danger transition hover:bg-danger/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger"
+                >
+                  Log out <span aria-hidden="true">→</span>
+                </button>
+              </div>
+            </aside>
           </div>
         </div>
       </main>

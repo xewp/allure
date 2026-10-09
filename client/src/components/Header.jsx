@@ -56,8 +56,7 @@ const Header = ({ activeTab, onTabChange }) => {
         // Fallback if fetch fails
         navigate("/booking");
       }
-    } catch (error) {
-
+    } catch {
       navigate("/booking");
     } finally {
       setLoading(false);

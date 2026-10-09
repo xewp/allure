@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import API_URL from "../../config/api";
 import Modal from "../../components/common/Modal";
 import OTPModal from "../../components/auth/OTPModal";
@@ -194,7 +194,7 @@ const LoginForm = () => {
           setError(data.message || "Invalid email or password");
         }
       }
-    } catch (err) {
+    } catch {
       setError("Unable to connect to server. Please try again.");
     } finally {
       setIsLoading(false);
@@ -205,14 +205,19 @@ const LoginForm = () => {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="mb-10">
-        <h2 className="text-3xl font-semibold text-white mb-2 tracking-tight">Welcome back</h2>
-        <p className="text-gray-400 text-sm">Please enter your details to sign in.</p>
+      <div className="mb-9">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-oxblood">
+          Client portal
+        </p>
+        <h2 className="font-serif text-4xl leading-tight text-obsidian sm:text-5xl">Welcome back</h2>
+        <p className="mt-3 text-sm leading-6 text-warm-gray">
+          Sign in to discover talent and manage your bookings.
+        </p>
       </div>
 
-      <div className="flex flex-col gap-5">
-        <div className="group">
-          <label className="block text-xs font-medium text-gray-400 mb-1.5 transition-colors group-focus-within:text-[#D8AF7F]" htmlFor="username">
+      <div className="flex flex-col gap-6">
+        <div>
+          <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-warm-gray" htmlFor="username">
             Email address
           </label>
           <input
@@ -221,21 +226,22 @@ const LoginForm = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             disabled={isLocked}
-            className="w-full px-4 py-3 bg-[#111] border border-[#222] rounded-xl text-white text-sm focus:border-[#D8AF7F] focus:ring-1 focus:ring-[#D8AF7F] outline-none transition-all placeholder-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            placeholder="Enter your email"
+            autoComplete="email"
+            className="w-full rounded-lg border border-obsidian/20 bg-white px-4 py-3.5 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:border-oxblood focus:ring-2 focus:ring-oxblood/15 disabled:cursor-not-allowed disabled:bg-obsidian/5 disabled:opacity-60"
+            placeholder="name@example.com"
             aria-label="Email address or username"
           />
         </div>
 
-        <div className="group">
-          <div className="flex justify-between items-center mb-1.5">
-            <label className="block text-xs font-medium text-gray-400 transition-colors group-focus-within:text-[#D8AF7F]" htmlFor="password">
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <label className="block text-xs font-semibold uppercase tracking-[0.16em] text-warm-gray" htmlFor="password">
               Password
             </label>
             <button
               type="button"
               onClick={() => setShowForgotPasswordModal(true)}
-              className="text-xs font-medium text-gray-400 hover:text-white transition-colors"
+              className="text-xs font-semibold text-oxblood underline-offset-4 transition hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
             >
               Forgot password?
             </button>
@@ -249,14 +255,15 @@ const LoginForm = () => {
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && !isButtonDisabled && handleLogin()}
               disabled={isLocked}
-              className="w-full px-4 py-3 bg-[#111] border border-[#222] rounded-xl text-white text-sm focus:border-[#D8AF7F] focus:ring-1 focus:ring-[#D8AF7F] outline-none transition-all pr-12 placeholder-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              placeholder="••••••••"
+              autoComplete="current-password"
+              className="w-full rounded-lg border border-obsidian/20 bg-white py-3.5 pl-4 pr-12 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:border-oxblood focus:ring-2 focus:ring-oxblood/15 disabled:cursor-not-allowed disabled:bg-obsidian/5 disabled:opacity-60"
+              placeholder="Enter your password"
               aria-label="Password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+              className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center text-warm-gray transition hover:text-oxblood focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
@@ -272,84 +279,84 @@ const LoginForm = () => {
         <AnimatePresence mode="wait">
           {/* Locked state — red banner with countdown */}
           {isLocked && (
-            <motion.div
+            <Motion.div
               key="locked"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="flex flex-col gap-2 p-4 rounded-xl bg-red-500/10 border border-red-500/20"
+              className="flex flex-col gap-2 rounded-lg border border-danger/30 bg-danger/10 p-4"
               role="alert"
               aria-live="assertive"
               aria-label="Account temporarily locked"
             >
               <div className="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400 flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 text-danger">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
-                <span className="text-red-400 text-xs font-semibold">Too many failed login attempts</span>
+                <span className="text-xs font-semibold text-danger">Too many failed login attempts</span>
               </div>
-              <p className="text-red-400/80 text-xs">
+              <p className="text-xs text-danger">
                 You are temporarily locked. Try again in{" "}
-                <span className="font-mono font-bold text-red-300 text-sm">{countdown}</span>
+                <span className="font-mono text-sm font-bold">{countdown}</span>
               </p>
-            </motion.div>
+            </Motion.div>
           )}
 
           {/* Warning state — remaining attempts (only show after first failure, not when locked) */}
           {!isLocked && remainingAttempts !== null && remainingAttempts > 0 && (
-            <motion.div
+            <Motion.div
               key="warning"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20"
+              className="flex items-center gap-2 rounded-lg border border-brass/50 bg-brass/15 p-3"
               role="status"
               aria-live="polite"
               aria-label={`${remainingAttempts} login attempt${remainingAttempts !== 1 ? 's' : ''} remaining`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-400 flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 text-brass-dark">
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
               </svg>
-              <span className="text-amber-400 text-xs font-medium">
+              <span className="text-xs font-medium text-obsidian">
                 You have <span className="font-bold">{remainingAttempts}</span> login attempt{remainingAttempts !== 1 ? 's' : ''} remaining.
               </span>
-            </motion.div>
+            </Motion.div>
           )}
         </AnimatePresence>
 
         {info && (
-          <div className="flex items-center gap-2 text-blue-400 bg-blue-500/10 p-3 rounded-lg text-xs font-medium border border-blue-500/20">
+          <div className="flex items-center gap-2 rounded-lg border border-brass/40 bg-brass/10 p-3 text-xs font-medium text-obsidian" role="status">
             <span>{info}</span>
           </div>
         )}
 
         {/* General error message (only show when not displaying lockout UI) */}
         {error && !isLocked && (
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
-            className="flex items-center gap-2 text-red-400 bg-red-500/10 p-3 rounded-lg text-xs font-medium border border-red-500/20"
+            className="flex items-center gap-2 rounded-lg border border-danger/30 bg-danger/10 p-3 text-xs font-medium text-danger"
             role="alert"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <span>{error}</span>
-          </motion.div>
+          </Motion.div>
         )}
 
         {/* Demo Test Account Quick Fill */}
-        <div className="p-3.5 bg-[#141414] border border-[#2a2a2a] rounded-xl flex items-center justify-between gap-3 text-xs group hover:border-[#D8AF7F]/40 transition-all duration-300">
+        <div className="flex items-center justify-between gap-3 border-y border-obsidian/10 py-4 text-xs">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#D8AF7F]/10 border border-[#D8AF7F]/20 flex items-center justify-center text-[#D8AF7F] group-hover:scale-105 transition-transform">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full border border-brass/50 bg-brass/15 text-brass-dark">
               <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 0121 9z" />
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="text-gray-200 font-medium text-xs">Demo Account</span>
-              <span className="text-[11px] text-gray-500">Auto-fill credentials for instant access</span>
+              <span className="text-xs font-semibold text-obsidian">Preview account</span>
+              <span className="text-[11px] text-warm-gray">Fill the demo credentials</span>
             </div>
           </div>
           <button
@@ -359,7 +366,7 @@ const LoginForm = () => {
               setPassword("test123");
               setError("");
             }}
-            className="px-3.5 py-1.5 bg-[#D8AF7F] hover:bg-[#c49a6c] text-black rounded-lg text-xs font-semibold transition-all hover:shadow-[0_0_12px_rgba(216,175,127,0.3)] active:scale-95 flex-shrink-0"
+            className="flex-shrink-0 rounded-md border border-obsidian/20 px-3.5 py-2 text-xs font-semibold text-obsidian transition hover:border-oxblood hover:text-oxblood focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
           >
             Fill Demo
           </button>
@@ -368,10 +375,10 @@ const LoginForm = () => {
         <button
           onClick={handleLogin}
           disabled={isButtonDisabled}
-          className={`mt-4 w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-300 ${
+          className={`mt-2 w-full rounded-lg py-3.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood focus-visible:ring-offset-2 focus-visible:ring-offset-porcelain ${
             isButtonDisabled
-              ? "bg-[#333] text-gray-500 cursor-not-allowed opacity-70"
-              : "bg-white text-black hover:bg-[#D8AF7F] hover:shadow-[0_0_20px_rgba(216,175,127,0.3)] hover:-translate-y-0.5 active:translate-y-0"
+              ? "cursor-not-allowed bg-obsidian/15 text-warm-gray"
+              : "bg-oxblood text-white hover:bg-oxblood-dark"
           }`}
           aria-label={isLocked ? "Login disabled — account temporarily locked" : "Sign in"}
           aria-disabled={isButtonDisabled}
@@ -390,12 +397,12 @@ const LoginForm = () => {
         </button>
       </div>
 
-      <div className="mt-8 text-center">
-        <p className="text-sm text-gray-500">
+      <div className="mt-8 border-t border-obsidian/10 pt-6 text-center">
+        <p className="text-sm text-warm-gray">
           Don't have an account?{" "}
           <Link
             to="/register"
-            className="text-white font-medium hover:text-[#D8AF7F] transition-colors"
+            className="font-semibold text-oxblood underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
           >
             Create one
           </Link>

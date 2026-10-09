@@ -4,7 +4,6 @@ import Header from "../../components/layout/Header";
 import API_URL from "../../config/api";
 
 const BookingPage = () => {
-  const themeColor = "#dcb887";
   const [activeTab, setActiveTab] = useState("LOCAL");
   const navigate = useNavigate();
 
@@ -26,6 +25,19 @@ const BookingPage = () => {
   const [bookingsLoading, setBookingsLoading] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showBookingDetails, setShowBookingDetails] = useState(false);
+
+  useEffect(() => {
+    if (!showConfirmation && !showBookingDetails) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key !== "Escape") return;
+      setShowConfirmation(false);
+      setShowBookingDetails(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showConfirmation, showBookingDetails]);
 
   // Fetch user's favorites and auto-fill name on mount
   useEffect(() => {
@@ -70,8 +82,8 @@ const BookingPage = () => {
             }
           }
         }
-      } catch (err) {
-
+      } catch {
+        // The form remains available; errors are surfaced when the user submits.
       }
     };
 
@@ -101,7 +113,7 @@ const BookingPage = () => {
           setBookings(data.bookings || []);
         }
       }
-    } catch (err) {
+    } catch {
       // Silent error handling for production
     } finally {
       setBookingsLoading(false);
@@ -121,7 +133,7 @@ const BookingPage = () => {
         const model = models.find((m) => m._id === modelId);
         return model?.imageUrl || "";
       }
-    } catch (err) {
+    } catch {
       // Silent error handling
     }
     return "";
@@ -222,8 +234,7 @@ const BookingPage = () => {
       } else {
         setError(data.message || "Failed to create booking");
       }
-    } catch (err) {
-
+    } catch {
       setError("Server error. Please try again later.");
     } finally {
       setLoading(false);
@@ -238,327 +249,251 @@ const BookingPage = () => {
       fav._id === formData.selectedModel,
   );
 
+  const fieldClassName =
+    "w-full rounded-xl border border-porcelain/15 bg-obsidian px-4 py-3.5 text-base text-porcelain outline-none transition placeholder:text-taupe/60 focus:border-brass focus:ring-2 focus:ring-brass/20";
+
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case "confirmed":
+        return "border-success/40 bg-success/15 text-emerald-200";
+      case "completed":
+        return "border-sky-400/40 bg-sky-400/10 text-sky-200";
+      case "cancelled":
+        return "border-danger/40 bg-danger/15 text-red-200";
+      default:
+        return "border-brass/40 bg-brass/10 text-brass-light";
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
-      {/* Header */}
+    <div className="min-h-screen overflow-x-hidden bg-obsidian pb-24 text-porcelain md:pb-0">
       <Header activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {/* Main Content */}
-      <div className="flex items-center justify-center min-h-[calc(100vh-100px)] p-4 md:p-8 animate-fade-in">
-        <div className="w-full max-w-6xl rounded-3xl p-6 md:p-10 lg:p-12 flex flex-col lg:flex-row gap-8 md:gap-10 lg:gap-12 items-center animate-fade-in-up bg-black border-2 border-[#D8AF7F]/30">
-          {/* Left Side - Text Content */}
-          <div className="w-full lg:w-1/2 space-y-6 md:space-y-8">
-            <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-semibold text-[#D8AF7F]">
-              WE'RE HERE TO ELEVATE YOUR EXPERIENCE
-            </p>
+      <main>
+        <section className="border-b border-porcelain/10">
+          <div className="mx-auto grid max-w-7xl gap-10 px-3 py-12 sm:px-6 md:py-20 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20 lg:px-8">
+            <div className="self-start lg:sticky lg:top-28">
+              <p className="editorial-kicker">Private bookings</p>
+              <h1 className="mt-4 max-w-xl font-serif text-4xl leading-[1.04] sm:text-5xl lg:text-6xl">
+                Let&apos;s shape an
+                <span className="block italic text-brass">unforgettable moment.</span>
+              </h1>
+              <p className="mt-6 max-w-lg text-base leading-7 text-taupe sm:text-lg">
+                Tell us about your event and select a favorite talent. The
+                VELORA team will review the details and coordinate the next
+                steps with you.
+              </p>
 
-            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              <span className="italic text-[#D8AF7F]">Discuss</span>{" "}
-              <span className="text-white">Your Needs.</span>
-            </h2>
+              <div className="mt-10 grid grid-cols-3 border-y border-porcelain/15 py-5 text-center lg:text-left">
+                <div>
+                  <span className="block font-serif text-2xl text-porcelain">01</span>
+                  <span className="mt-1 block text-[0.65rem] uppercase tracking-[0.18em] text-taupe">Select</span>
+                </div>
+                <div className="border-x border-porcelain/15 px-2 lg:px-5">
+                  <span className="block font-serif text-2xl text-porcelain">02</span>
+                  <span className="mt-1 block text-[0.65rem] uppercase tracking-[0.18em] text-taupe">Request</span>
+                </div>
+                <div className="pl-2 lg:pl-5">
+                  <span className="block font-serif text-2xl text-porcelain">03</span>
+                  <span className="mt-1 block text-[0.65rem] uppercase tracking-[0.18em] text-taupe">Confirm</span>
+                </div>
+              </div>
+            </div>
 
-            <p className="text-gray-300 text-base md:text-lg leading-relaxed">
-              Looking for professional PR models tailored to your brand, event,
-              or campaign?
-            </p>
+            <div className="rounded-2xl border border-porcelain/15 bg-ink p-5 shadow-editorial sm:p-8 lg:p-10">
+              <div className="mb-8 flex items-end justify-between gap-4 border-b border-porcelain/10 pb-5">
+                <div>
+                  <p className="editorial-kicker">Booking request</p>
+                  <h2 className="mt-2 font-serif text-3xl">Event details</h2>
+                </div>
+                <span className="text-xs text-taupe">* Required</span>
+              </div>
 
-            <p className="text-[#D8AF7F] text-base md:text-lg leading-relaxed font-light">
-              Reach out to Aura Select and let us deliver elegance, discretion,
-              and excellence.
-            </p>
-          </div>
-
-          {/* Right Side - Form */}
-          <div className="w-full lg:w-1/2">
-            <div className="rounded-3xl p-6 md:p-8 shadow-lg bg-gradient-to-b from-[#3a3a3a] via-[#5a5a5a] to-[#D8AF7F]">
-              {/* Success Message */}
               {success && (
-                <div className="mb-4 p-3 bg-green-500 text-white rounded-lg text-center">
-                  ✓ Booking request submitted successfully!
+                <div
+                  role="status"
+                  className="mb-5 rounded-xl border border-success/40 bg-success/15 p-4 text-sm text-emerald-100"
+                >
+                  Booking request submitted successfully.
                 </div>
               )}
 
-              {/* Error Message */}
               {error && (
-                <div className="mb-4 p-3 bg-red-500/20 border border-red-500 text-red-200 rounded-lg text-center">
+                <div
+                  role="alert"
+                  className="mb-5 rounded-xl border border-danger/50 bg-danger/15 p-4 text-sm text-red-100"
+                >
                   {error}
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Name is auto-filled in background from user account - not shown to user */}
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div className="sm:col-span-2">
+                    <label htmlFor="company" className="mb-2 block text-sm font-medium text-porcelain">
+                      Company <span className="font-normal text-taupe">(optional)</span>
+                    </label>
+                    <input
+                      id="company"
+                      type="text"
+                      name="company"
+                      value={formData.company}
+                      onChange={handleInputChange}
+                      placeholder="Company or brand name"
+                      className={fieldClassName}
+                    />
+                  </div>
 
-                {/* Company Field */}
-                <div>
-                  <label className="block text-sm font-semibold text-white mb-2">
-                    Company
-                  </label>
-                  <input
-                    type="text"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleInputChange}
-                    placeholder="Company name (optional)"
-                    className="w-full px-4 py-3 md:py-4 rounded-lg bg-[#D8AF7F] placeholder-black/70 text-black text-base focus:outline-none focus:ring-2 focus:ring-[#C9A87C] transition-all"
-                  />
-                </div>
+                  <div className="sm:col-span-2">
+                    <label htmlFor="event" className="mb-2 block text-sm font-medium text-porcelain">
+                      Event *
+                    </label>
+                    <input
+                      id="event"
+                      type="text"
+                      name="event"
+                      value={formData.event}
+                      onChange={handleInputChange}
+                      placeholder="Event name or type"
+                      className={fieldClassName}
+                      required
+                    />
+                  </div>
 
-                {/* Event Field */}
-                <div>
-                  <label className="block text-sm font-semibold text-white mb-2">
-                    Event *
-                  </label>
-                  <input
-                    type="text"
-                    name="event"
-                    value={formData.event}
-                    onChange={handleInputChange}
-                    placeholder="Event name or type"
-                    className="w-full px-4 py-3 md:py-4 rounded-lg bg-[#D8AF7F] placeholder-black/70 text-black text-base focus:outline-none focus:ring-2 focus:ring-[#C9A87C] transition-all"
-                    required
-                  />
-                </div>
+                  <div>
+                    <label htmlFor="eventDate" className="mb-2 block text-sm font-medium text-porcelain">
+                      Event date *
+                    </label>
+                    <input
+                      id="eventDate"
+                      type="date"
+                      name="eventDate"
+                      value={formData.eventDate}
+                      onChange={handleInputChange}
+                      min={new Date().toISOString().split("T")[0]}
+                      className={fieldClassName}
+                      required
+                    />
+                  </div>
 
-                {/* Event Date Field */}
-                <div>
-                  <label className="block text-sm font-semibold text-white mb-2">
-                    Event Date *
-                  </label>
-                  <input
-                    type="date"
-                    name="eventDate"
-                    value={formData.eventDate}
-                    onChange={handleInputChange}
-                    min={new Date().toISOString().split("T")[0]}
-                    className="w-full px-4 py-3 md:py-4 rounded-lg bg-[#D8AF7F] text-black text-base focus:outline-none focus:ring-2 focus:ring-[#C9A87C] transition-all"
-                    required
-                  />
-                </div>
+                  <div>
+                    <label htmlFor="eventTime" className="mb-2 block text-sm font-medium text-porcelain">
+                      Event time *
+                    </label>
+                    <input
+                      id="eventTime"
+                      type="time"
+                      name="eventTime"
+                      value={formData.eventTime}
+                      onChange={handleInputChange}
+                      className={fieldClassName}
+                      required
+                    />
+                  </div>
 
-                {/* Event Time Field */}
-                <div>
-                  <label className="block text-sm font-semibold text-white mb-2">
-                    Event Time *
-                  </label>
-                  <input
-                    type="time"
-                    name="eventTime"
-                    value={formData.eventTime}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 md:py-4 rounded-lg bg-[#D8AF7F] text-black text-base focus:outline-none focus:ring-2 focus:ring-[#C9A87C] transition-all"
-                    required
-                  />
-                </div>
-
-                {/* Model Selection Dropdown */}
-                <div>
-                  <label className="block text-sm font-semibold text-white mb-2">
-                    Select Model (From Your Favorites) *
-                  </label>
-                  <select
-                    name="selectedModel"
-                    value={formData.selectedModel}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 md:py-4 rounded-lg bg-[#D8AF7F] text-black text-base focus:outline-none focus:ring-2 focus:ring-[#C9A87C] transition-all"
-                    required
-                  >
-                    <option value="">-- Choose a model --</option>
-                    {favorites.length === 0 ? (
-                      <option value="" disabled>
-                        No favorites yet. Add models to favorites first.
-                      </option>
-                    ) : (
-                      favorites.map((fav) => (
-                        <option key={fav.modelId} value={fav.modelId}>
-                          {fav.name} ({fav.category || "Local"})
+                  <div className="sm:col-span-2">
+                    <label htmlFor="selectedModel" className="mb-2 block text-sm font-medium text-porcelain">
+                      Talent from your favorites *
+                    </label>
+                    <select
+                      id="selectedModel"
+                      name="selectedModel"
+                      value={formData.selectedModel}
+                      onChange={handleInputChange}
+                      className={fieldClassName}
+                      required
+                    >
+                      <option value="">Choose a talent</option>
+                      {favorites.length === 0 ? (
+                        <option value="" disabled>
+                          No favorites yet. Add talent to favorites first.
                         </option>
-                      ))
-                    )}
-                  </select>
+                      ) : (
+                        favorites.map((fav) => (
+                          <option key={fav.modelId} value={fav.modelId}>
+                            {fav.name} ({fav.category || "Local"})
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </div>
                 </div>
 
-                {/* Submit Button */}
-                <div className="flex justify-center pt-4">
-                  <button
-                    type="submit"
-                    disabled={loading || favorites.length === 0}
-                    className="px-8 md:px-10 py-2 md:py-3 text-base md:text-lg rounded-md bg-[#D8AF7F] text-black font-normal transition-all hover:bg-[#C9A87C] disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? "Submitting..." : "Book Now"}
-                  </button>
-                </div>
+                {selectedModelData && (
+                  <div className="flex items-center gap-4 rounded-xl border border-brass/30 bg-brass/5 p-3">
+                    {selectedModelData.imageUrl && (
+                      <img
+                        src={selectedModelData.imageUrl}
+                        alt=""
+                        className="h-16 w-12 rounded-lg object-cover"
+                      />
+                    )}
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.18em] text-brass">Selected talent</p>
+                      <p className="mt-1 font-serif text-xl">{selectedModelData.name}</p>
+                    </div>
+                  </div>
+                )}
 
                 {favorites.length === 0 && (
-                  <p className="text-center text-sm text-white/80 italic">
-                    Please add models to your favorites before booking.
-                  </p>
+                  <div className="rounded-xl border border-porcelain/10 bg-obsidian/50 p-4 text-sm leading-6 text-taupe">
+                    Add at least one talent to your favorites before making a
+                    booking.
+                    <button
+                      type="button"
+                      onClick={() => navigate("/main")}
+                      className="ml-1 font-semibold text-brass underline decoration-brass/40 underline-offset-4"
+                    >
+                      Browse talent
+                    </button>
+                  </div>
                 )}
+
+                <button
+                  type="submit"
+                  disabled={loading || favorites.length === 0}
+                  className="w-full rounded-xl bg-oxblood px-6 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-porcelain transition hover:bg-oxblood-light disabled:cursor-not-allowed disabled:opacity-45"
+                >
+                  {loading ? "Submitting…" : "Review request"}
+                </button>
               </form>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      {/* Confirmation Modal */}
-      {showConfirmation && selectedModelData && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-fade-in"
-          onClick={() => setShowConfirmation(false)}
-        >
-          <div
-            className="relative w-full max-w-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-3xl border-2 border-gold/40 shadow-2xl overflow-hidden animate-scale-in"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="px-8 py-6 border-b border-gold/30 bg-gradient-to-r from-gold/10 to-transparent">
-              <h2 className="font-serif text-3xl md:text-4xl font-bold bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent">
-                Confirm Your Booking
-              </h2>
-              <p className="text-gray-400 text-sm mt-2">
-                Please review your booking details before confirming
+        <section className="mx-auto max-w-7xl px-3 py-14 sm:px-6 md:py-20 lg:px-8">
+          <div className="mb-8 flex flex-col justify-between gap-3 border-b border-porcelain/15 pb-5 sm:flex-row sm:items-end">
+            <div>
+              <p className="editorial-kicker">Your activity</p>
+              <h2 className="mt-2 font-serif text-3xl sm:text-4xl">My bookings</h2>
+            </div>
+            {!bookingsLoading && bookings.length > 0 && (
+              <p className="text-sm text-taupe">
+                {bookings.length} {bookings.length === 1 ? "request" : "requests"}
+              </p>
+            )}
+          </div>
+
+          {bookingsLoading ? (
+            <div className="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-porcelain/10 bg-ink">
+              <div className="h-9 w-9 animate-spin rounded-full border-2 border-porcelain/15 border-t-brass" />
+              <p className="mt-4 text-sm text-taupe">Loading your bookings…</p>
+            </div>
+          ) : bookings.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-porcelain/20 bg-ink px-6 py-14 text-center">
+              <p className="font-serif text-2xl">No bookings yet</p>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-taupe">
+                Once you submit a request, its progress and details will appear
+                here.
               </p>
             </div>
-
-            {/* Content */}
-            <div className="px-8 py-6 max-h-[70vh] overflow-y-auto">
-              {/* Model Section */}
-              <div className="mb-6">
-                <h3 className="text-gold font-semibold mb-3 text-lg">
-                  Model Information
-                </h3>
-                <div className="flex gap-4 items-start bg-black/30 p-4 rounded-xl border border-gold/20">
-                  {/* Model Image */}
-                  <div className="flex-shrink-0">
-                    <img
-                      src={selectedModelData.imageUrl}
-                      alt={selectedModelData.name}
-                      className="w-24 h-24 md:w-32 md:h-32 rounded-xl object-cover border-2 border-gold/40 shadow-lg"
-                    />
-                  </div>
-                  {/* Model Details */}
-                  <div className="flex-1">
-                    <p className="text-2xl font-bold text-gold">
-                      {selectedModelData.name}
-                    </p>
-                    <p className="text-gray-300 capitalize mt-1">
-                      {selectedModelData.category || "Local"} Model
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Booking Details Section */}
-              <div className="mb-6">
-                <h3 className="text-gold font-semibold mb-3 text-lg">
-                  Event Details
-                </h3>
-                <div className="bg-black/30 p-4 rounded-xl border border-gold/20 space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Company:</span>
-                    <span className="text-white font-semibold">
-                      {formData.company}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Event:</span>
-                    <span className="text-white font-semibold">
-                      {formData.event}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Date:</span>
-                    <span className="text-white font-semibold">
-                      {new Date(formData.eventDate).toLocaleDateString(
-                        "en-US",
-                        {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        },
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Time:</span>
-                    <span className="text-white font-semibold">
-                      {formData.eventTime}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Important Notice */}
-              <div className="mb-6 p-4 bg-gold/10 border border-gold/30 rounded-xl">
-                <p className="text-gold-light text-sm">
-                  <span className="font-bold">⚠ Note:</span> Please double-check
-                  all details above. Your booking will be submitted for admin
-                  approval.
-                </p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-4">
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {bookings.map((booking) => (
                 <button
                   type="button"
-                  onClick={() => setShowConfirmation(false)}
-                  className="flex-1 px-6 py-3 border-2 border-gray-500/30 text-gray-300 font-semibold rounded-xl hover:bg-gray-500/10 hover:border-gray-400/50 transition-all duration-300"
-                >
-                  Go Back & Edit
-                </button>
-                <button
-                  type="button"
-                  onClick={handleConfirmBooking}
-                  disabled={loading}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-gold-light via-gold to-gold-dark text-black font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? "Submitting..." : "Confirm Booking"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Booking History Section */}
-      <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
-        <h2 className="font-serif text-3xl md:text-4xl font-bold mb-8 text-center bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent">
-          My Bookings
-        </h2>
-
-        {bookingsLoading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#D8AF7F]"></div>
-            <p className="text-gray-400 mt-4">Loading your bookings...</p>
-          </div>
-        ) : bookings.length === 0 ? (
-          <div className="text-center py-12 bg-black/30 rounded-2xl border border-[#D8AF7F]/20">
-            <p className="text-gray-400 text-lg">No bookings yet</p>
-            <p className="text-gray-500 text-sm mt-2">
-              Your bookings will appear here once you make one
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {bookings.map((booking) => {
-              const getStatusColor = (status) => {
-                switch (status?.toLowerCase()) {
-                  case "confirmed":
-                    return "bg-green-500/20 text-green-400 border-green-500";
-                  case "completed":
-                    return "bg-blue-500/20 text-blue-400 border-blue-500";
-                  case "cancelled":
-                    return "bg-red-500/20 text-red-400 border-red-500";
-                  default:
-                    return "bg-yellow-500/20 text-yellow-400 border-yellow-500";
-                }
-              };
-
-              return (
-                <div
                   key={booking._id}
                   onClick={async () => {
-                    // Fetch image if not available
                     let bookingWithImage = { ...booking };
                     if (!booking.modelImageUrl) {
                       const imageUrl = await getModelImage(
@@ -570,167 +505,157 @@ const BookingPage = () => {
                     setSelectedBooking(bookingWithImage);
                     setShowBookingDetails(true);
                   }}
-                  className="bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-2xl border-2 border-[#D8AF7F]/30 p-6 cursor-pointer hover:border-[#D8AF7F] transition-all duration-300 hover:scale-105"
+                  className="group rounded-2xl border border-porcelain/15 bg-ink p-5 text-left transition hover:-translate-y-1 hover:border-brass/50"
                 >
-                  {/* Status Badge */}
-                  <div className="flex justify-between items-start mb-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(booking.status)}`}
-                    >
-                      {(booking.status || "pending").toUpperCase()}
+                  <div className="mb-7 flex items-start justify-between gap-4">
+                    <span className={`rounded-full border px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] ${getStatusColor(booking.status)}`}>
+                      {booking.status || "pending"}
                     </span>
+                    <span className="text-sm text-taupe transition group-hover:translate-x-1 group-hover:text-brass" aria-hidden="true">→</span>
                   </div>
+                  <p className="editorial-kicker">{booking.modelName}</p>
+                  <h3 className="mt-2 font-serif text-2xl text-porcelain">{booking.event}</h3>
+                  <dl className="mt-6 space-y-2 border-t border-porcelain/10 pt-4 text-sm">
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-taupe">Date</dt>
+                      <dd>{new Date(booking.eventDate).toLocaleDateString()}</dd>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-taupe">Time</dt>
+                      <dd>{booking.eventTime}</dd>
+                    </div>
+                    {booking.company && (
+                      <div className="flex justify-between gap-3">
+                        <dt className="text-taupe">Company</dt>
+                        <dd className="truncate">{booking.company}</dd>
+                      </div>
+                    )}
+                  </dl>
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+      </main>
 
-                  {/* Model Name */}
-                  <h3 className="text-xl font-bold text-[#D8AF7F] mb-2">
-                    {booking.modelName}
-                  </h3>
-
-                  {/* Event Name */}
-                  <p className="text-white font-semibold mb-3">
-                    {booking.event}
-                  </p>
-
-                  {/* Date and Time */}
-                  <div className="space-y-1 text-sm text-gray-400">
-                    <p>📅 {new Date(booking.eventDate).toLocaleDateString()}</p>
-                    <p>🕐 {booking.eventTime}</p>
-                    {booking.company && <p>🏢 {booking.company}</p>}
-                  </div>
-
-                  {/* Click to view more */}
-                  <p className="text-[#D8AF7F]/60 text-xs mt-4 text-center">
-                    Click to view details
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Booking Details Modal */}
-      {showBookingDetails && selectedBooking && (
+      {showConfirmation && selectedModelData && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-fade-in"
-          onClick={() => setShowBookingDetails(false)}
+          className="fixed inset-0 z-[70] flex items-end justify-center bg-obsidian/90 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+          onClick={() => setShowConfirmation(false)}
+          role="presentation"
         >
           <div
-            className="relative w-full max-w-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-3xl border-2 border-[#D8AF7F]/40 shadow-2xl overflow-hidden animate-scale-in"
-            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="confirm-booking-title"
+            className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-2xl border border-porcelain/15 bg-ink shadow-editorial sm:rounded-2xl"
+            onClick={(event) => event.stopPropagation()}
           >
-            {/* Header */}
-            <div className="px-8 py-6 border-b border-[#D8AF7F]/30 bg-gradient-to-r from-[#D8AF7F]/10 to-transparent">
-              <h2 className="font-serif text-3xl font-bold text-[#D8AF7F]">
-                Booking Details
-              </h2>
-              <p className="text-gray-400 text-sm mt-2">
-                Booking ID: {selectedBooking._id?.slice(-8).toUpperCase()}
-              </p>
+            <div className="border-b border-porcelain/10 p-5 sm:p-7">
+              <p className="editorial-kicker">Final check</p>
+              <h2 id="confirm-booking-title" className="mt-2 font-serif text-3xl">Confirm your request</h2>
+              <p className="mt-2 text-sm text-taupe">Review the details before sending them to our team.</p>
             </div>
 
-            {/* Content */}
-            <div className="px-8 py-6 max-h-[70vh] overflow-y-auto">
-              {/* Status Badge */}
-              <div className="mb-6">
-                <span
-                  className={`px-4 py-2 rounded-full text-sm font-semibold border ${
-                    selectedBooking.status?.toLowerCase() === "confirmed"
-                      ? "bg-green-500/20 text-green-400 border-green-500"
-                      : selectedBooking.status?.toLowerCase() === "completed"
-                        ? "bg-blue-500/20 text-blue-400 border-blue-500"
-                        : selectedBooking.status?.toLowerCase() === "cancelled"
-                          ? "bg-red-500/20 text-red-400 border-red-500"
-                          : "bg-yellow-500/20 text-yellow-400 border-yellow-500"
-                  }`}
-                >
-                  {(selectedBooking.status || "pending").toUpperCase()}
-                </span>
-              </div>
-
-              {/* Model Information */}
-              <div className="mb-6">
-                <h3 className="text-[#D8AF7F] font-semibold mb-3 text-lg">
-                  Model Information
-                </h3>
-                <div className="bg-black/30 p-4 rounded-xl border border-[#D8AF7F]/20 flex gap-4 items-center">
-                  {selectedBooking.modelImageUrl && (
-                    <img
-                      src={selectedBooking.modelImageUrl}
-                      alt={selectedBooking.modelName}
-                      className="w-24 h-24 md:w-32 md:h-32 rounded-xl object-cover border-2 border-[#D8AF7F]/40 shadow-lg flex-shrink-0"
-                    />
-                  )}
-                  <div className="flex-1">
-                    <p className="text-2xl font-bold text-[#D8AF7F]">
-                      {selectedBooking.modelName}
-                    </p>
-                    <p className="text-gray-300 capitalize mt-1">
-                      {selectedBooking.modelCategory || "Local"} Model
-                    </p>
-                  </div>
+            <div className="space-y-6 p-5 sm:p-7">
+              <div className="flex items-center gap-4 rounded-xl border border-porcelain/10 bg-obsidian p-4">
+                {selectedModelData.imageUrl && (
+                  <img src={selectedModelData.imageUrl} alt={selectedModelData.name} className="h-24 w-20 rounded-lg object-cover" />
+                )}
+                <div>
+                  <p className="editorial-kicker">Selected talent</p>
+                  <p className="mt-1 font-serif text-2xl">{selectedModelData.name}</p>
+                  <p className="mt-1 text-sm capitalize text-taupe">{selectedModelData.category || "Local"} talent</p>
                 </div>
               </div>
 
-              {/* Event Details */}
-              <div className="mb-6">
-                <h3 className="text-[#D8AF7F] font-semibold mb-3 text-lg">
-                  Event Details
-                </h3>
-                <div className="bg-black/30 p-4 rounded-xl border border-[#D8AF7F]/20 space-y-3">
-                  {selectedBooking.company && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Company:</span>
-                      <span className="text-white font-semibold">
-                        {selectedBooking.company}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Event:</span>
-                    <span className="text-white font-semibold">
-                      {selectedBooking.event}
-                    </span>
+              <dl className="divide-y divide-porcelain/10 rounded-xl border border-porcelain/10 px-4">
+                {[
+                  ["Company", formData.company || "Not specified"],
+                  ["Event", formData.event],
+                  ["Date", new Date(formData.eventDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })],
+                  ["Time", formData.eventTime],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex items-start justify-between gap-6 py-3.5 text-sm">
+                    <dt className="text-taupe">{label}</dt>
+                    <dd className="text-right font-medium">{value}</dd>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Date:</span>
-                    <span className="text-white font-semibold">
-                      {new Date(selectedBooking.eventDate).toLocaleDateString(
-                        "en-US",
-                        {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        },
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Time:</span>
-                    <span className="text-white font-semibold">
-                      {selectedBooking.eventTime}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Booked On:</span>
-                    <span className="text-white font-semibold">
-                      {new Date(selectedBooking.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-              </div>
+                ))}
+              </dl>
 
-              {/* Close Button */}
-              <div className="flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => setShowBookingDetails(false)}
-                  className="px-8 py-3 bg-gradient-to-r from-gold-light via-gold to-gold-dark text-black font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300"
-                >
-                  Close
+              <p className="rounded-xl border border-brass/25 bg-brass/5 p-4 text-sm leading-6 text-brass-light">
+                Your request will be submitted for admin approval. The VELORA
+                team will contact you after review.
+              </p>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <button type="button" onClick={() => setShowConfirmation(false)} className="rounded-xl border border-porcelain/20 px-5 py-3.5 text-sm font-semibold transition hover:bg-porcelain/5">
+                  Go back and edit
+                </button>
+                <button type="button" onClick={handleConfirmBooking} disabled={loading} className="rounded-xl bg-oxblood px-5 py-3.5 text-sm font-semibold text-porcelain transition hover:bg-oxblood-light disabled:opacity-50">
+                  {loading ? "Submitting…" : "Confirm booking"}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showBookingDetails && selectedBooking && (
+        <div
+          className="fixed inset-0 z-[70] flex items-end justify-center bg-obsidian/90 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+          onClick={() => setShowBookingDetails(false)}
+          role="presentation"
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="booking-details-title"
+            className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-t-2xl border border-porcelain/15 bg-ink shadow-editorial sm:rounded-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4 border-b border-porcelain/10 p-5 sm:p-7">
+              <div>
+                <p className="editorial-kicker">Booking {selectedBooking._id?.slice(-8).toUpperCase()}</p>
+                <h2 id="booking-details-title" className="mt-2 font-serif text-3xl">Booking details</h2>
+              </div>
+              <button type="button" onClick={() => setShowBookingDetails(false)} className="flex h-10 w-10 items-center justify-center rounded-full border border-porcelain/15 text-xl text-taupe transition hover:border-brass hover:text-brass" aria-label="Close booking details">×</button>
+            </div>
+
+            <div className="space-y-6 p-5 sm:p-7">
+              <span className={`inline-flex rounded-full border px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] ${getStatusColor(selectedBooking.status)}`}>
+                {selectedBooking.status || "pending"}
+              </span>
+
+              <div className="flex items-center gap-4 rounded-xl border border-porcelain/10 bg-obsidian p-4">
+                {selectedBooking.modelImageUrl && (
+                  <img src={selectedBooking.modelImageUrl} alt={selectedBooking.modelName} className="h-24 w-20 rounded-lg object-cover" />
+                )}
+                <div>
+                  <p className="editorial-kicker">Talent</p>
+                  <p className="mt-1 font-serif text-2xl">{selectedBooking.modelName}</p>
+                  <p className="mt-1 text-sm capitalize text-taupe">{selectedBooking.modelCategory || "Local"}</p>
+                </div>
+              </div>
+
+              <dl className="divide-y divide-porcelain/10 rounded-xl border border-porcelain/10 px-4">
+                {[
+                  ...(selectedBooking.company ? [["Company", selectedBooking.company]] : []),
+                  ["Event", selectedBooking.event],
+                  ["Date", new Date(selectedBooking.eventDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })],
+                  ["Time", selectedBooking.eventTime],
+                  ["Booked on", new Date(selectedBooking.createdAt).toLocaleDateString()],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex items-start justify-between gap-6 py-3.5 text-sm">
+                    <dt className="text-taupe">{label}</dt>
+                    <dd className="text-right font-medium">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              <button type="button" onClick={() => setShowBookingDetails(false)} className="w-full rounded-xl bg-porcelain px-5 py-3.5 text-sm font-semibold text-obsidian transition hover:bg-brass-light">
+                Close
+              </button>
             </div>
           </div>
         </div>

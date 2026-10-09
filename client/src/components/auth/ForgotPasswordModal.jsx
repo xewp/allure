@@ -52,7 +52,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
           text: data.message || "Failed to send reset link",
         });
       }
-    } catch (error) {
+    } catch {
 
       setMessage({
         type: "error",
@@ -73,22 +73,24 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
 
   const modalContent = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-obsidian/85 p-4"
       onClick={handleClose}
     >
       <div
-        className="relative w-full max-w-md bg-[#1A1A1A] rounded-2xl border border-[#333] shadow-2xl overflow-hidden animate-scale-in"
+        className="relative w-full max-w-md overflow-hidden border border-porcelain/10 bg-porcelain text-obsidian shadow-editorial"
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="forgot-password-title"
       >
-        {/* Header */}
-        <div className="relative px-8 py-6 border-b border-[#333]">
+        <div className="relative border-b border-obsidian/10 px-6 py-6 sm:px-8">
           <div className="flex items-center justify-between">
-            <h2 className="font-serif text-3xl font-bold text-[#D8AF7F]">
-              Forgot Password?
+            <h2 id="forgot-password-title" className="font-serif text-3xl text-obsidian">
+              Reset your password
             </h2>
             <button
               onClick={handleClose}
-              className="text-gray-500 hover:text-white transition-colors duration-300 text-3xl leading-none"
+              className="flex h-10 w-10 items-center justify-center text-2xl leading-none text-warm-gray transition hover:text-oxblood focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
               aria-label="Close modal"
             >
               ×
@@ -96,45 +98,47 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
           </div>
         </div>
 
-        {/* Content */}
-        <div className="px-8 py-6">
+        <div className="px-6 py-6 sm:px-8 sm:py-8">
           {message.text && (
             <div
-              className={`mb-4 p-4 rounded-xl text-sm text-center ${
+              className={`mb-5 rounded-lg border p-4 text-sm leading-6 ${
                 message.type === "success"
-                  ? "bg-green-100 text-green-800 border border-green-300"
-                  : "bg-red-100 text-red-800 border border-red-300"
+                  ? "border-success/30 bg-success/10 text-success"
+                  : "border-danger/30 bg-danger/10 text-danger"
               }`}
+              role={message.type === "success" ? "status" : "alert"}
             >
               {message.text}
             </div>
           )}
 
-          <p className="text-gray-400 text-sm mb-6">
+          <p className="mb-6 text-sm leading-6 text-warm-gray">
             Enter your email address and we'll send you a link to reset your
             password.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-bold text-[#D8AF7F] uppercase tracking-wider mb-2">
+              <label htmlFor="forgot-password-email" className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-warm-gray">
                 Email Address
               </label>
               <input
+                id="forgot-password-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pb-2 border-b-2 border-gray-600 bg-transparent text-white text-base focus:border-[#D8AF7F] focus:outline-none transition-colors placeholder-gray-500"
-                placeholder="Enter your email"
+                autoComplete="email"
+                className="w-full rounded-lg border border-obsidian/20 bg-white px-4 py-3.5 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:border-oxblood focus:ring-2 focus:ring-oxblood/15"
+                placeholder="name@example.com"
                 disabled={loading}
               />
             </div>
 
-            <div className="flex gap-3 pt-4">
+            <div className="flex flex-col-reverse gap-3 pt-3 sm:flex-row">
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 py-4 rounded-full bg-[#333] text-white font-bold text-sm uppercase tracking-widest transition-all hover:bg-[#444]"
+                className="flex-1 rounded-lg border border-obsidian/20 py-3.5 text-sm font-semibold text-obsidian transition hover:border-oxblood hover:text-oxblood focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
                 disabled={loading}
               >
                 Cancel
@@ -142,7 +146,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 py-4 rounded-full bg-[#D8AF7F] text-black font-bold text-sm uppercase tracking-widest transition-all hover:bg-[#C9A87C] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 rounded-lg bg-oxblood py-3.5 text-sm font-semibold text-white transition hover:bg-oxblood-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? "Sending..." : "Send Link"}
               </button>

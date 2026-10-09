@@ -20,8 +20,8 @@ const FavoritesPage = () => {
             const data = await response.json();
             setFavorites(data);
           }
-        } catch (error) {
-
+        } catch {
+          // Preserve the empty-state experience when favorites cannot load.
         }
       }
       setLoading(false);

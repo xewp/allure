@@ -2,8 +2,12 @@ import React from "react";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import { useMainPageLogic } from "../../hooks/useMainPageLogic";
 import { MainPageHeader } from "../../components/main/MainPageHeader";
-import { ModelGrid } from "../../components/main/ModelGrid";
+import {
+  ModelGrid,
+  ModelGridSkeleton,
+} from "../../components/main/ModelGrid";
 import { NoModelsFound } from "../../components/main/NoModelsFound";
+import Header from "../../components/layout/Header";
 
 const MainPage = () => {
   const {
@@ -16,50 +20,61 @@ const MainPage = () => {
     handleCardClick,
     handleTabClick,
     loadMoreModels,
-    navigate,
     userPermissions,
     permissionsLoading,
     hasMore,
     totalModels,
   } = useMainPageLogic();
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white font-sans flex flex-col relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-yellow-900/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-tl from-amber-900/10 to-transparent rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        ></div>
-      </div>
+  const visibleModelCount =
+    activeTab === "FAVORITES" ? models.length : totalModels;
 
-      <div className="flex flex-col items-center w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8 pt-6 relative z-10">
+  return (
+    <div className="min-h-screen overflow-x-hidden bg-obsidian font-sans text-porcelain">
+      <Header activeTab={activeTab} onTabChange={handleTabClick} />
+
+      <main className="mx-auto flex w-full max-w-7xl flex-col items-center px-2.5 sm:px-6 lg:px-8">
         <MainPageHeader
           activeTab={activeTab}
           handleTabClick={handleTabClick}
-          navigate={navigate}
+          modelCount={visibleModelCount}
         />
 
         {permissionsLoading ? (
-          <div className="flex justify-center items-center min-h-[600px]">
+          <div className="flex min-h-[50vh] items-center justify-center">
             <LoadingSpinner message="Loading..." size="large" />
           </div>
         ) : userPermissions && !userPermissions.canViewModels ? (
-          <div className="flex justify-center items-center min-h-[600px]">
-            <div className="bg-red-500/20 border-2 border-red-500 rounded-2xl p-8 max-w-md text-center">
-              <div className="text-6xl mb-4">🚫</div>
-              <h3 className="text-2xl font-bold text-red-500 mb-2">
-                Model Access Disabled
-              </h3>
-              <p className="text-gray-300">
-                Your access to view models has been disabled by the
-                administrator. Please contact support.
+          <div className="flex min-h-[50vh] w-full items-center justify-center pb-24">
+            <section className="w-full max-w-lg rounded-2xl border border-danger/40 bg-danger/10 p-7 text-center sm:p-10">
+              <span className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-danger/40 text-danger">
+                <svg
+                  aria-hidden="true"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.7}
+                    d="M18.36 18.36A9 9 0 1 1 5.64 5.64m12.72 12.72L5.64 5.64"
+                  />
+                </svg>
+              </span>
+              <h2 className="font-serif text-3xl font-semibold text-porcelain">
+                Talent access unavailable
+              </h2>
+              <p className="mt-3 leading-relaxed text-taupe">
+                Your access to view talent has been disabled by an
+                administrator. Please contact support for assistance.
               </p>
-            </div>
+            </section>
           </div>
         ) : loading ? (
-          <div className="flex justify-center items-center min-h-[600px]">
-            <LoadingSpinner message="Loading models" size="large" />
+          <div className="w-full pb-28 md:pb-16">
+            <ModelGridSkeleton />
           </div>
         ) : models.length > 0 ? (
           <ModelGrid
@@ -76,7 +91,7 @@ const MainPage = () => {
         ) : (
           <NoModelsFound activeTab={activeTab} />
         )}
-      </div>
+      </main>
     </div>
   );
 };

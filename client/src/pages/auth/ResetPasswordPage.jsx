@@ -44,7 +44,7 @@ const ResetPasswordPage = () => {
         } else {
           setError(data.message || "Invalid or expired reset token");
         }
-      } catch (err) {
+      } catch {
         setError("Unable to verify reset link. Please try again.");
       } finally {
         setVerifying(false);
@@ -98,7 +98,7 @@ const ResetPasswordPage = () => {
       } else {
         setError(data.message || "Failed to reset password");
       }
-    } catch (err) {
+    } catch {
       setError("Unable to connect to server. Please try again.");
     } finally {
       setLoading(false);
@@ -108,23 +108,24 @@ const ResetPasswordPage = () => {
   const renderContent = () => {
     if (verifying) {
       return (
-        <div className="flex flex-col items-center gap-6 py-8">
-          <div className="w-16 h-16 border-4 border-[#333] border-t-[#D8AF7F] rounded-full animate-spin"></div>
-          <p className="text-gray-400 font-medium tracking-wider">Verifying link...</p>
+        <div className="flex flex-col items-center gap-5 py-10" role="status">
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-obsidian/15 border-t-oxblood" />
+          <p className="text-sm font-medium text-warm-gray">Verifying your secure link...</p>
         </div>
       );
     }
 
     if (!validToken) {
       return (
-        <div className="flex flex-col items-center gap-6 py-8 text-center">
-          <div className="text-5xl">⚠️</div>
-          <p className="text-red-400 font-bold">{error}</p>
+        <div className="flex flex-col items-center gap-5 py-8 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-danger/30 bg-danger/10 font-serif text-2xl text-danger" aria-hidden="true">!</div>
+          <h2 className="font-serif text-3xl">Link unavailable</h2>
+          <p className="max-w-sm text-sm leading-6 text-danger" role="alert">{error}</p>
           <button
             onClick={() => navigate("/login")}
-            className="mt-4 px-8 py-4 rounded-full bg-[#333] text-white font-bold text-sm uppercase tracking-widest transition-all hover:bg-[#444]"
+            className="mt-2 rounded-lg bg-obsidian px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
           >
-            Back to Login
+            Back to login
           </button>
         </div>
       );
@@ -132,35 +133,39 @@ const ResetPasswordPage = () => {
 
     if (success) {
       return (
-        <div className="flex flex-col items-center gap-6 py-8 text-center">
-          <div className="text-5xl text-green-500">✓</div>
-          <h2 className="text-2xl font-bold text-[#D8AF7F]">Success!</h2>
-          <p className="text-gray-400">Password reset successfully.</p>
-          <p className="text-sm text-gray-500 mt-4">Redirecting to login...</p>
+        <div className="flex flex-col items-center gap-4 py-8 text-center" role="status">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-success text-2xl text-white" aria-hidden="true">✓</div>
+          <h2 className="font-serif text-3xl">Password updated</h2>
+          <p className="text-sm text-warm-gray">Your password has been reset successfully.</p>
+          <p className="mt-2 text-xs uppercase tracking-[0.16em] text-taupe">Redirecting to login...</p>
         </div>
       );
     }
 
     return (
       <div className="flex flex-col gap-6">
-        <div className="relative">
-          <label className="block text-xs font-bold text-[#D8AF7F] uppercase tracking-wider mb-2">
+        <div>
+          <label htmlFor="new-password" className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-warm-gray">
             New Password
           </label>
           <input
+            id="new-password"
             type="password"
-            placeholder="Min 6 characters"
+            autoComplete="new-password"
+            placeholder="At least 6 characters"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full pb-2 border-b-2 border-gray-600 bg-transparent text-white text-base focus:border-[#D8AF7F] focus:outline-none transition-colors placeholder-gray-500"
+            className="w-full rounded-lg border border-obsidian/20 bg-white px-4 py-3.5 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:border-oxblood focus:ring-2 focus:ring-oxblood/15"
           />
         </div>
-        <div className="relative">
-          <label className="block text-xs font-bold text-[#D8AF7F] uppercase tracking-wider mb-2">
+        <div>
+          <label htmlFor="confirm-password" className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-warm-gray">
             Confirm Password
           </label>
           <input
+            id="confirm-password"
             type="password"
+            autoComplete="new-password"
             placeholder="Re-enter password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -169,12 +174,12 @@ const ResetPasswordPage = () => {
                 handleSubmit();
               }
             }}
-            className="w-full pb-2 border-b-2 border-gray-600 bg-transparent text-white text-base focus:border-[#D8AF7F] focus:outline-none transition-colors placeholder-gray-500"
+            className="w-full rounded-lg border border-obsidian/20 bg-white px-4 py-3.5 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:border-oxblood focus:ring-2 focus:ring-oxblood/15"
           />
         </div>
         
         {error && (
-          <div className="text-red-400 text-sm font-bold text-center bg-red-950/50 p-3 rounded-lg border border-red-900/50">
+          <div className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-sm font-medium text-danger" role="alert">
             {error}
           </div>
         )}
@@ -182,7 +187,7 @@ const ResetPasswordPage = () => {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className={`mt-4 w-full py-4 rounded-full bg-[#D8AF7F] text-black font-bold text-sm uppercase tracking-widest transition-all hover:bg-[#C9A87C] disabled:opacity-50 disabled:cursor-not-allowed`}
+          className="mt-2 w-full rounded-lg bg-oxblood py-3.5 text-sm font-semibold text-white transition hover:bg-oxblood-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? "Resetting..." : "Reset Password"}
         </button>
@@ -191,31 +196,32 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black font-sans relative overflow-hidden">
-      {/* Ambient Decorative Lighting */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-gradient-to-br from-[#D8AF7F]/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-20 left-10 w-96 h-96 bg-gradient-to-tl from-[#D8AF7F]/10 to-transparent rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        ></div>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-obsidian px-4 py-10 font-sans text-obsidian sm:px-6">
+      <div className="absolute inset-0" aria-hidden="true">
+        <div className="absolute left-0 top-0 h-px w-full bg-brass/30" />
+        <div className="absolute -right-32 top-16 h-72 w-72 rounded-full border border-brass/15" />
       </div>
 
-      <div className="w-full max-w-md mx-4 px-6 py-12 md:px-10 bg-[#1A1A1A] shadow-2xl rounded-2xl border border-[#333] flex flex-col relative z-10">
-        
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold tracking-tight text-[#D8AF7F] mb-2 font-serif">
-            Aura Select
-          </h1>
-          <p className="text-sm text-gray-400 font-medium">
-            Reset Your Password
-          </p>
+      <section className="relative z-10 flex w-full max-w-lg flex-col border border-porcelain/10 bg-porcelain p-6 shadow-editorial sm:p-10 md:p-12" aria-labelledby="reset-password-title">
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className="mb-10 block w-fit text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
+          aria-label="VELORA home"
+        >
+          <span className="block font-serif text-2xl tracking-[0.14em]">VELORA</span>
+          <span className="block text-[8px] font-semibold tracking-[0.3em] text-oxblood">TALENT &amp; EVENTS</span>
+        </button>
+
+        <div className="mb-8">
+          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.28em] text-oxblood">Account security</p>
+          <h1 id="reset-password-title" className="font-serif text-4xl leading-tight sm:text-5xl">Reset your password</h1>
+          <p className="mt-3 text-sm leading-6 text-warm-gray">Choose a new password for your VELORA account.</p>
         </div>
 
         {renderContent()}
-
-      </div>
-    </div>
+      </section>
+    </main>
   );
 };
 

@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const ErrorPage = () => {
-  const [visibleSections, setVisibleSections] = useState(new Set());
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const timer1 = setTimeout(() => {
-      setVisibleSections(new Set(["content"]));
-    }, 100);
-
-    return () => {
-      clearTimeout(timer1);
-    };
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleGoBack = () => {
@@ -18,220 +14,71 @@ const ErrorPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen w-full bg-gradient-to-br from-black via-gray-900 to-black overflow-hidden">
+    <main className="relative flex min-h-screen items-center overflow-hidden bg-obsidian px-3 py-16 font-sans text-porcelain sm:px-6">
       <div
-        className={`flex flex-col items-center transition-all duration-1000 ${
-          visibleSections.has("content")
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-10"
-        }`}
+        className="absolute inset-y-0 right-0 hidden w-1/3 border-l border-porcelain/10 bg-ink lg:block"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute right-[16%] top-1/2 hidden -translate-y-1/2 font-serif text-[20rem] leading-none text-porcelain/[0.025] lg:block"
+        aria-hidden="true"
       >
-        {/* Floating Animated Icon */}
-        <div className="relative mb-12">
-          {/* Outer rotating ring */}
-          <div className="absolute inset-0 flex justify-center items-center">
-            <div className="w-40 h-40 border-4 border-[#D8AF7F] rounded-full animate-spin-slow opacity-30"></div>
-          </div>
-
-          {/* Middle pulsing ring */}
-          <div className="absolute inset-0 flex justify-center items-center">
-            <div className="w-32 h-32 border-4 border-[#D8AF7F] rounded-full animate-pulse-ring"></div>
-          </div>
-
-          {/* Center content */}
-          <div className="relative w-40 h-40 flex flex-col justify-center items-center">
-            <div className="text-[#D8AF7F] text-7xl font-bold animate-glitch">
-              404
-            </div>
-            <div className="w-16 h-1 bg-[#D8AF7F] mt-2 animate-expand-contract"></div>
-          </div>
-        </div>
-
-        {/* Error Message */}
-        <h1 className="text-[#D8AF7F] text-5xl font-bold mb-4 animate-fade-slide-up">
-          Lost in the Void
-        </h1>
-        <p className="text-[#D8AF7F] text-lg mb-8 text-center max-w-md animate-fade-slide-up-delay">
-          The page you seek has vanished into darkness.
-        </p>
-
-        {/* Buttons */}
-        <div className="flex gap-4 animate-fade-slide-up-delay-2">
-          <button
-            onClick={handleGoBack}
-            className="px-8 py-3 rounded-full bg-[#D8AF7F] text-black font-semibold transition-all hover:bg-[#c5c4c4] hover:scale-105 active:scale-95"
-          >
-            Go Back
-          </button>
-          <button
-            onClick={() => (window.location.href = "/")}
-            className="px-8 py-3 rounded-full border-2 border-[#D8AF7F] text-[#D8AF7F] font-semibold transition-all hover:bg-[#D8AF7F] hover:text-black hover:scale-105 active:scale-95"
-          >
-            Home
-          </button>
-        </div>
-
-        {/* Floating particles */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="particle particle-1"></div>
-          <div className="particle particle-2"></div>
-          <div className="particle particle-3"></div>
-          <div className="particle particle-4"></div>
-          <div className="particle particle-5"></div>
-          <div className="particle particle-6"></div>
-        </div>
+        V
       </div>
 
-      <style jsx>{`
-        @keyframes spin-slow {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
+      <section
+        className={`relative mx-auto w-full max-w-7xl transition-all duration-700 motion-reduce:transform-none motion-reduce:transition-none ${
+          isVisible ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"
+        }`}
+      >
+        <Link
+          to="/"
+          aria-label="Velora home"
+          className="inline-flex items-center gap-3 rounded-md focus:outline-none focus:ring-2 focus:ring-brass focus:ring-offset-2 focus:ring-offset-obsidian"
+        >
+          <span className="flex h-11 w-11 items-center justify-center border border-brass/70 font-serif text-2xl text-brass">
+            V
+          </span>
+          <span>
+            <span className="block font-serif text-xl tracking-[0.16em]">
+              VELORA
+            </span>
+            <span className="mt-1 block text-[0.55rem] font-semibold uppercase tracking-[0.28em] text-taupe">
+              Talent &amp; Events
+            </span>
+          </span>
+        </Link>
 
-        @keyframes pulse-ring {
-          0%,
-          100% {
-            transform: scale(1);
-            opacity: 0.5;
-          }
-          50% {
-            transform: scale(1.1);
-            opacity: 0.8;
-          }
-        }
+        <div className="mt-16 max-w-2xl sm:mt-20">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brass">
+            Error 404
+          </p>
+          <h1 className="mt-5 font-serif text-5xl leading-[0.98] sm:text-6xl md:text-7xl">
+            This page has left the room.
+          </h1>
+          <p className="mt-6 max-w-lg text-base leading-7 text-taupe">
+            The address may have changed, or the page may no longer be
+            available. We can take you back to somewhere familiar.
+          </p>
 
-        @keyframes glitch {
-          0%,
-          90%,
-          100% {
-            transform: translateX(0);
-            text-shadow: 0 0 10px rgba(216, 175, 127, 0.5);
-          }
-          92% {
-            transform: translateX(-3px);
-            text-shadow: -3px 0 10px rgba(216, 175, 127, 0.8);
-          }
-          94% {
-            transform: translateX(3px);
-            text-shadow: 3px 0 10px rgba(216, 175, 127, 0.8);
-          }
-          96% {
-            transform: translateX(-2px);
-          }
-        }
-
-        @keyframes expand-contract {
-          0%,
-          100% {
-            width: 4rem;
-            opacity: 1;
-          }
-          50% {
-            width: 6rem;
-            opacity: 0.6;
-          }
-        }
-
-        @keyframes fade-slide-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes float-particle {
-          0% {
-            transform: translateY(100vh) translateX(0) rotate(0deg);
-            opacity: 0;
-          }
-          10% {
-            opacity: 0.5;
-          }
-          90% {
-            opacity: 0.5;
-          }
-          100% {
-            transform: translateY(-100vh) translateX(100px) rotate(360deg);
-            opacity: 0;
-          }
-        }
-
-        .animate-spin-slow {
-          animation: spin-slow 8s linear infinite;
-        }
-
-        .animate-pulse-ring {
-          animation: pulse-ring 2s ease-in-out infinite;
-        }
-
-        .animate-glitch {
-          animation: glitch 3s ease-in-out infinite;
-        }
-
-        .animate-expand-contract {
-          animation: expand-contract 2s ease-in-out infinite;
-        }
-
-        .animate-fade-slide-up {
-          animation: fade-slide-up 0.8s ease-out 0.4s both;
-        }
-
-        .animate-fade-slide-up-delay {
-          animation: fade-slide-up 0.8s ease-out 0.6s both;
-        }
-
-        .animate-fade-slide-up-delay-2 {
-          animation: fade-slide-up 0.8s ease-out 0.8s both;
-        }
-
-        .particle {
-          position: absolute;
-          width: 4px;
-          height: 4px;
-          background: #d8af7f;
-          border-radius: 50%;
-          opacity: 0;
-        }
-
-        .particle-1 {
-          left: 10%;
-          animation: float-particle 15s ease-in-out infinite;
-        }
-
-        .particle-2 {
-          left: 25%;
-          animation: float-particle 18s ease-in-out infinite 2s;
-        }
-
-        .particle-3 {
-          left: 40%;
-          animation: float-particle 20s ease-in-out infinite 4s;
-        }
-
-        .particle-4 {
-          left: 60%;
-          animation: float-particle 17s ease-in-out infinite 1s;
-        }
-
-        .particle-5 {
-          left: 75%;
-          animation: float-particle 19s ease-in-out infinite 3s;
-        }
-
-        .particle-6 {
-          left: 90%;
-          animation: float-particle 16s ease-in-out infinite 5s;
-        }
-      `}</style>
-    </div>
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <button
+              type="button"
+              onClick={handleGoBack}
+              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-oxblood px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-oxblood/85 focus:outline-none focus:ring-2 focus:ring-brass focus:ring-offset-2 focus:ring-offset-obsidian"
+            >
+              Go back
+            </button>
+            <Link
+              to="/"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-porcelain/30 px-6 py-3 text-sm font-semibold text-porcelain transition-colors hover:border-brass hover:text-brass focus:outline-none focus:ring-2 focus:ring-brass focus:ring-offset-2 focus:ring-offset-obsidian"
+            >
+              Return home
+            </Link>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 };
 

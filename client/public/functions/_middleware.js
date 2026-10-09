@@ -17,7 +17,7 @@ export async function onRequest(context) {
     
     // For any other status, return the original response
     return response;
-  } catch (error) {
+  } catch {
     // If there's an error, try to serve index.html as a fallback
     return context.env.ASSETS.fetch(new URL("/index.html", context.request.url));
   }

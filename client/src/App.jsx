@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 // Public pages
 import LandingPage from "./pages/public/LandingPage";
 import AboutPage from "./pages/public/AboutPage";
@@ -24,6 +24,32 @@ import "./App.css";
 
 function App() {
   const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (maintenanceMode) {
+      document.title = "We’ll Be Right Back — VELORA";
+      return;
+    }
+
+    const titles = {
+      "/": "VELORA — Talent & Events",
+      "/about": "Our Story — VELORA",
+      "/login": "Sign In — VELORA",
+      "/register": "Create Account — VELORA",
+      "/verify-otp": "Verify Email — VELORA",
+      "/reset-password": "Reset Password — VELORA",
+      "/main": "Discover Talent — VELORA",
+      "/favorites": "Favorites — VELORA",
+      "/booking": "Bookings — VELORA",
+      "/profile": "Your Profile — VELORA",
+      "/edit": "Edit Profile — VELORA",
+    };
+
+    document.title = location.pathname.startsWith("/model/")
+      ? "Talent Profile — VELORA"
+      : titles[location.pathname] || "VELORA — Talent & Events";
+  }, [location.pathname, maintenanceMode]);
 
   useEffect(() => {
     // Set up a global fetch interceptor to detect maintenance mode
@@ -39,7 +65,7 @@ function App() {
         if (data.maintenanceMode === true && response.status === 503) {
           setMaintenanceMode(true);
         }
-      } catch (e) {
+      } catch {
         // Response is not JSON, ignore
       }
 

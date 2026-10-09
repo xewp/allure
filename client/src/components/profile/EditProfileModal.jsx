@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import API_URL from "../../config/api";
 
@@ -21,6 +21,21 @@ const EditProfileModal = ({ isOpen, onClose, userData, onUpdateSuccess }) => {
   const [showPasswordSuccess, setShowPasswordSuccess] = useState(false);
   const [apiError, setApiError] = useState("");
   const [passwordApiError, setPasswordApiError] = useState("");
+
+  const handleClose = useCallback(() => {
+    setErrors({});
+    setPasswordErrors({});
+    setApiError("");
+    setPasswordApiError("");
+    setShowSuccess(false);
+    setShowPasswordSuccess(false);
+    setPasswordData({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+    onClose();
+  }, [onClose]);
 
   // Initialize form data when userData changes
   useEffect(() => {
@@ -49,22 +64,7 @@ const EditProfileModal = ({ isOpen, onClose, userData, onUpdateSuccess }) => {
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "unset";
     };
-  }, [isOpen]);
-
-  const handleClose = () => {
-    setErrors({});
-    setPasswordErrors({});
-    setApiError("");
-    setPasswordApiError("");
-    setShowSuccess(false);
-    setShowPasswordSuccess(false);
-    setPasswordData({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
-    onClose();
-  };
+  }, [handleClose, isOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -237,28 +237,27 @@ const EditProfileModal = ({ isOpen, onClose, userData, onUpdateSuccess }) => {
 
   const modalContent = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-obsidian/85 p-3 sm:p-5"
       onClick={handleClose}
     >
       <div
-        className="relative w-full max-w-3xl bg-gradient-to-br from-charcoal via-gray-900 to-black rounded-3xl border border-gold/30 shadow-2xl overflow-hidden animate-scale-in max-h-[90vh] overflow-y-auto"
+        className="relative max-h-[94vh] w-full max-w-3xl overflow-y-auto border border-porcelain/10 bg-porcelain text-obsidian shadow-editorial"
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-profile-title"
       >
-        {/* Decorative Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-10 right-10 w-40 h-40 bg-gradient-to-br from-gold/20 to-transparent rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 left-10 w-56 h-56 bg-gradient-to-tl from-gold/15 to-transparent rounded-full blur-3xl"></div>
-        </div>
-
-        {/* Header */}
-        <div className="relative z-10 px-8 py-6 border-b border-gold/20">
+        <div className="sticky top-0 z-20 border-b border-obsidian/10 bg-porcelain px-5 py-5 sm:px-8 sm:py-6">
           <div className="flex items-center justify-between">
-            <h2 className="font-serif text-3xl md:text-4xl font-bold bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent">
+            <div>
+              <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-oxblood">Account settings</p>
+              <h2 id="edit-profile-title" className="font-serif text-3xl text-obsidian sm:text-4xl">
               Edit Profile
-            </h2>
+              </h2>
+            </div>
             <button
               onClick={handleClose}
-              className="text-gray-400 hover:text-gold transition-colors duration-300 text-3xl leading-none"
+              className="flex h-11 w-11 items-center justify-center text-3xl leading-none text-warm-gray transition hover:text-oxblood focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
               aria-label="Close modal"
             >
               ×
@@ -266,47 +265,50 @@ const EditProfileModal = ({ isOpen, onClose, userData, onUpdateSuccess }) => {
           </div>
         </div>
 
-        {/* Form Content */}
-        <div className="relative z-10 px-8 py-6">
-          {/* Profile Information Section */}
-          <div className="mb-8">
-            <h3 className="text-xl font-semibold text-gold mb-4">
+        <div className="relative z-10 px-5 py-7 sm:px-8 sm:py-9">
+          <section className="mb-9" aria-labelledby="profile-information-title">
+            <h3 id="profile-information-title" className="mb-1 font-serif text-2xl text-obsidian">
               Profile Information
             </h3>
+            <p className="mb-6 text-sm leading-6 text-warm-gray">Update the name shown across your VELORA account.</p>
 
             {/* Success Message */}
             {showSuccess && (
-              <div className="mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-xl text-green-400 text-center animate-fade-in">
+              <div className="mb-5 rounded-lg border border-success/30 bg-success/10 p-4 text-sm font-medium text-success" role="status">
                 ✓ Profile updated successfully!
               </div>
             )}
 
             {/* Error Message */}
             {apiError && (
-              <div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 text-center animate-fade-in">
+              <div className="mb-5 rounded-lg border border-danger/30 bg-danger/10 p-4 text-sm font-medium text-danger" role="alert">
                 {apiError}
               </div>
             )}
 
-            <form onSubmit={handleProfileSubmit} className="space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form onSubmit={handleProfileSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 {/* First Name */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
-                    First Name <span className="text-red-400">*</span>
+                  <label htmlFor="profile-first-name" className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-warm-gray">
+                    First Name <span className="text-danger">*</span>
                   </label>
                   <input
+                    id="profile-first-name"
                     type="text"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 rounded-xl bg-black/40 border ${
-                      errors.firstName ? "border-red-500" : "border-gold/30"
-                    } focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 text-white placeholder-gray-500 transition-all duration-300`}
-                    placeholder="Enter your first name"
+                    autoComplete="given-name"
+                    aria-invalid={Boolean(errors.firstName)}
+                    aria-describedby={errors.firstName ? "profile-first-name-error" : undefined}
+                    className={`w-full rounded-lg border bg-white px-4 py-3.5 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:ring-2 focus:ring-oxblood/15 ${
+                      errors.firstName ? "border-danger focus:border-danger" : "border-obsidian/20 focus:border-oxblood"
+                    }`}
+                    placeholder="First name"
                   />
                   {errors.firstName && (
-                    <p className="mt-1 text-sm text-red-400">
+                    <p id="profile-first-name-error" className="mt-1.5 text-xs text-danger">
                       {errors.firstName}
                     </p>
                   )}
@@ -314,21 +316,25 @@ const EditProfileModal = ({ isOpen, onClose, userData, onUpdateSuccess }) => {
 
                 {/* Last Name */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
-                    Last Name <span className="text-red-400">*</span>
+                  <label htmlFor="profile-last-name" className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-warm-gray">
+                    Last Name <span className="text-danger">*</span>
                   </label>
                   <input
+                    id="profile-last-name"
                     type="text"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 rounded-xl bg-black/40 border ${
-                      errors.lastName ? "border-red-500" : "border-gold/30"
-                    } focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 text-white placeholder-gray-500 transition-all duration-300`}
-                    placeholder="Enter your last name"
+                    autoComplete="family-name"
+                    aria-invalid={Boolean(errors.lastName)}
+                    aria-describedby={errors.lastName ? "profile-last-name-error" : undefined}
+                    className={`w-full rounded-lg border bg-white px-4 py-3.5 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:ring-2 focus:ring-oxblood/15 ${
+                      errors.lastName ? "border-danger focus:border-danger" : "border-obsidian/20 focus:border-oxblood"
+                    }`}
+                    placeholder="Last name"
                   />
                   {errors.lastName && (
-                    <p className="mt-1 text-sm text-red-400">
+                    <p id="profile-last-name-error" className="mt-1.5 text-xs text-danger">
                       {errors.lastName}
                     </p>
                   )}
@@ -336,46 +342,49 @@ const EditProfileModal = ({ isOpen, onClose, userData, onUpdateSuccess }) => {
               </div>
 
               {/* Disabled Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 {/* Email - Disabled */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-400 mb-2">
+                  <label htmlFor="profile-email" className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-taupe">
                     Email Address{" "}
                     <span className="text-xs">(Cannot be changed)</span>
                   </label>
                   <input
+                    id="profile-email"
                     type="email"
                     value={userData?.email || ""}
                     disabled
-                    className="w-full px-4 py-3 rounded-xl bg-black/20 border border-gray-600/30 text-gray-500 cursor-not-allowed"
+                    className="w-full cursor-not-allowed rounded-lg border border-obsidian/10 bg-obsidian/5 px-4 py-3.5 text-sm text-warm-gray"
                   />
                 </div>
 
                 {/* Phone Number - Disabled */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-400 mb-2">
+                  <label htmlFor="profile-phone" className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-taupe">
                     Phone Number{" "}
                     <span className="text-xs">(Cannot be changed)</span>
                   </label>
                   <input
+                    id="profile-phone"
                     type="text"
                     value={userData?.phoneNumber || ""}
                     disabled
-                    className="w-full px-4 py-3 rounded-xl bg-black/20 border border-gray-600/30 text-gray-500 cursor-not-allowed"
+                    className="w-full cursor-not-allowed rounded-lg border border-obsidian/10 bg-obsidian/5 px-4 py-3.5 text-sm text-warm-gray"
                   />
                 </div>
               </div>
 
               {/* Age - Disabled */}
               <div>
-                <label className="block text-sm font-semibold text-gray-400 mb-2">
+                <label htmlFor="profile-age" className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-taupe">
                   Age <span className="text-xs">(Cannot be changed)</span>
                 </label>
                 <input
+                  id="profile-age"
                   type="number"
                   value={userData?.age || ""}
                   disabled
-                  className="w-full px-4 py-3 rounded-xl bg-black/20 border border-gray-600/30 text-gray-500 cursor-not-allowed"
+                  className="w-full cursor-not-allowed rounded-lg border border-obsidian/10 bg-obsidian/5 px-4 py-3.5 text-sm text-warm-gray"
                 />
               </div>
 
@@ -383,81 +392,88 @@ const EditProfileModal = ({ isOpen, onClose, userData, onUpdateSuccess }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full px-6 py-3 bg-gradient-to-r from-gold-light via-gold to-gold-dark text-black font-semibold rounded-xl hover:shadow-gold-lg hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full rounded-lg bg-oxblood px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-oxblood-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? "Saving..." : "Update Profile"}
               </button>
             </form>
-          </div>
+          </section>
 
-          {/* Divider */}
-          <div className="border-t border-gold/20 my-8"></div>
+          <div className="my-9 border-t border-obsidian/10" />
 
-          {/* Password Change Section */}
-          <div>
-            <h3 className="text-xl font-semibold text-gold mb-4">
+          <section aria-labelledby="change-password-title">
+            <h3 id="change-password-title" className="mb-1 font-serif text-2xl text-obsidian">
               Change Password
             </h3>
+            <p className="mb-6 text-sm leading-6 text-warm-gray">Use a unique password with at least six characters.</p>
 
             {/* Password Success Message */}
             {showPasswordSuccess && (
-              <div className="mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-xl text-green-400 text-center animate-fade-in">
+              <div className="mb-5 rounded-lg border border-success/30 bg-success/10 p-4 text-sm font-medium text-success" role="status">
                 ✓ Password changed successfully!
               </div>
             )}
 
             {/* Password Error Message */}
             {passwordApiError && (
-              <div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 text-center animate-fade-in">
+              <div className="mb-5 rounded-lg border border-danger/30 bg-danger/10 p-4 text-sm font-medium text-danger" role="alert">
                 {passwordApiError}
               </div>
             )}
 
-            <form onSubmit={handlePasswordSubmit} className="space-y-5">
+            <form onSubmit={handlePasswordSubmit} className="space-y-6">
               {/* Current Password */}
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">
-                  Current Password <span className="text-red-400">*</span>
+                <label htmlFor="current-password" className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-warm-gray">
+                  Current Password <span className="text-danger">*</span>
                 </label>
                 <input
+                  id="current-password"
                   type="password"
                   name="currentPassword"
                   value={passwordData.currentPassword}
                   onChange={handlePasswordChange}
-                  className={`w-full px-4 py-3 rounded-xl bg-black/40 border ${
+                  autoComplete="current-password"
+                  aria-invalid={Boolean(passwordErrors.currentPassword)}
+                  aria-describedby={passwordErrors.currentPassword ? "current-password-error" : undefined}
+                  className={`w-full rounded-lg border bg-white px-4 py-3.5 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:ring-2 focus:ring-oxblood/15 ${
                     passwordErrors.currentPassword
-                      ? "border-red-500"
-                      : "border-gold/30"
-                  } focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 text-white placeholder-gray-500 transition-all duration-300`}
+                      ? "border-danger focus:border-danger"
+                      : "border-obsidian/20 focus:border-oxblood"
+                  }`}
                   placeholder="Enter current password"
                 />
                 {passwordErrors.currentPassword && (
-                  <p className="mt-1 text-sm text-red-400">
+                  <p id="current-password-error" className="mt-1.5 text-xs text-danger">
                     {passwordErrors.currentPassword}
                   </p>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 {/* New Password */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
-                    New Password <span className="text-red-400">*</span>
+                  <label htmlFor="new-profile-password" className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-warm-gray">
+                    New Password <span className="text-danger">*</span>
                   </label>
                   <input
+                    id="new-profile-password"
                     type="password"
                     name="newPassword"
                     value={passwordData.newPassword}
                     onChange={handlePasswordChange}
-                    className={`w-full px-4 py-3 rounded-xl bg-black/40 border ${
+                    autoComplete="new-password"
+                    aria-invalid={Boolean(passwordErrors.newPassword)}
+                    aria-describedby={passwordErrors.newPassword ? "new-profile-password-error" : undefined}
+                    className={`w-full rounded-lg border bg-white px-4 py-3.5 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:ring-2 focus:ring-oxblood/15 ${
                       passwordErrors.newPassword
-                        ? "border-red-500"
-                        : "border-gold/30"
-                    } focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 text-white placeholder-gray-500 transition-all duration-300`}
+                        ? "border-danger focus:border-danger"
+                        : "border-obsidian/20 focus:border-oxblood"
+                    }`}
                     placeholder="Enter new password"
                   />
                   {passwordErrors.newPassword && (
-                    <p className="mt-1 text-sm text-red-400">
+                    <p id="new-profile-password-error" className="mt-1.5 text-xs text-danger">
                       {passwordErrors.newPassword}
                     </p>
                   )}
@@ -465,23 +481,27 @@ const EditProfileModal = ({ isOpen, onClose, userData, onUpdateSuccess }) => {
 
                 {/* Confirm Password */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
-                    Confirm New Password <span className="text-red-400">*</span>
+                  <label htmlFor="confirm-profile-password" className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-warm-gray">
+                    Confirm New Password <span className="text-danger">*</span>
                   </label>
                   <input
+                    id="confirm-profile-password"
                     type="password"
                     name="confirmPassword"
                     value={passwordData.confirmPassword}
                     onChange={handlePasswordChange}
-                    className={`w-full px-4 py-3 rounded-xl bg-black/40 border ${
+                    autoComplete="new-password"
+                    aria-invalid={Boolean(passwordErrors.confirmPassword)}
+                    aria-describedby={passwordErrors.confirmPassword ? "confirm-profile-password-error" : undefined}
+                    className={`w-full rounded-lg border bg-white px-4 py-3.5 text-sm text-obsidian outline-none transition placeholder:text-taupe focus:ring-2 focus:ring-oxblood/15 ${
                       passwordErrors.confirmPassword
-                        ? "border-red-500"
-                        : "border-gold/30"
-                    } focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 text-white placeholder-gray-500 transition-all duration-300`}
+                        ? "border-danger focus:border-danger"
+                        : "border-obsidian/20 focus:border-oxblood"
+                    }`}
                     placeholder="Confirm new password"
                   />
                   {passwordErrors.confirmPassword && (
-                    <p className="mt-1 text-sm text-red-400">
+                    <p id="confirm-profile-password-error" className="mt-1.5 text-xs text-danger">
                       {passwordErrors.confirmPassword}
                     </p>
                   )}
@@ -492,19 +512,19 @@ const EditProfileModal = ({ isOpen, onClose, userData, onUpdateSuccess }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full px-6 py-3 bg-gradient-to-r from-gold-light via-gold to-gold-dark text-black font-semibold rounded-xl hover:shadow-gold-lg hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full rounded-lg bg-obsidian px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? "Changing..." : "Change Password"}
               </button>
             </form>
-          </div>
+          </section>
 
           {/* Close Button */}
-          <div className="mt-8 pt-6 border-t border-gold/20">
+          <div className="mt-9 border-t border-obsidian/10 pt-6">
             <button
               type="button"
               onClick={handleClose}
-              className="w-full px-6 py-3 border-2 border-gray-500/30 text-gray-300 font-semibold rounded-xl hover:bg-gray-500/10 hover:border-gray-400/50 transition-all duration-300"
+              className="w-full rounded-lg border border-obsidian/20 px-6 py-3 text-sm font-semibold text-obsidian transition hover:border-oxblood hover:text-oxblood focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oxblood"
             >
               Close
             </button>

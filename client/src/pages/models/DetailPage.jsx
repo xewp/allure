@@ -1,10 +1,69 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useDetailPageLogic } from "../../hooks/useDetailPageLogic";
 import Header from "../../components/layout/Header";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import BookingModal from "../../components/booking/BookingModal";
 import ImageZoomModal from "../../components/detail/ImageZoomModal";
+
+const DetailActions = ({
+  isFavorite,
+  toggleFavorite,
+  handleBookNow,
+  compact = false,
+}) => (
+  <div className={`flex gap-2.5 ${compact ? "w-full" : "pt-2"}`}>
+    <button
+      type="button"
+      onClick={toggleFavorite}
+      aria-pressed={isFavorite}
+      className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass ${
+        compact ? "flex-1" : "min-w-0 flex-1"
+      } ${
+        isFavorite
+          ? "border-oxblood bg-oxblood/10 text-porcelain hover:bg-oxblood/20"
+          : "border-porcelain/20 text-porcelain hover:border-brass hover:text-brass"
+      }`}
+    >
+      <svg
+        aria-hidden="true"
+        className={`h-5 w-5 ${isFavorite ? "fill-current" : "fill-none"}`}
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.7}
+          d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0Z"
+        />
+      </svg>
+      {compact ? (isFavorite ? "Saved" : "Save") : isFavorite ? "Remove from favorites" : "Add to favorites"}
+    </button>
+    <button
+      type="button"
+      onClick={handleBookNow}
+      className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-oxblood px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-porcelain transition-colors hover:bg-oxblood/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass ${
+        compact ? "flex-1" : "min-w-0 flex-1"
+      }`}
+    >
+      <svg
+        aria-hidden="true"
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.7}
+          d="M6.75 3.75v2.5m10.5-2.5v2.5M4.5 9h15m-13.25-4h11.5A1.75 1.75 0 0 1 19.5 6.75v12a1.75 1.75 0 0 1-1.75 1.75H6.25a1.75 1.75 0 0 1-1.75-1.75v-12A1.75 1.75 0 0 1 6.25 5Z"
+        />
+      </svg>
+      Book now
+    </button>
+  </div>
+);
 
 const DetailPage = () => {
   const {
@@ -21,231 +80,205 @@ const DetailPage = () => {
     navigate,
   } = useDetailPageLogic();
 
-  const navigateInstance = useNavigate();
-
-  // Booking modal state
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  // Zoom modal state
   const [zoomedImageUrl, setZoomedImageUrl] = useState(null);
 
-  const handleBookNow = () => {
-    setIsBookingModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setIsBookingModalOpen(false);
-  };
-
-  const handleBookingSuccess = (booking) => {
-
-  };
-
-  const handleImageZoom = (imageUrl) => {
-    setZoomedImageUrl(imageUrl);
-  };
-
-  const handleCloseZoom = () => {
-    setZoomedImageUrl(null);
-  };
+  const handleBookNow = () => setIsBookingModalOpen(true);
+  const handleModalClose = () => setIsBookingModalOpen(false);
+  const handleBookingSuccess = () => {};
+  const handleImageZoom = (imageUrl) => setZoomedImageUrl(imageUrl);
+  const handleCloseZoom = () => setZoomedImageUrl(null);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white flex items-center justify-center">
-        <LoadingSpinner message="Loading model details" size="large" />
+      <div className="flex min-h-screen items-center justify-center bg-obsidian text-porcelain">
+        <LoadingSpinner message="Loading talent profile" size="large" />
       </div>
     );
   }
 
   if (!modelData) return null;
 
+  const activeImage = galleryImages[currentIndex];
+  const category = modelData.category || activeTab || "Talent";
+
   return (
     <div
-      className={`min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white font-sans relative overflow-hidden transition-opacity duration-500 ${
+      className={`min-h-screen overflow-x-hidden bg-obsidian font-sans text-porcelain transition-opacity duration-500 motion-reduce:transition-none ${
         mounted ? "opacity-100" : "opacity-0"
       }`}
     >
-      {/* Ambient Decorative Lighting */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-[#D8AF7F]/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-tl from-[#D8AF7F]/10 to-transparent rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        ></div>
-      </div>
-      {/* Header */}
       <Header activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {/* LOCAL/FOREIGN Tabs - Top Center */}
-      <div className="flex justify-center pt-6 pb-4">
-        <div className="flex gap-4">
+      <div className="border-b border-porcelain/10 bg-ink/60">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3 py-3 sm:px-6 lg:px-8">
           <button
-            onClick={() =>
-              navigateInstance("/main", { state: { activeTab: "LOCAL" } })
-            }
-            className={`px-8 py-2 rounded-md font-medium uppercase text-sm tracking-wider transition-all duration-300 ${
-              modelData.category?.toLowerCase() === "local"
-                ? "border-2 border-[#D8AF7F] bg-white text-black"
-                : "border-2 border-[#D8AF7F] text-[#D8AF7F] hover:bg-[#D8AF7F]/10"
-            }`}
+            type="button"
+            onClick={() => navigate(-1)}
+            className="inline-flex min-h-10 items-center gap-2 rounded-lg px-2 text-xs font-semibold uppercase tracking-[0.16em] text-taupe transition-colors hover:text-porcelain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass"
           >
-            LOCAL
+            <svg
+              aria-hidden="true"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.8}
+                d="M15.75 19.5 8.25 12l7.5-7.5"
+              />
+            </svg>
+            Back
           </button>
-          <button
-            onClick={() =>
-              navigateInstance("/main", { state: { activeTab: "FOREIGN" } })
-            }
-            className={`px-8 py-2 rounded-md font-medium uppercase text-sm tracking-wider transition-all duration-300 ${
-              modelData.category?.toLowerCase() === "foreign"
-                ? "border-2 border-[#D8AF7F] bg-white text-black"
-                : "border-2 border-[#D8AF7F] text-[#D8AF7F] hover:bg-[#D8AF7F]/10"
-            }`}
+
+          <div
+            className="grid grid-cols-2 gap-1 rounded-lg bg-obsidian p-1"
+            role="group"
+            aria-label="Browse another talent collection"
           >
-            FOREIGN
-          </button>
+            {["LOCAL", "FOREIGN"].map((tab) => {
+              const isActive = category.toLowerCase() === tab.toLowerCase();
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() =>
+                    navigate("/main", { state: { activeTab: tab } })
+                  }
+                  aria-pressed={isActive}
+                  className={`min-h-9 rounded-md px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass sm:px-5 sm:text-xs ${
+                    isActive
+                      ? "bg-porcelain text-obsidian"
+                      : "text-taupe hover:text-porcelain"
+                  }`}
+                >
+                  {tab}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Button - Far Left */}
-        <div className="mb-8 flex">
-          <button
-            onClick={() => navigate(-1)}
-            className="px-6 py-2 border-2 border-[#D8AF7F] text-[#D8AF7F] rounded-md font-medium uppercase text-sm hover:bg-[#D8AF7F] hover:text-black transition-all duration-300"
-          >
-            Back
-          </button>
-        </div>
+      <main className="mx-auto grid max-w-7xl gap-8 px-3 pb-44 pt-5 sm:px-6 sm:pt-8 md:pb-16 lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)] lg:gap-12 lg:px-8 lg:pt-10">
+        <section aria-label={`${modelData.name} image gallery`}>
+          <div className="relative overflow-hidden rounded-xl border border-porcelain/10 bg-ink">
+            {activeImage ? (
+              <button
+                type="button"
+                onClick={() => handleImageZoom(activeImage)}
+                aria-label={`Enlarge portrait of ${modelData.name}`}
+                className="group block aspect-[3/4] w-full cursor-zoom-in overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brass lg:max-h-[calc(100vh-11rem)]"
+              >
+                <img
+                  src={activeImage}
+                  alt={`${modelData.name} portfolio image ${currentIndex + 1}`}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transform-none motion-reduce:transition-none"
+                />
+              </button>
+            ) : (
+              <div className="flex aspect-[3/4] items-center justify-center text-sm text-taupe">
+                No image available
+              </div>
+            )}
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Left Side - Image Gallery */}
-          <div className="space-y-4">
-            {/* Main Image */}
-            <div className="relative aspect-[3/4] rounded-lg overflow-hidden border-2 border-[#D8AF7F]/30">
-              <img
-                src={galleryImages[currentIndex]}
-                alt={modelData.name}
-                className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
-                onClick={() => handleImageZoom(galleryImages[currentIndex])}
-              />
-            </div>
+            {galleryImages.length > 0 && (
+              <span className="absolute bottom-3 right-3 rounded-md border border-porcelain/15 bg-obsidian/70 px-2.5 py-1 text-[10px] font-semibold tracking-[0.14em] text-porcelain backdrop-blur-md">
+                {currentIndex + 1} / {galleryImages.length}
+              </span>
+            )}
+          </div>
 
-            {/* Thumbnail Images - Centered */}
-            <div className="flex gap-4 overflow-x-auto pb-2 justify-center">
+          {galleryImages.length > 1 && (
+            <div className="mt-3 flex snap-x gap-2.5 overflow-x-auto pb-2 sm:mt-4 sm:gap-3">
               {galleryImages.map((image, index) => (
                 <button
-                  key={index}
+                  key={`${image}-${index}`}
+                  type="button"
                   onClick={() => setCurrentIndex(index)}
-                  className={`flex-shrink-0 w-20 h-28 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+                  aria-label={`Show image ${index + 1} of ${galleryImages.length}`}
+                  aria-pressed={currentIndex === index}
+                  className={`aspect-[3/4] w-16 flex-none snap-start overflow-hidden rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass sm:w-20 ${
                     currentIndex === index
-                      ? "border-[#D8AF7F] scale-105"
-                      : "border-transparent hover:border-[#D8AF7F]/50"
+                      ? "border-brass"
+                      : "border-transparent opacity-60 hover:opacity-100"
                   }`}
                 >
                   <img
                     src={image}
-                    alt={`${modelData.name} ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    alt=""
+                    className="h-full w-full object-cover"
                   />
                 </button>
               ))}
             </div>
+          )}
+        </section>
+
+        <section className="text-left lg:sticky lg:top-24 lg:self-start">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-brass sm:text-xs">
+            {category} talent
+          </p>
+          <h1 className="mt-3 font-serif text-5xl font-semibold leading-[0.95] text-porcelain sm:text-6xl lg:text-7xl">
+            {modelData.name}
+          </h1>
+
+          <div className="mt-8 border-y border-porcelain/10 py-6">
+            <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-taupe">
+              At a glance
+            </p>
+            <dl className="grid grid-cols-3 gap-3">
+              {[
+                ["Age", modelData.age],
+                ["Height", modelData.height],
+                ["Weight", modelData.weight],
+              ].map(([label, value]) => (
+                <div key={label} className="min-w-0">
+                  <dt className="text-[10px] uppercase tracking-[0.14em] text-taupe">
+                    {label}
+                  </dt>
+                  <dd className="mt-1 truncate font-serif text-xl text-porcelain sm:text-2xl">
+                    {value || "—"}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
-          {/* Right Side - Model Details */}
-          <div className="space-y-6">
-            {/* Model Name */}
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-[#D8AF7F]">
-              {modelData.name}
-            </h1>
-
-            {/* Stats Section */}
-            <div className="border-2 border-[#D8AF7F] rounded-lg p-6">
-              <h2 className="font-serif text-2xl font-bold text-[#D8AF7F] mb-4 text-center">
-                Stats
-              </h2>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Age</p>
-                  <p className="text-white font-semibold text-lg">
-                    {modelData.age || "N/A"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Weight</p>
-                  <p className="text-white font-semibold text-lg">
-                    {modelData.weight || "N/A"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Height</p>
-                  <p className="text-white font-semibold text-lg">
-                    {modelData.height || "N/A"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* About Section */}
-            <div className="border-2 border-[#D8AF7F] rounded-lg p-6">
-              <h2 className="font-serif text-2xl font-bold text-[#D8AF7F] mb-4 text-center">
-                About
-              </h2>
-              <p className="text-gray-300 leading-relaxed">
-                {modelData.about || "No description available."}
-              </p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-4 pt-4">
-              <button
-                onClick={toggleFavorite}
-                className={`flex-1 px-6 py-3 border-2 rounded-md font-medium uppercase text-sm tracking-wider transition-all duration-300 flex items-center justify-center gap-2 ${
-                  isFavorite
-                    ? "border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-                    : "border-[#D8AF7F] text-[#D8AF7F] hover:bg-[#D8AF7F] hover:text-black"
-                }`}
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill={isFavorite ? "currentColor" : "none"}
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
-                {isFavorite ? "Remove from Favorites" : "Add To Favorites"}
-              </button>
-              <button
-                onClick={handleBookNow}
-                className="flex-1 px-6 py-3 border-2 border-[#D8AF7F] text-[#D8AF7F] rounded-md font-medium uppercase text-sm tracking-wider hover:bg-[#D8AF7F] hover:text-black transition-all duration-300 flex items-center justify-center gap-2"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                Book Now
-              </button>
-            </div>
+          <div className="py-7">
+            <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-brass">
+              Profile
+            </p>
+            <p className="max-w-xl whitespace-pre-line leading-7 text-taupe">
+              {modelData.about || "No description is available for this profile yet."}
+            </p>
           </div>
-        </div>
+
+          <div className="hidden md:block">
+            <DetailActions
+              isFavorite={isFavorite}
+              toggleFavorite={toggleFavorite}
+              handleBookNow={handleBookNow}
+            />
+          </div>
+        </section>
       </main>
 
-      {/* Booking Modal */}
+      <div
+        className="fixed inset-x-0 z-30 border-t border-porcelain/10 bg-ink/95 px-3 py-2.5 shadow-[0_-12px_30px_rgba(0,0,0,0.3)] backdrop-blur-xl md:hidden"
+        style={{ bottom: "calc(4.375rem + env(safe-area-inset-bottom))" }}
+      >
+        <DetailActions
+          isFavorite={isFavorite}
+          toggleFavorite={toggleFavorite}
+          handleBookNow={handleBookNow}
+          compact
+        />
+      </div>
+
       <BookingModal
         isOpen={isBookingModalOpen}
         onClose={handleModalClose}
@@ -253,9 +286,8 @@ const DetailPage = () => {
         onBookingSuccess={handleBookingSuccess}
       />
 
-      {/* Image Zoom Modal */}
       <ImageZoomModal
-        isOpen={!!zoomedImageUrl}
+        isOpen={Boolean(zoomedImageUrl)}
         imageUrl={zoomedImageUrl}
         altText={modelData.name}
         onClose={handleCloseZoom}

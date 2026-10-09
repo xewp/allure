@@ -1,46 +1,52 @@
 import React from "react";
-import { NavLink, Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const LandingHeader = () => {
   const navLinkClasses = ({ isActive }) =>
-    `relative text-sm font-semibold uppercase tracking-widest px-4 py-2 rounded-full transition-colors duration-300 group ${
-      isActive ? "text-gold" : "text-white hover:text-gold"
+    `relative inline-flex min-h-11 items-center px-1 text-[0.7rem] font-semibold uppercase tracking-[0.16em] transition-colors focus:outline-none focus:ring-2 focus:ring-brass focus:ring-offset-2 focus:ring-offset-obsidian sm:text-xs ${
+      isActive ? "text-brass" : "text-porcelain/75 hover:text-porcelain"
     }`;
 
   return (
-    <header className="absolute top-0 z-50 w-full p-6 flex justify-between items-center bg-black bg-opacity-20 backdrop-blur-sm">
-      <nav className="flex items-center space-x-6">
-        <NavLink to="/" className={navLinkClasses}>
-          {({ isActive }) => (
-            <>
-              HOME
-              <span
-                className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-0.5 bg-gold transition-all duration-300 ${
-                  isActive ? "w-1/2" : "w-0 group-hover:w-1/2"
-                }`}
-              ></span>
-            </>
-          )}
-        </NavLink>
-        <NavLink to="/about" className={navLinkClasses}>
-          {({ isActive }) => (
-            <>
-              ABOUT US
-              <span
-                className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-0.5 bg-gold transition-all duration-300 ${
-                  isActive ? "w-1/2" : "w-0 group-hover:w-1/2"
-                }`}
-              ></span>
-            </>
-          )}
-        </NavLink>
-      </nav>
-      <Link
-        to="/login"
-        className="px-6 py-2 rounded-full font-semibold text-sm text-white border border-white/30 hover:bg-gold hover:text-black hover:border-gold transition-all duration-300"
-      >
-        Login
-      </Link>
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-porcelain/10 bg-obsidian/90 text-porcelain backdrop-blur-md">
+      <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between gap-3 px-3 sm:px-6 lg:px-8">
+        <Link
+          to="/"
+          aria-label="Velora home"
+          className="group inline-flex min-w-0 items-center gap-3 rounded-md focus:outline-none focus:ring-2 focus:ring-brass focus:ring-offset-2 focus:ring-offset-obsidian"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center border border-brass/70 font-serif text-xl text-brass transition-colors group-hover:bg-brass group-hover:text-obsidian">
+            V
+          </span>
+          <span className="hidden leading-none sm:block">
+            <span className="block font-serif text-lg tracking-[0.16em]">
+              VELORA
+            </span>
+            <span className="mt-1 block text-[0.52rem] font-semibold uppercase tracking-[0.28em] text-taupe">
+              Talent &amp; Events
+            </span>
+          </span>
+        </Link>
+
+        <nav aria-label="Primary navigation" className="flex items-center gap-3 sm:gap-6">
+          <NavLink
+            to="/"
+            end
+            className={(props) => `${navLinkClasses(props)} hidden sm:inline-flex`}
+          >
+            Home
+          </NavLink>
+          <NavLink to="/about" className={navLinkClasses}>
+            About
+          </NavLink>
+          <Link
+            to="/login"
+            className="inline-flex min-h-11 items-center justify-center rounded-xl border border-porcelain/30 px-3 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-porcelain transition-colors hover:border-brass hover:bg-brass hover:text-obsidian focus:outline-none focus:ring-2 focus:ring-brass focus:ring-offset-2 focus:ring-offset-obsidian sm:px-5 sm:text-xs"
+          >
+            Sign in
+          </Link>
+        </nav>
+      </div>
     </header>
   );
 };
