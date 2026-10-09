@@ -11,7 +11,7 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto px-8">
         {/* Company Name */}
         <h2 className="text-4xl font-bold italic text-center text-black mb-6">
-          AURA SELECT
+          VELORA
         </h2>
 
         {/* Contact Information */}
@@ -19,10 +19,10 @@ const Footer = () => {
           <div className="flex items-center gap-2">
             <span className="font-medium">Email:</span>
             <a
-              href="mailto:info@auraselect.com.ph"
+              href="mailto:info@velora.com.ph"
               className="hover:underline"
             >
-              info@auraselect.com.ph
+              info@velora.com.ph
             </a>
           </div>
 

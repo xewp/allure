@@ -93,7 +93,7 @@ const Header = ({ activeTab, onTabChange }) => {
           <h1
             className={`${goldColor} text-4xl font-bold tracking-wide whitespace-nowrap`}
           >
-            Aura Select
+            Velora
           </h1>
         </div>
 

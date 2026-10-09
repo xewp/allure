@@ -191,7 +191,7 @@ const BookingPage = () => {
               className="text-base md:text-lg leading-relaxed italic"
               style={{ color: themeColor }}
             >
-              Reach out to Aura Select and let us deliver elegance, discretion,
+              Reach out to Velora and let us deliver elegance, discretion,
               and excellence.
             </p>
           </div>

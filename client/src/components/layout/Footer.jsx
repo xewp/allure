@@ -80,7 +80,7 @@ const Footer = () => {
               Planning an event or looking for the right brand presence?
             </p>
             <a
-              href="mailto:info@auraselect.com.ph"
+              href="mailto:info@velora.com.ph"
               className="mt-4 inline-flex border-b border-porcelain/30 pb-1 text-sm font-semibold text-porcelain transition-colors hover:border-brass hover:text-brass focus:outline-none focus:ring-2 focus:ring-brass"
             >
               Email our booking team

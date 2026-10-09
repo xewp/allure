@@ -24,25 +24,25 @@ const AboutPage = () => {
   const features = [
     {
       title: "Trained, professional talent",
-      text: "At AURA SELECT, we take pride in offering trained, professional talent who understand the demands of the industry. Our models are prepared, disciplined, and capable of meeting the highest standards.",
+      text: "At VELORA, we take pride in offering trained, professional talent who understand the demands of the industry. Our models are prepared, disciplined, and capable of meeting the highest standards.",
       image: why1,
       theme: "dark",
     },
     {
       title: "VIP-ready and experienced",
-      text: "At AURA SELECT, VIP-ready and experienced. Trained to handle exclusive gatherings, prestigious functions, and high-end clientele with confidence and grace.",
+      text: "At VELORA, VIP-ready and experienced. Trained to handle exclusive gatherings, prestigious functions, and high-end clientele with confidence and grace.",
       image: why2,
       theme: "gold",
     },
     {
       title: "Flexible and customized services",
-      text: "At AURA SELECT, we understand that every client and event is different. That's why we provide personalized arrangements, ensuring the perfect fit for your brand, theme, or occasion.",
+      text: "At VELORA, we understand that every client and event is different. That's why we provide personalized arrangements, ensuring the perfect fit for your brand, theme, or occasion.",
       image: why3,
       theme: "dark",
     },
     {
       title: "Discreet and reliable",
-      text: "At AURA SELECT, your event and brand are handled with the utmost professionalism. We maintain strict confidentiality and ensure our models arrive prepared, punctual, and dependable for every engagement.",
+      text: "At VELORA, your event and brand are handled with the utmost professionalism. We maintain strict confidentiality and ensure our models arrive prepared, punctual, and dependable for every engagement.",
       image: why1,
       theme: "gold",
     },
@@ -52,7 +52,7 @@ const AboutPage = () => {
   const services = [
     {
       title: "Event PR & Promotions",
-      text: "Ensure your events shine with AuraSelect's PR professionals. We provide polished representatives who communicate your brand with elegance and impact.",
+      text: "Ensure your events shine with Velora's PR professionals. We provide polished representatives who communicate your brand with elegance and impact.",
       theme: "gold",
     },
     {
@@ -132,7 +132,7 @@ const AboutPage = () => {
               ABOUT US
             </h2>
             <p className="text-lg md:text-xl font-medium italic leading-relaxed opacity-90">
-              AuraSelect was founded with a single mission: to elevate every
+              Velora was founded with a single mission: to elevate every
               event, brand, and experience through elegance, professionalism,
               and charisma. What started as a vision to provide premium talent
               for high-profile events quickly became a trusted partner for
